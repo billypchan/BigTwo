@@ -262,8 +262,9 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
   through Beta App Review before external testers get it, and **only one build per
   version can be in Beta App Review** (`ANOTHER_BUILD_IN_REVIEW`): add the next build to
   the group, submit it once the previous review finishes.
-- Build numbers so far: 1.0 (1) old layout, 1.0 (2) Palm square — the one attached to the
-  App Store version. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
+- Build numbers so far: 1.0 (1) old layout, 1.0 (2) square layout (submitted, then pulled),
+  1.0 (3) = (2) without "Palm" + white status bar — the one in review. Marketing URL left
+  empty on purpose: it pointed at the GitHub README, which tells the Palm story. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
   expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
 - ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
   `$ASC_KEY_ID` is App Manager: export fails with *Cloud signing permission error* and
@@ -275,7 +276,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
 Single-player against three bots is complete and runs on the simulator; 47 kit tests and
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. App Store: **1.0 (2) submitted for review 2026-09-13** (release after approval). When it
+1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval). When it
    is live: tag `v1.0`, bump `MARKETING_VERSION`. Build 2 still needs Beta App Review for
    the external group once build 1's review is done. CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
