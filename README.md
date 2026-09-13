@@ -1,6 +1,6 @@
 # Big Two — iOS
 
-Remake of Big Two v2.2.8 for Palm OS (鋤大弟). SwiftUI, iOS 16+, iPhone, no third-party
+Remake of Big Two v2.2.8 for Palm OS (鋤大弟). SwiftUI, iOS 15+, iPhone, no third-party
 dependencies.
 
 ## Build

@@ -28,7 +28,10 @@ the flat chrome, the green table, the button layout and the terse wording are th
   to the plist by hand is silently dropped on the next generate.
 - `BigTwoApp/`, `Resources/` and `BigTwoUITests/` are **synced folders** — adding a file
   there needs no regenerate.
-- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, iOS 16+.
+- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 15+**
+  (iPhone 6s/7/SE 1 included). No iOS 15 simulator runtime is installed here, so iOS 15 is
+  verified by compiling only — avoid iOS 16 APIs (`NavigationStack`, `presentationDetents`,
+  `Duration`, `LabeledContent`, `Task.sleep(for:)`) or guard them with `#available`.
   Version and build number live in `Configurations/Version.xcconfig`.
 - Swift 6 language mode for the app and `BigTwoKit`. The UI-test target is Swift 5 on
   purpose: `XCUIApplication` is `@MainActor`, and Swift 6 would need isolation on every test.
@@ -36,7 +39,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | Path | Contents |
 | --- | --- |
 | `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
-| `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `Palette.swift` (every color + `Font.palm`), `PalmChrome.swift`, `Views/` |
+| `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy` |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
@@ -66,22 +69,43 @@ the flat chrome, the green table, the button layout and the terse wording are th
 
 ## Visual rules (do not drift from these)
 
-- Table green is `#00cc00` (the lighter green of v2.0.a), with a darker gradient toward the
-  bottom.
-- Chrome is a flat light grey bar with a 1px hard black rule beneath. No shadows, no blur,
-  no rounded-card-shadow material.
-  ⚠️ iOS 26 draws a partial-height sheet as translucent glass — the table bleeds through.
-  Every sheet over the table takes `.palmSheetBackground()`.
-- Cards: white, 1px black border, 3pt corner radius, rank top-left, suit glyph centre and
-  bottom-right. Red suits use `#cc0000` for the *rank digit* too, as on the Palm.
-- Sort buttons are labelled `2` (by rank) and `♠` (by suit), bottom left.
-- Play and Pass are **hidden** when it is not the human's turn (Palm v0.3 behaviour).
-- Prompt strings stay terse: "Your Play", "Your Lead", "— new trick —", "*WIN!*", "DOUBLE!".
+The reference is the Palm itself: the SourceForge screenshots
+(https://sourceforge.net/projects/bigtwo-palmos/ and the images on
+https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif`, `prefs.gif`,
+`GameHist.gif`). When in doubt, match them.
+
+- **The game is one square** — the Palm's 320×320 screen. `GameView` sizes it to
+  `min(width, …)` and lays everything out in Palm units (`\.palmUnit` = side / 320), so it
+  scales as a whole. Around it: the dark `bezel`, status bar hidden.
+- **Below the square, the card tracker** (♦♣♥♠ × 3…2, played cards white) — where the
+  Palm's portrait screen put it, in the input area.
+- Title: a navy "Big Two" tab (green text) over a navy rule; **tapping the title opens the
+  menu**, as on the Palm. "Deal n/10" at the right where the Palm showed its version.
+- **One row per player, in play order from you** (Bill, Carl, Dean, Adam): grey name button
+  (inverted on that player's turn), their last move this deal — the cards, or "PASS" — and
+  `left: N`.
+- Lead/Play and Pass are white pills with a black border, bottom-right of the rows,
+  **hidden** when it is not your turn (Palm v0.3). Beside them: an empty box (clear the
+  selection) and **one sort icon** that shows the order a tap switches to (`♠` / `2`).
+- Your hand runs along the bottom edge. Cards: white, 1px black border, rank top-left with
+  the suit under it (a strip still reads); red suits colour the rank too (`#cc0000`).
+  **Selected cards are inverted** (black face), not raised.
+- Menus and dialogs are **Palm forms inside the square** (`PalmMenuView`, `PalmDialogView`:
+  navy title bar, white body, pill buttons) — never iOS sheets. They are modal: a clear
+  layer swallows taps outside them. Preferences keep the Palm wording ("Auto pass",
+  "Enable autopass for 5-card turn", "Use Hong Kong Rule Set", "Game speed: Slow | Medium |
+  Fast", "Sort cards by: Rank | Suit").
+- Table green is a **flat** `#00cc00`, as on the Palm screen. No shadows (the menu's hard
+  2px offset is the one exception — it is the Palm's), no blur, no glass.
+- Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
+  green; Palm greys the text and keeps the white pill.
+- Prompt strings stay terse: "Your Play", "Your Lead", "*WIN!*", "DOUBLE!", "PASS".
 - **Colors live only in `BigTwoApp/Palette.swift`** — no `Color(red:…)` or bare `.white`
   in a view. `Resources/Assets.xcassets/AccentColor` must hold the same components as
   `Color.feltDeep` (an asset catalog can't read a Swift constant).
-- **Touch targets are 44pt even where the Palm look is smaller**: `PalmButtonView` draws
-  30pt and hit-tests 44 (`.frame(minHeight: 44)` + `.contentShape`).
+- **Touch targets are 44pt even where the Palm look is smaller** (`PalmMetrics.minTouch`):
+  pills draw 20 Palm units and hit-test 44pt. The one exception is the title tab — the
+  title bar is only 24 units tall.
 
 ## Rules that must not be broken
 
