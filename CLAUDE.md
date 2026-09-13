@@ -254,7 +254,12 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
   plus "me"; **"External Testers"** holds every 周易占卜 tester. Internal groups only
   accept people the API recognises as team members ("Tester(s) cannot be assigned"
   otherwise) — add those to the external group. Each new version's first build goes
-  through Beta App Review before external testers get it.
+  through Beta App Review before external testers get it, and **only one build per
+  version can be in Beta App Review** (`ANOTHER_BUILD_IN_REVIEW`): add the next build to
+  the group, submit it once the previous review finishes.
+- Build numbers so far: 1.0 (1) old layout, 1.0 (2) Palm square — the one attached to the
+  App Store version. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
+  expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
 - ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
   `$ASC_KEY_ID` is App Manager: export fails with *Cloud signing permission error* and
   *No profiles for 'com.billchan.BigTwo'*. The second key has Admin and exported 1.0 (1)
