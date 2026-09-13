@@ -35,7 +35,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 
 | Path | Contents |
 | --- | --- |
-| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer`, `Preferences` + `PreferencesStore` |
+| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `Palette.swift` (every color + `Font.palm`), `PalmChrome.swift`, `Views/` |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy` |
@@ -54,8 +54,8 @@ the flat chrome, the green table, the button layout and the terse wording are th
 
 ## Git, PRs and learnings
 
-- ⚠️ **There is no GitHub remote yet** (`billypchan/BigTwo` does not exist). Until one is
-  added, work on a branch and commit; the PR steps below start once it exists.
+- Public repo **github.com/billypchan/BigTwo**, MIT (`LICENSE`). Anything committed is
+  published — no keys, no `.p8`, no personal data.
 - **A new feature ends with an open PR against `main`** — standing permission. The PR body
   says what the diff can't: why this approach, what was left out, and **whether it was
   actually built and tested** — never imply a green run that didn't happen.
@@ -112,17 +112,20 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 - The shipped v2.2.9 Hong Kong code does not match the spec page: it ranks *both* A2345
   and 23456 above every other straight (A2345 and 23456 can't beat each other, and a
   dangling `if` lets any A2345 beat another A2345). We follow the page.
-- ⚠️ **The original AI is © Woo Kok Tong, GPL.** This remake is fresh code. Porting that
-  AI line by line would make the app a derivative of GPL code, and App Store terms are
-  widely held to conflict with the GPL. Settle that (reimplement from the behaviour, or
-  get permission) *before* porting.
+- ⚠️ **Never copy or translate code from the SVN source.** It is GPL (© Woo Kok Tong 1999,
+  Bill 2006); this remake is MIT and on the App Store, and a translated function would
+  make it a derivative. Describe the behaviour, then write it fresh — that is how
+  `BotPlayer.swift` was made.
+- The bots keep the Palm habits on purpose, including the two cheats: they **see every
+  hand** (`BotContext.hands`) and a bot **lets a fellow bot's K/A/2 single stand**. Both
+  are in `BotPlayerTests`; turning either off changes the game's difficulty.
 
 ## Tests
 
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit                  # 31 tests, ~10s
+swift test --package-path BigTwoKit                  # 46 tests, ~30s
 swift test --package-path BigTwoKit --filter PlayTests
 ```
 
@@ -130,6 +133,10 @@ swift test --package-path BigTwoKit --filter PlayTests
 The give-away that a type should move there: it imports only Foundation. Whole-game
 tests drive every seat with `BotPlayer` (`humanSeats: [0, 1, 2, 3]`, so nothing runs on a
 timer) and check conservation, zero-sum scoring and termination.
+`BotPlayerTests` pins each bot habit to a hand, and `palmBotsOutscoreTheGreedyBot` keeps
+the app's first bot (`GreedyBot`, test target only) as a yardstick: over 8 seeded games
+the greedy seat finished at −719. A bot change that makes that number go up is a
+regression in strength, whatever the intent.
 
 ### UI — XCUITest on the simulator
 
@@ -152,6 +159,10 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
   in `docs/test_runs.md`. Evidence from this repo: `sheet.swipeDown()` passed with the
   score sheet made dismissable — it never moves a sheet. Drag from inside the sheet's top
   edge with `coordinate.press(forDuration:thenDragTo:)`.
+- ⚠️ **Wait for the state a tap causes; never read it on the next line.** On a loaded
+  Mac the app lags the synthesized taps: `isSelected` read right after `tap()` was false,
+  and a Play tapped before the second card's selection landed led a single. Use
+  `waitForCount(app.selectedHandCards, n)` / `waitFor(_:label:)` first.
 - ⚠️ **`waitForExistence` is true while a sheet is still sliding in.** Capture after
   `waitUntilSettled(_:)`, or the shot shows a layout bug that isn't there.
 - ⚠️ **Overlapping cards must not each own a tap gesture.** Touch slop hands a tap near a
@@ -173,6 +184,9 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
 
 ## Simulator
 
+- ⚠️ **Checked 2026-09-13: the Data volume is 99 % full (≈3 GB free).** Time Machine and
+  cache deletion push the load average to 50–75 and every UI test slows down (launch
+  took 18 s). Free space before trusting a timing failure.
 - This Mac (checked 2026-09-13): **Xcode 26.3**, iOS 26.3 runtime. Use **iPhone 17 Pro Max**
   (`xcrun simctl list devices available` for the UDID — pin by `id=`, never by a `name=`
   that two devices share).
@@ -200,14 +214,20 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
 - App icon: `scripts/make_app_icon.swift` (1024², no alpha — see its header for how to run).
 - `PrivacyInfo.xcprivacy` declares UserDefaults (CA92.1) — update it if the app starts
   using another required-reason API. `ITSAppUsesNonExemptEncryption` is `false`.
-- Screenshots come from `testScreenTour` (6.9" iPhone 17 Pro Max).
+- Screenshots come from `testScreenTour` (6.9" iPhone 17 Pro Max, 1320×2868).
+- Privacy policy: `PRIVACY.md` (no data collected). Support URL: the repo's Issues page.
+- ⚠️ **The App Store Connect API cannot create an app record** — the first version needs
+  App Store Connect → Apps → **+** (name, primary language, bundle id `com.billchan.BigTwo`,
+  SKU), and the **App Privacy** questionnaire ("Data Not Collected") is web-only too.
+  Archive/upload follow `~/dev/iChingSwiftUI/.claude/skills/local-archive-upload`.
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 31 kit tests and
+Single-player against three bots is complete and runs on the simulator; 46 kit tests and
 8 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. GitHub remote, then CI (Xcode Cloud) and the PR workflow.
+1. App Store: create the app record (see "Release"), then upload and submit 1.0 (1).
+   CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
    score balance (as in v2.2).
@@ -216,5 +236,3 @@ Single-player against three bots is complete and runs on the simulator; 31 kit t
 5. Localization — at least zh-Hant (鋤大弟) for the Hong Kong audience.
 6. Landscape layout / iPad.
 7. Editable player names (v2.0.11).
-8. The bot is a fresh greedy heuristic, not the original AI — see "Original source" (GPL)
-   before porting.
