@@ -220,6 +220,10 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
   App Store Connect → Apps → **+** (name, primary language, bundle id `com.billchan.BigTwo`,
   SKU), and the **App Privacy** questionnaire ("Data Not Collected") is web-only too.
   Archive/upload follow `~/dev/iChingSwiftUI/.claude/skills/local-archive-upload`.
+- ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
+  `$ASC_KEY_ID` is App Manager: export fails with *Cloud signing permission error* and
+  *No profiles for 'com.billchan.BigTwo'*. The second key has Admin and exported 1.0 (1)
+  on 2026-09-13 (that run also registered the bundle id). Same issuer id for both.
 
 ## State of play
 
