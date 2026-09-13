@@ -28,10 +28,16 @@ the flat chrome, the green table, the button layout and the terse wording are th
   to the plist by hand is silently dropped on the next generate.
 - `BigTwoApp/`, `Resources/` and `BigTwoUITests/` are **synced folders** — adding a file
   there needs no regenerate.
-- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 15+**
-  (iPhone 6s/7/SE 1 included). No iOS 15 simulator runtime is installed here, so iOS 15 is
-  verified by compiling only — avoid iOS 16 APIs (`NavigationStack`, `presentationDetents`,
-  `Duration`, `LabeledContent`, `Task.sleep(for:)`) or guard them with `#available`.
+- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 14+**
+  (from 1.0 build 4; build 3 shipped at 15). Every device that runs 14 also runs 15 — 14 is
+  for people who never updated. No simulator runtime below 26 is installed here, so 14 is
+  verified by compiling only: `swiftc -typecheck -target arm64-apple-ios14.0-simulator`
+  over the kit and the app. Avoid iOS 15+ APIs (`.task`, `.foregroundStyle`,
+  `Button(role:)`, `.buttonStyle(.plain)` static syntax, `NavigationStack`,
+  `presentationDetents`, `Duration`) or guard them with `#available`.
+  ⚠️ StoreKit 2 (in-app purchases) and SharedKit need iOS 15: on 14, hide Remove Ads and
+  the tip jar rather than raising the target. Going to 13 means leaving the SwiftUI `App`
+  lifecycle (`@main App`, `WindowGroup`, `@StateObject` are 14+); 12 has no SwiftUI.
   Version and build number live in `Configurations/Version.xcconfig`.
 - Swift 6 language mode for the app and `BigTwoKit`. The UI-test target is Swift 5 on
   purpose: `XCUIApplication` is `@MainActor`, and Swift 6 would need isolation on every test.
