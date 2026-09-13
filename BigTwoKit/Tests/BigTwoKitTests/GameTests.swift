@@ -5,20 +5,18 @@ import Testing
 @MainActor
 struct GameTests {
 
-  /// Every seat human, so nothing runs on a timer — the test drives each seat with the bot.
+  /// Seat 1 is the human, as in the app, but nothing runs on a timer — the test moves
+  /// every seat itself, the human's with the same bot.
   func driven(_ prefs: Preferences = Preferences(), seed: UInt64 = 1) -> BigTwoGame {
-    BigTwoGame(preferences: prefs, seed: seed, humanSeats: [0, 1, 2, 3])
+    BigTwoGame(preferences: prefs, seed: seed, humanSeats: [1], botsMoveThemselves: false)
   }
 
   /// One bot move for whoever's turn it is. Returns false if the bot tried to pass a lead.
   @discardableResult
   func step(_ game: BigTwoGame) -> Bool {
     let seat = game.turn
-    let others = game.seats.indices.filter { $0 != seat }.map { game.seats[$0].hand.count }
-    let options = game.legalPlays(for: seat)
-    if let choice = BotPlayer.choose(from: options, table: game.table,
-                                     hand: game.seats[seat].hand, opponentCounts: others) {
-      #expect(options.contains(choice))
+    if let choice = game.botChoice(for: seat) {
+      #expect(game.legalPlays(for: seat).contains(choice))
       #expect(game.submit(choice.cards, from: seat) == nil, "legal \(choice.label) rejected")
       return true
     }
@@ -87,7 +85,7 @@ struct GameTests {
 
   @Test(arguments: [false, true])
   func botsFinishWholeGamesWithConsistentScores(hongKong: Bool) {
-    for seed in UInt64(1)...5 {
+    for seed in UInt64(1)...3 {
       let game = driven(Preferences(hongKong: hongKong), seed: seed)
       var played = 0
       var steps = 0

@@ -62,13 +62,18 @@ public final class BigTwoGame: ObservableObject {
   private var openingPlay = false  // the 3♦ must be in the first play of a deal
   private var botTask: Task<Void, Never>?
   private var rng: SeededGenerator?
+  private var prefersFiveCards = [true, false, true, false]
+  private let botsMoveThemselves: Bool
 
   /// `humanSeats` empty lets the bots play every seat (UI-test autoplay).
+  /// `botsMoveThemselves: false` leaves every move to the caller — tests step the bots
+  /// with `botChoice(for:)` instead of waiting on timers.
   public init(preferences: Preferences = Preferences(), seed: UInt64? = nil,
-              humanSeats: Set<Int> = [1]) {
+              humanSeats: Set<Int> = [1], botsMoveThemselves: Bool = true) {
     self.preferences = preferences
     self.rules = RuleSet(hongKong: preferences.hongKong)
     self.rng = seed.map(SeededGenerator.init(seed:))
+    self.botsMoveThemselves = botsMoveThemselves
     self.seats = ["Adam", "Bill", "Carl", "Dean"].enumerated().map {
       Seat(id: $0.offset, name: $0.element, isHuman: humanSeats.contains($0.offset))
     }
@@ -96,6 +101,7 @@ public final class BigTwoGame: ObservableObject {
       seats[i].hand = HandSort.byRank.sorted(Array(deck.prefix(13)))
       deck.removeFirst(13)
     }
+    prefersFiveCards = seats.map { _ in coinFlip() }  // after the deal, so seeds keep their hands
     table = nil
     tableOwner = nil
     passes = 0
@@ -117,6 +123,12 @@ public final class BigTwoGame: ObservableObject {
     guard var generator = rng else { return Card.deck.shuffled() }
     defer { rng = generator }
     return Card.deck.shuffled(using: &generator)
+  }
+
+  private func coinFlip() -> Bool {
+    guard var generator = rng else { return Bool.random() }
+    defer { rng = generator }
+    return Bool.random(using: &generator)
   }
 
   // MARK: - Turns
@@ -181,7 +193,7 @@ public final class BigTwoGame: ObservableObject {
 
   private func scheduleBot() {
     botTask?.cancel()
-    guard !seats[turn].isHuman, result == nil, !gameOver else { return }
+    guard botsMoveThemselves, !seats[turn].isHuman, result == nil, !gameOver else { return }
     let seat = turn
     let delay = botDelay
     botTask = Task { [weak self] in
@@ -192,14 +204,27 @@ public final class BigTwoGame: ObservableObject {
   }
 
   private func playBotTurn(_ seat: Int) {
-    let options = legalPlays(for: seat)
-    let others = seats.indices.filter { $0 != seat }.map { seats[$0].hand.count }
-    if let choice = BotPlayer.choose(from: options, table: table,
-                                     hand: seats[seat].hand, opponentCounts: others) {
+    if let choice = botChoice(for: seat) {
       submit(choice.cards, from: seat)
     } else {
       pass(from: seat)
     }
+  }
+
+  public func botContext(for seat: Int) -> BotContext {
+    BotContext(seat: seat,
+               hands: seats.map(\.hand),
+               isHuman: seats.map(\.isHuman),
+               table: table,
+               tableOwner: tableOwner,
+               mustInclude: openingPlay ? .threeOfDiamonds : nil,
+               rules: rules,
+               prefersFiveCards: prefersFiveCards[seat])
+  }
+
+  /// What the bot would play from `seat` right now; nil is a pass.
+  public func botChoice(for seat: Int) -> Play? {
+    BotPlayer.choose(botContext(for: seat))
   }
 
   // MARK: - Scoring

@@ -22,13 +22,17 @@ final class GameUITests: XCTestCase {
     app.launch()
     XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
     app.element("hand_3d").tap()
+    waitForCount(app.selectedHandCards, 1)
     XCTAssertTrue(app.element("hand_3d").isSelected)
     XCTAssertEqual(app.buttons["button_play"].label, "Lead")
     app.buttons["button_play"].tap()
 
     waitForCount(app.handCards, 12)
     XCTAssertFalse(app.element("hand_3d").exists)
-    XCTAssertTrue(app.element("history_strip").label.contains("Bill: 3♦"))
+    // The strip shows only the last two moves — the bots may already have played past it.
+    app.buttons["menu_button"].tap()
+    XCTAssertTrue(app.element("history_text").waitForExistence(timeout: 5))
+    XCTAssertTrue(app.element("history_text").label.contains("Bill: 3♦"))
   }
 
   func testIllegalPlay_showsReasonAndKeepsHand() {
@@ -36,9 +40,10 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
     app.element("hand_3d").tap()
     app.element("hand_4c").tap()
+    waitForCount(app.selectedHandCards, 2)  // a loaded simulator lags behind the taps
     app.buttons["button_play"].tap()
 
-    XCTAssertEqual(app.prompt.label, "Not a legal combination")
+    waitFor(app.prompt, label: "Not a legal combination")
     XCTAssertEqual(app.handCards.count, 13)
     XCTAssertEqual(app.selectedHandCards.count, 2, "a rejected play keeps the selection")
   }

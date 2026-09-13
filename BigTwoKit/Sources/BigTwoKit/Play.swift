@@ -148,13 +148,15 @@ public struct Play: Equatable, Sendable {
 public enum PlayFinder {
 
   /// Every legal play in `hand`, cheapest first (fewest cards, then weakest). Pass
-  /// `beating` to restrict to answers for the current turn, and `mustInclude` for the
-  /// opening play of a deal (3♦).
+  /// `beating` to restrict to answers for the current turn, `mustInclude` for the
+  /// opening play of a deal (3♦), and `size` to look at one play size only.
   public static func plays(in hand: [Card],
                            beating target: Play? = nil,
                            rules: RuleSet = .standard,
-                           mustInclude: Card? = nil) -> [Play] {
-    let sizes = target.map { [$0.count] } ?? [1, 2, 3, 5]
+                           mustInclude: Card? = nil,
+                           size: Int? = nil) -> [Play] {
+    var sizes = target.map { [$0.count] } ?? [1, 2, 3, 5]
+    if let size { sizes = sizes.filter { $0 == size } }
     var found: [Play] = []
 
     for size in sizes where size <= hand.count {
@@ -171,20 +173,27 @@ public enum PlayFinder {
     }
   }
 
+  /// Stops at the first answer — autopass asks this for every seat on every turn.
   public static func canBeat(_ target: Play?, with hand: [Card], rules: RuleSet) -> Bool {
-    !plays(in: hand, beating: target, rules: rules).isEmpty
+    guard let target else { return !hand.isEmpty }
+    return combinations(hand, target.count).contains {
+      Play($0, rules: rules).map { $0.beats(target) } ?? false
+    }
   }
 
+  /// All `k`-element combinations, in index order.
   static func combinations<T>(_ items: [T], _ k: Int) -> [[T]] {
     guard k > 0 else { return [[]] }
     guard items.count >= k else { return [] }
-    if k == items.count { return [items] }
     var result: [[T]] = []
-    for (i, item) in items.enumerated() where items.count - i >= k {
-      for rest in combinations(Array(items[(i + 1)...]), k - 1) {
-        result.append([item] + rest)
-      }
+    var index = Array(0..<k)
+    while true {
+      result.append(index.map { items[$0] })
+      var i = k - 1
+      while i >= 0 && index[i] == items.count - k + i { i -= 1 }
+      if i < 0 { return result }
+      index[i] += 1
+      for j in (i + 1)..<k { index[j] = index[j - 1] + 1 }
     }
-    return result
   }
 }

@@ -33,3 +33,6 @@ fastlane/test_output
 # App Store Connect API private keys — never commit these
 *.p8
 private_keys/
+
+# Archives and exports
+*.xcarchive

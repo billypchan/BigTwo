@@ -13,6 +13,41 @@ and the evidence.
 
 ---
 
+## palm-style-bot — 依行為重寫原版 AI、MIT 開源
+
+**原始碼是 GPL，所以只准「依描述重寫」，不准翻譯。** 先把 `cstate.cpp` 的行為寫成規格（出牌順序、
+留牌規則、偷看、讓同伴），再用 `PlayFinder` 的架構重新實作；原版是 char 陣列 + 一連串 Strip，
+結構完全不同。這條規則已寫進 CLAUDE.md。
+
+**「偷看」與「讓同伴」照原版保留。** Palm 的 bot 看得到所有人的手牌、也不搶同伴 bot 的 K/A/2
+單張。拿掉任一項遊戲都會變簡單；兩者各有測試釘住。
+
+**強度用數字看，不用感覺。** 舊的貪心 bot 留在測試 target（`GreedyBot`）當量尺：它坐人類位、
+對上三個 Palm 式 bot，固定 seed 8 局累計 −719（20 局 −1756）。之後改 AI 若這個數字變大，
+就是變弱。
+
+**新 AI 讓整套測試從 10 秒變 301 秒。** 每次決策都會列舉 C(13,5)=1287 種五張組合，而且每種牌型
+各列舉一次、留牌時每一輪又重列。改成每組牌只列舉一次（`Fives`）、組合改用迴圈產生、`canBeat`
+找到一個就停 → 79 秒；再把整局測試縮成 3 個 seed、強度測試 8 局 → 27 秒。Debug 編譯的 Swift
+在這種迴圈上特別慢；Release 版 App 裡每步只要幾毫秒。
+
+**⚠️ `BotContext.hands` 的第二格才是人類。** 行為測試的 `others:` 參數依座位 1、2、3 排列，
+第一次把「人類剩兩張」寫成座位 2，測的其實是 bot。
+
+**牌的代碼是 Big Two 順序：♦ 在 ♣ 前。** 一對五是 `"5d 5c"`，不是 `"5c 5d"` —— 四個斷言因此
+第一次就錯。
+
+**磁碟只剩 3 GB 時 UI 測試會亂。** 負載衝到 50–75，模擬器慢到點擊還沒生效就被讀取；
+`isSelected` 讀到 false、「出牌」在第二張牌選上之前就按下。測試改成先等狀態再往下。
+
+**`git stash -u` 碰上「搬走舊檔 + 同路徑新檔」會還原失敗**（`already exists, no checkout`）。
+已追蹤的改動會回來，未追蹤的新檔留在 stash 裡；用 `git show 'stash@{0}^3:<path>'` 比對後再 drop。
+
+**API 建不了 App。** App Store Connect API 可以查、可以改 metadata、可以送審，但 `POST /v1/apps`
+不存在 —— 第一次上架一定要到網頁建 App 紀錄；App Privacy 問卷也只能在網頁填。
+
+---
+
 ## production-foundation — XcodeGen、BigTwoKit、UI 測試
 
 **重疊的牌不能各自掛 tap gesture。** 13 張牌疊成一排，每張只露出約 30pt。每張牌自己

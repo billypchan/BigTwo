@@ -36,6 +36,19 @@ Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
 | Sort icons `2` / `♠` | Same two buttons, bottom left |
 | Export history to Memo Pad | Menu → Copy history |
 
+## The bots
+
+Adam, Carl and Dean play the way the Palm bots did: set aside the cards they want to
+keep, then play the cheapest thing that works; lead five-card hands first; spend the big
+cards once someone is nearly out. Like the originals they see every hand, and they won't
+fight each other over a K, A or 2 — reimplemented from that behaviour, not from the
+original code.
+
+## License
+
+MIT — see [LICENSE](LICENSE). The Palm original is GPL and none of its code is used.
+Privacy: [PRIVACY.md](PRIVACY.md).
+
 ## Credits
 
 Big Two for Palm OS © Woo Kok Tong 1999, © Chan Yiu Por Bill 2006, GPL —

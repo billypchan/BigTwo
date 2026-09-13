@@ -15,6 +15,7 @@ final class ScreenTourUITests: XCTestCase {
 
     // A tap goes to whatever is really on top — if a system alert covered us, this fails.
     app.element("hand_3d").tap()
+    waitForCount(app.selectedHandCards, 1)
     XCTAssertTrue(app.element("hand_3d").isSelected)
     capture(app, "ios_screen_02_selected")
 
