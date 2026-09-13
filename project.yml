@@ -2,7 +2,7 @@ name: BigTwo
 options:
   bundleIdPrefix: com.billchan
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "14.0"
   createIntermediateGroups: true
   groupSortPosition: top
 

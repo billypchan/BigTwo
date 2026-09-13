@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
   name: "BigTwoKit",
-  platforms: [.iOS(.v15), .macOS(.v13)],
+  platforms: [.iOS(.v14), .macOS(.v13)],
   products: [
     .library(name: "BigTwoKit", targets: ["BigTwoKit"])
   ],
