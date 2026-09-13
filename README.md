@@ -1,29 +1,25 @@
 # Big Two — iOS
 
-Remake of Big Two v2.2.8 for Palm OS. SwiftUI, iOS 16+, no dependencies.
+Remake of Big Two v2.2.8 for Palm OS (鋤大弟). SwiftUI, iOS 16+, iPhone, no third-party
+dependencies.
 
 ## Build
 
-1. Xcode → New Project → iOS App → SwiftUI, product name `BigTwo`.
-2. Delete the generated `ContentView.swift` and `*App.swift`.
-3. Drag in all `.swift` files from this folder.
-4. Run.
+```bash
+xcodegen generate                      # only after editing project.yml
+open BigTwo.xcodeproj                  # scheme "BigTwo"
+swift test --package-path BigTwoKit    # rules engine, no simulator
+```
 
-## Files
-
-| File | What's in it |
-| --- | --- |
-| `Card.swift` | Rank order 3…A,2 · suit order ♦♣♥♠ · penalty values · sort by rank / by suit |
-| `Play.swift` | Validation and ranking of 1/2/3/5-card plays, straight ordering, `RuleSet`, play enumeration |
-| `Game.swift` | Dealing, 3♦ lead, passes, tricks, autopass, 10-deal scoring with doubling, history log |
-| `BotPlayer.swift` | Adam / Carl / Dean — cheapest legal play, holds bombs back, pushes when someone is near out |
-| `GameView.swift` | Screen: title bar, history strip, green table, hand, sort/clear/pass/play, score sheet, preferences |
+Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
 
 ## Rules kept verbatim from the Palm version
 
-- Straights: `A2345 < 23456 < 34567 < … < TJQKA`, `JQKA2` not a straight. Sequence ties broken by the suit of the highest sequence card.
+- Straights: `A2345 < 23456 < 34567 < … < TJQKA`, `JQKA2` not a straight. Sequence ties
+  broken by the suit of the highest sequence card.
 - Five-card ranking: straight < flush < full house < four of a kind < straight flush.
-- Flush compared on highest card (rank then suit); full house on the triple; four of a kind on the quad.
+- Flush compared on highest card (rank then suit); full house on the triple; four of a
+  kind on the quad.
 - Scoring: 3 costs 1 … 2 costs 13, doubled at 10+ cards left, winner collects the other three.
 - 10 deals per game, then reset.
 - Hong Kong rule set: last deal's winner leads, and 23456 becomes the largest straight.
@@ -40,9 +36,7 @@ Remake of Big Two v2.2.8 for Palm OS. SwiftUI, iOS 16+, no dependencies.
 | Sort icons `2` / `♠` | Same two buttons, bottom left |
 | Export history to Memo Pad | Menu → Copy history |
 
-## Not carried over yet
+## Credits
 
-- Multiplayer (pass-and-play, and the IR/Bluetooth games). Pass-and-play is the easy one: `Seat.isHuman` already drives it, it needs the "Next Player's Turn" cover screen.
-- High score table with rounds / seconds / max score.
-- Landscape layout.
-- Player name editing.
+Big Two for Palm OS © Woo Kok Tong 1999, © Chan Yiu Por Bill 2006, GPL —
+https://bigtwo-palmos.sourceforge.net

@@ -1,0 +1,487 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 986DEBFCCDA0844CFA741BF5 /* BigTwoKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B820E5AEEC3AFC3B23B6023F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF7EC009CAC5253B5543FB36 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4CC6A192A7F30B280F045B5;
+			remoteInfo = BigTwo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		287EF2890EF46B0F79446373 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+		49F90944719399D926E68D53 /* BigTwoKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BigTwoKit; path = BigTwoKit; sourceTree = SOURCE_ROOT; };
+		D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BigTwo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E32176153D68A88E857C858C /* BigTwoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BigTwoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		05C8A9CCC6DE5B5EA808AFBD /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5C24637EC107664296640160 /* BigTwoApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = BigTwoApp;
+			sourceTree = "<group>";
+		};
+		69E23FA008BEDC520EB4EF13 /* BigTwoUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = BigTwoUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		69750676D30967B58886A97A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2F41931DDF09F9CC37F7A690 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */,
+				E32176153D68A88E857C858C /* BigTwoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5E67529F69D4DCCF9405F8B3 = {
+			isa = PBXGroup;
+			children = (
+				5C24637EC107664296640160 /* BigTwoApp */,
+				69E23FA008BEDC520EB4EF13 /* BigTwoUITests */,
+				C47E98700BE8F6BBA6FCA177 /* Configurations */,
+				635832212CE93223D4D8B082 /* Packages */,
+				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
+				2F41931DDF09F9CC37F7A690 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		635832212CE93223D4D8B082 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				49F90944719399D926E68D53 /* BigTwoKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		C47E98700BE8F6BBA6FCA177 /* Configurations */ = {
+			isa = PBXGroup;
+			children = (
+				287EF2890EF46B0F79446373 /* Version.xcconfig */,
+			);
+			path = Configurations;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BFF8ED8CD8EE7A8C7594DE21 /* BigTwoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58C4C699D81CAACF9D4C4AD3 /* Build configuration list for PBXNativeTarget "BigTwoUITests" */;
+			buildPhases = (
+				BB8ABAD3C7912B5450E34E24 /* Sources */,
+				0D13CFAAE5BF06C28AC57800 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ACC4ADF49D33E674212BB8EE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				69E23FA008BEDC520EB4EF13 /* BigTwoUITests */,
+			);
+			name = BigTwoUITests;
+			packageProductDependencies = (
+			);
+			productName = BigTwoUITests;
+			productReference = E32176153D68A88E857C858C /* BigTwoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F4CC6A192A7F30B280F045B5 /* BigTwo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1100B2608E38DEB8A1896C5 /* Build configuration list for PBXNativeTarget "BigTwo" */;
+			buildPhases = (
+				AB392E60879C3839F85058F7 /* Sources */,
+				8BCD803B02916C5A20A5F164 /* Resources */,
+				69750676D30967B58886A97A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5C24637EC107664296640160 /* BigTwoApp */,
+				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
+			);
+			name = BigTwo;
+			packageProductDependencies = (
+				986DEBFCCDA0844CFA741BF5 /* BigTwoKit */,
+			);
+			productName = BigTwo;
+			productReference = D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FF7EC009CAC5253B5543FB36 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					BFF8ED8CD8EE7A8C7594DE21 = {
+						DevelopmentTeam = G5GZ5MPEHS;
+						TestTargetID = F4CC6A192A7F30B280F045B5;
+					};
+					F4CC6A192A7F30B280F045B5 = {
+						DevelopmentTeam = G5GZ5MPEHS;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = EDFAAFB8E95138E231888DFD /* Build configuration list for PBXProject "BigTwo" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 5E67529F69D4DCCF9405F8B3;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				611E27EB4DF749BA5655C5CD /* XCLocalSwiftPackageReference "BigTwoKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2F41931DDF09F9CC37F7A690 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4CC6A192A7F30B280F045B5 /* BigTwo */,
+				BFF8ED8CD8EE7A8C7594DE21 /* BigTwoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0D13CFAAE5BF06C28AC57800 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BCD803B02916C5A20A5F164 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AB392E60879C3839F85058F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB8ABAD3C7912B5450E34E24 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		ACC4ADF49D33E674212BB8EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4CC6A192A7F30B280F045B5 /* BigTwo */;
+			targetProxy = B820E5AEEC3AFC3B23B6023F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		06DE4E599659CA2FA532438B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 287EF2890EF46B0F79446373 /* Version.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = G5GZ5MPEHS;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		459C42CE1E5BBD6E3BF4C368 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				INFOPLIST_FILE = "Configurations/BigTwo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billchan.BigTwo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		4A25E09A438645FA192ADBE9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 287EF2890EF46B0F79446373 /* Version.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = G5GZ5MPEHS;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		840E8A24BA53D31356FCC79C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				INFOPLIST_FILE = "Configurations/BigTwo-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billchan.BigTwo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B50A6A6A61924CC25FC1B881 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billchan.BigTwoUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BigTwo;
+			};
+			name = Release;
+		};
+		C99FD345148DB28A591A4ED1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billchan.BigTwoUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BigTwo;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58C4C699D81CAACF9D4C4AD3 /* Build configuration list for PBXNativeTarget "BigTwoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C99FD345148DB28A591A4ED1 /* Debug */,
+				B50A6A6A61924CC25FC1B881 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B1100B2608E38DEB8A1896C5 /* Build configuration list for PBXNativeTarget "BigTwo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				459C42CE1E5BBD6E3BF4C368 /* Debug */,
+				840E8A24BA53D31356FCC79C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EDFAAFB8E95138E231888DFD /* Build configuration list for PBXProject "BigTwo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				06DE4E599659CA2FA532438B /* Debug */,
+				4A25E09A438645FA192ADBE9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		611E27EB4DF749BA5655C5CD /* XCLocalSwiftPackageReference "BigTwoKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = BigTwoKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		986DEBFCCDA0844CFA741BF5 /* BigTwoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BigTwoKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FF7EC009CAC5253B5543FB36 /* Project object */;
+}
