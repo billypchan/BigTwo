@@ -10,8 +10,6 @@ struct AboutDialogView: View {
 
   @Environment(\.palmUnit) private var u
 
-  private static let site = URL(string: "https://bigtwo-palmos.sourceforge.net")
-
   private var version: String {
     let info = Bundle.main.infoDictionary
     let short = info?["CFBundleShortVersionString"] as? String ?? "?"
@@ -24,11 +22,8 @@ struct AboutDialogView: View {
       VStack(spacing: 6 * u) {
         Text("Big Two \(version)").font(.palm(15 * u, .heavy))
         Text("Remade for iPhone by Chan Yiu Por Bill, 2026.")
-        Text("Big Two for Palm OS © Woo Kok Tong 1999, Chan Yiu Por Bill 2006.")
-        if let site = Self.site {
-          Link("bigtwo-palmos.sourceforge.net", destination: site)
-            .foregroundColor(.titleNavy)
-        }
+        // ⚠️ No other platform's name here or in the store copy (guideline 2.3.10).
+        Text("After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill.")
         Text("I will not play with real money.").foregroundColor(.inkDim)
       }
       .font(.palm(12 * u, .regular))

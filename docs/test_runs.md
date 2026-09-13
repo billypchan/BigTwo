@@ -25,3 +25,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-13 12:35 — iOS ✗ 9/10 (testLongPress fixed by judging on event timestamps; testDoubleTap still 1/6 — compared touch-up times, ≈0.3 s apart for XCUITest's double tap)
 - 2026-09-13 12:45 — iOS ✓ 3/3 (gesture tests: double tap measured touch-down to touch-down, 0.4 s)
 - 2026-09-13 12:50 — iOS (iPhone 17 Pro Max, 26.3) ✓ 10/10 (full suite, Palm square layout) · 6-shot tour re-extracted and viewed
+- 2026-09-13 13:10 — iOS (iPhone 17 Pro Max, 26.3) ✓ 10/10 (Palm removed from About; white status bar) · tour re-extracted, status bar checked

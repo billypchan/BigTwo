@@ -42,7 +42,6 @@ struct GameView: View {
       .frame(width: geo.size.width, height: geo.size.height)
     }
     .background(Color.bezel.ignoresSafeArea())
-    .statusBar(hidden: true)
     // Your hand only changes when you play (selection already cleared) or on a
     // redeal / new game — never carry a selection into a fresh hand.
     .onChange(of: game.seats[seat].hand) { _ in

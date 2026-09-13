@@ -248,8 +248,13 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
   every territory except mainland China (a game there needs a license number).
 - ⚠️ **No suit symbols in any App Store Connect text** — description, promotional text and
   TestFlight "What to Test" all reject ♠♦♣♥ (409 *invalid characters*), and a `<` in the
-  description is refused as markup. Write "3 of diamonds". Keep store copy free of other
-  platforms' names too (guideline 2.3.10) — no "Palm".
+  description is refused as markup. Write "3 of diamonds".
+- ⚠️ **No "Palm" anywhere a user or reviewer can read it** (guideline 2.3.10 — other
+  platforms' names): app strings, store metadata, and TestFlight "What to Test" — which
+  is why those notes carry the commit hash, not the branch name (`palm-square-layout`
+  leaked that way). Say "the 1999 handheld game" / "the classic look". Type names like
+  `PalmButtonView`, comments, README and the GitHub repo are fine. Removed from 1.0 (3)
+  after 1.0 (2) had gone to review with the credit in About.
 - **TestFlight**: internal groups mirror 周易占卜's ("App Store Connect Users", "testers")
   plus "me"; **"External Testers"** holds every 周易占卜 tester. Internal groups only
   accept people the API recognises as team members ("Tester(s) cannot be assigned"
