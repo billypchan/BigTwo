@@ -56,6 +56,27 @@ struct GameTests {
     #expect(game.history.count == 1)
   }
 
+  @Test func lastActionsFollowEveryMoveAndClearOnANewDeal() {
+    let game = driven()
+    #expect(game.lastActions.allSatisfy { $0 == nil })
+    for _ in 0..<60 where game.result == nil {
+      let seat = game.turn
+      step(game)
+      guard let action = game.lastActions[seat] else {
+        Issue.record("seat \(seat) moved but has no last action")
+        return
+      }
+      switch action {
+      case .played(let play): #expect(game.table == play || game.table == nil || game.result != nil)
+      case .passed: break
+      }
+    }
+    #expect(game.lastActions.contains(.passed), "sixty moves without a pass")
+    while game.result == nil { step(game) }
+    game.continueAfterScore()
+    #expect(game.lastActions.allSatisfy { $0 == nil })
+  }
+
   @Test func sameSeedDealsTheSameHands() {
     #expect(driven(seed: 42).seats.map(\.hand) == driven(seed: 42).seats.map(\.hand))
     #expect(driven(seed: 42).seats.map(\.hand) != driven(seed: 43).seats.map(\.hand))
@@ -156,16 +177,18 @@ struct PreferencesStoreTests {
   @Test func roundTrips() throws {
     let store = PreferencesStore(defaults: try freshDefaults())
     #expect(store.load() == Preferences())
-    let changed = Preferences(hongKong: true, autopass: false, autopassFiveCard: true, showCardsLeft: false)
+    let changed = Preferences(hongKong: true, autopass: false, autopassFiveCard: true,
+                              showCardsLeft: false, gameSpeed: .fast, sortBySuit: true)
     store.save(changed)
     #expect(store.load() == changed)
   }
 
   @Test func missingKeysKeepTheirDefaults() throws {
     let defaults = try freshDefaults()
-    defaults.set(Data(#"{"hongKong":true}"#.utf8), forKey: PreferencesStore.key)
+    defaults.set(Data(#"{"hongKong":true,"gameSpeed":"turbo"}"#.utf8), forKey: PreferencesStore.key)
     let prefs = PreferencesStore(defaults: defaults).load()
-    #expect(prefs.hongKong)
+    #expect(prefs.hongKong, "one unreadable value must not reset the rest")
+    #expect(prefs.gameSpeed == .medium)
     #expect(prefs.autopass == Preferences().autopass)
   }
 

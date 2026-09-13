@@ -17,7 +17,7 @@ struct BigTwoApp: App {
     let game = BigTwoGame(preferences: store.load(),
                           seed: LaunchOptions.seed,
                           humanSeats: LaunchOptions.autoplay ? [] : [1])
-    if LaunchOptions.uiTestMode { game.botDelay = .milliseconds(150) }
+    if LaunchOptions.uiTestMode { game.botDelayOverride = 0.15 }
     self.store = store
     _game = StateObject(wrappedValue: game)
   }

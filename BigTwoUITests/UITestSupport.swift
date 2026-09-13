@@ -35,6 +35,14 @@ extension XCTestCase {
                    file: file, line: line)
   }
 
+  func waitFor(_ element: XCUIElement, value: String, timeout: TimeInterval = 5,
+               file: StaticString = #filePath, line: UInt = #line) {
+    let predicate = NSPredicate(format: "value == %@", value)
+    let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
+    let outcome = XCTWaiter().wait(for: [expectation], timeout: timeout)
+    XCTAssertEqual(outcome, .completed, "value never became '\(value)'", file: file, line: line)
+  }
+
   func waitForCount(_ query: XCUIElementQuery, _ count: Int, timeout: TimeInterval = 10,
                     file: StaticString = #filePath, line: UInt = #line) {
     let deadline = Date().addingTimeInterval(timeout)

@@ -26,16 +26,19 @@ final class ScreenTourUITests: XCTestCase {
     capture(app, "ios_screen_03_trick")
 
     app.buttons["menu_button"].tap()
-    XCTAssertTrue(app.switches["pref_hongKong"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["menu_preferences"].waitForExistence(timeout: 5))
     capture(app, "ios_screen_04_menu")
-    app.buttons["menu_done"].tap()
+    app.buttons["menu_preferences"].tap()
+    XCTAssertTrue(app.buttons["pref_ok"].waitForExistence(timeout: 5))
+    capture(app, "ios_screen_05_preferences")
+    app.buttons["pref_ok"].tap()
 
     app.terminate()
     let auto = XCUIApplication.bigTwo(["-autoplay", "YES"])
     auto.launch()
     XCTAssertTrue(auto.element("score_sheet").waitForExistence(timeout: 120))
     waitUntilSettled(auto.element("score_sheet"))
-    capture(auto, "ios_screen_05_score")
+    capture(auto, "ios_screen_06_score")
   }
 }
 

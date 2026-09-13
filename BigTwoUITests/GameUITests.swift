@@ -14,11 +14,12 @@ final class GameUITests: XCTestCase {
     XCTAssertEqual(app.prompt.label, "Lead with the 3♦")
     XCTAssertEqual(app.handCards.count, 13)
     XCTAssertEqual(app.element("deal_label").label, "Deal 1/10")
+    XCTAssertEqual(app.element("left_1").label, "left: 13")
     XCTAssertFalse(app.buttons["button_pass"].isEnabled, "a lead cannot be passed")
     XCTAssertFalse(app.buttons["button_play"].isEnabled, "nothing selected yet")
   }
 
-  func testLead_threeOfDiamondsLeavesTwelveCards() {
+  func testLead_showsInYourRowAndTheTracker() {
     app.launch()
     XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
     app.element("hand_3d").tap()
@@ -29,10 +30,32 @@ final class GameUITests: XCTestCase {
 
     waitForCount(app.handCards, 12)
     XCTAssertFalse(app.element("hand_3d").exists)
-    // The strip shows only the last two moves — the bots may already have played past it.
+    XCTAssertTrue(app.element("row1_3d").waitForExistence(timeout: 5), "your row shows your lead")
+    XCTAssertTrue((app.element("card_tracker").value as? String ?? "").contains("3d"))
+
     app.buttons["menu_button"].tap()
+    app.buttons["menu_history"].tap()
     XCTAssertTrue(app.element("history_text").waitForExistence(timeout: 5))
     XCTAssertTrue(app.element("history_text").label.contains("Bill: 3♦"))
+  }
+
+  func testPass_showsPassInYourRow() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    app.element("hand_3d").tap()
+    waitForCount(app.selectedHandCards, 1)
+    app.buttons["button_play"].tap()
+
+    // Either you get to answer and pass by hand, or autopass passes for you.
+    let yourPlay = NSPredicate(format: "label == 'Your Play'")
+    let deadline = Date().addingTimeInterval(20)
+    while Date() < deadline && !app.element("pass_1").exists {
+      if yourPlay.evaluate(with: app.prompt), app.buttons["button_pass"].isEnabled {
+        app.buttons["button_pass"].tap()
+      }
+      usleep(200_000)
+    }
+    XCTAssertTrue(app.element("pass_1").exists, "PASS should replace your row's cards")
   }
 
   func testIllegalPlay_showsReasonAndKeepsHand() {
@@ -67,24 +90,33 @@ final class GameUITests: XCTestCase {
     waitForCount(app.selectedHandCards, 0)
   }
 
-  func testScoreSheet_swipeDownDoesNotDismissIt() {
+  func testSortIcon_togglesBetweenRankAndSuit() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    XCTAssertEqual(app.handCards.element(boundBy: 1).identifier, "hand_4c", "by rank: 3d 4c …")
+    app.buttons["button_sort"].tap()
+    let bySuit = NSPredicate(format: "identifier == 'hand_Jd'")
+    let expectation = XCTNSPredicateExpectation(predicate: bySuit, object: app.handCards.element(boundBy: 1))
+    XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 5), .completed, "by suit: 3d Jd …")
+  }
+
+  func testScoreDialog_isModal() {
     app = .bigTwo(["-autoplay", "YES"])
     app.launch()
-    let sheet = app.element("score_sheet")
-    XCTAssertTrue(sheet.waitForExistence(timeout: 120), "the bots never finished the deal")
-    waitUntilSettled(sheet)
+    let dialog = app.element("score_sheet")
+    XCTAssertTrue(dialog.waitForExistence(timeout: 120), "the bots never finished the deal")
     let winnerRows = app.descendants(matching: .any).matching(
       NSPredicate(format: "identifier BEGINSWITH 'score_row_' AND label CONTAINS '*WIN!*'"))
     XCTAssertEqual(winnerRows.count, 1, "one winner, asterisks shown literally")
 
-    // ⚠️ `sheet.swipeDown()` never moves a sheet — it passed with the guard removed.
-    // A press-and-drag from just inside the sheet's top edge is what a finger does.
-    let top = sheet.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0))
-      .withOffset(CGVector(dx: 0, dy: 12))
-    top.press(forDuration: 0.2,
-              thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.98)))
-    sleep(1)
-    XCTAssertTrue(sheet.exists, "only OK may leave the score sheet")
+    // A tap on the hand below the dialog must not reach it.
+    let card = app.handCards.firstMatch
+    if card.exists {
+      card.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.5)).tap()
+      sleep(1)
+      XCTAssertEqual(app.selectedHandCards.count, 0, "the score dialog is modal")
+    }
+    XCTAssertTrue(dialog.exists, "only OK leaves the score dialog")
 
     app.buttons["score_ok"].tap()
     waitFor(app.element("deal_label"), label: "Deal 2/10")
@@ -93,17 +125,22 @@ final class GameUITests: XCTestCase {
   func testPreferences_surviveARelaunch() {
     app.launch()
     app.buttons["menu_button"].tap()
-    let hk = app.switches["pref_hongKong"]
+    app.buttons["menu_preferences"].tap()
+    let hk = app.buttons["pref_hongKong"]
     XCTAssertTrue(hk.waitForExistence(timeout: 5))
     XCTAssertEqual(hk.value as? String, "0")
-    hk.switches.firstMatch.tap()
-    XCTAssertEqual(hk.value as? String, "1")
+    hk.tap()
+    waitFor(hk, value: "1")
+    app.buttons["pref_speed_Fast"].tap()
+    app.buttons["pref_ok"].tap()
 
     app.terminate()
     app = .bigTwo(["-keepPreferences", "YES"])
     app.launch()
     app.buttons["menu_button"].tap()
-    XCTAssertTrue(app.switches["pref_hongKong"].waitForExistence(timeout: 5))
-    XCTAssertEqual(app.switches["pref_hongKong"].value as? String, "1")
+    app.buttons["menu_preferences"].tap()
+    XCTAssertTrue(app.buttons["pref_hongKong"].waitForExistence(timeout: 5))
+    XCTAssertEqual(app.buttons["pref_hongKong"].value as? String, "1")
+    XCTAssertTrue(app.buttons["pref_speed_Fast"].isSelected)
   }
 }

@@ -13,6 +13,39 @@ and the evidence.
 
 ---
 
+## palm-square-layout — Palm 正方形版面、記牌表、iOS 15
+
+**參考圖要全部看過再動手。** 使用者只貼了一張 v2.2.8 的主畫面；SourceForge 上另外還有 10 張，
+其中 `portrait.gif` 才是 iPhone 直向的答案：Palm 直向時是「上方正方形 + 下方記牌表」（記牌表放在
+原本的手寫輸入區）。只照第一張圖做，iPhone 上下會空一大塊。
+
+**Palm 的細節只有截圖看得到：** pass 顯示大字「PASS」、選中的牌是反白而不是抬起、排序圖示顯示
+「按下會切成的順序」、選單從標題分頁往下拉、偏好設定的用詞（"Auto pass"、"Use Hong Kong Rule Set"）。
+這些都寫進了 CLAUDE.md 的視覺規則。
+
+**iOS 的 sheet 全部拿掉，iOS 15 相容幾乎是順便完成的。** `presentationDetents`、`NavigationStack`、
+`LabeledContent` 都是 iOS 16 才有；改成畫在正方形裡的 Palm 對話框後，這些 API 一起消失。
+剩下的只有 kit 裡的 `Duration` / `Task.sleep(for:)`，換成 `TimeInterval` / `nanoseconds`。
+⚠️ 這台 Mac 沒有 iOS 15 模擬器（磁碟也裝不下），所以 iOS 15 只驗證到編譯。
+
+**SwiftUI 的 `.plain` 按鈕停用時會把整個 label 調暗。** Palm 的停用按鈕是白色膠囊配灰字，被調暗後
+變成半透明綠色。自訂一個 `ButtonStyle`（`PalmPressStyle`）就不會自動調暗，`.disabled()` 仍然有效，
+所以 XCUITest 的 `isEnabled` 照樣能測。
+
+**Palm 式的 modal 對話框靠一層透明底攔截點擊。** `Color.clear.contentShape(Rectangle()).onTapGesture {}`
+放在對話框後面；少了它，點對話框外面會點到底下的手牌。這條由 `testScoreDialog_isModal` 測試。
+
+**手勢判斷要用事件自己的時間戳記（`DragGesture.Value.time`），不要用處理當下的 `Date()`。**
+主執行緒一卡，按下和放開的事件會一起送到：長按被當成點一下、雙擊的兩下被算成間隔太久。
+而雙擊要量「按下到按下」：量「放開到放開」時，XCUITest 的 `doubleTap()` 間隔約 0.3 秒，
+0.3 秒的門檻剛好卡住，在低負載下也穩定失敗。現在的門檻是 0.4 秒（UIKit 約 0.35 秒）。
+
+**⚠️ UI 測試跑到一半把磁碟寫滿（`ENOSPC`）之後，連 Bash 都不能用** —— 每個指令都要先建立輸出檔。
+只能停掉背景工作，請使用者清空間。之後的測試改用 `-resultBundlePath` 存到暫存區，擷取截圖後就刪掉，
+不在 DerivedData 裡累積。
+
+---
+
 ## palm-style-bot — 依行為重寫原版 AI、MIT 開源
 
 **原始碼是 GPL，所以只准「依描述重寫」，不准翻譯。** 先把 `cstate.cpp` 的行為寫成規格（出牌順序、

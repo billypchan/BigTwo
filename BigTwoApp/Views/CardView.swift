@@ -1,7 +1,7 @@
 //
 //  CardView.swift
-//  Big Two — white face, 1px black border, 3pt corners, rank top-left, suit centre and
-//  bottom-right. Red suits colour the rank too.
+//  Big Two — a Palm card: white face, 1px black border, rank top-left with the suit under
+//  it, so a card still reads when only its left strip shows. Selected cards are inverted.
 //
 
 import BigTwoKit
@@ -10,36 +10,40 @@ import SwiftUI
 struct CardView: View {
   let card: Card
   var selected = false
-  var height: CGFloat = 76
+  var height: CGFloat = 60
 
   var body: some View {
-    ZStack {
-      RoundedRectangle(cornerRadius: 3).fill(Color.cardFace)
-      RoundedRectangle(cornerRadius: 3).strokeBorder(Color.ink, lineWidth: selected ? 2 : 1)
-      VStack(spacing: 0) {
-        HStack(spacing: 1) {
-          Text(card.rank.label).font(.palm(height * 0.24, .heavy))
-          Spacer(minLength: 0)
-        }
-        Text(card.suit.symbol).font(.palm(height * 0.34, .regular))
-        Spacer(minLength: 0)
-        HStack {
-          Spacer(minLength: 0)
-          Text(card.suit.symbol).font(.palm(height * 0.18, .regular))
-        }
+    ZStack(alignment: .topLeading) {
+      RoundedRectangle(cornerRadius: height * 0.05).fill(selected ? Color.ink : Color.cardFace)
+      RoundedRectangle(cornerRadius: height * 0.05).strokeBorder(Color.ink, lineWidth: 1)
+      VStack(alignment: .leading, spacing: 0) {
+        Text(card.rank.label)
+          .font(.palm(height * 0.3, .heavy))
+          .minimumScaleFactor(0.6)
+          .lineLimit(1)
+        Text(card.suit.symbol)
+          .font(.palm(height * 0.36, .regular))
       }
-      .foregroundColor(card.suit.isRed ? .suitRed : .ink)
-      .padding(.horizontal, 3)
-      .padding(.vertical, 2)
+      .foregroundColor(glyphColor)
+      .padding(.leading, height * 0.05)
+      .padding(.top, height * 0.02)
     }
     .frame(width: height * CardView.aspect, height: height)
-    .offset(y: selected ? -14 : 0)
     .accessibilityElement(children: .ignore)
     .accessibilityLabel(card.spokenName)
     .accessibilityAddTraits(selected ? .isSelected : [])
   }
 
-  static let aspect: CGFloat = 0.66
+  private var glyphColor: Color {
+    switch (card.suit.isRed, selected) {
+    case (true, false): return .suitRed
+    case (true, true): return .suitRedOnInk
+    case (false, false): return .ink
+    case (false, true): return .cardFace
+    }
+  }
+
+  static let aspect: CGFloat = 0.64
 }
 
 #Preview {

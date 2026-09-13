@@ -1,7 +1,8 @@
 //
 //  GameView.swift
-//  Big Two — the screen. Palm layout kept: title bar, card history strip,
-//  green table, your hand along the bottom, sort / clear / pass / play.
+//  Big Two — the Palm screen: a 320×320 square (title tab, a row per player, Play/Pass,
+//  your hand along the bottom) with the card tracker below it where the Palm's portrait
+//  screen had its input area. Menus and dialogs are Palm forms drawn inside the square.
 //
 
 import BigTwoKit
@@ -10,35 +11,38 @@ import SwiftUI
 struct GameView: View {
   @ObservedObject var game: BigTwoGame
   @State private var selection: Set<Card> = []
-  @State private var sort: HandSort = .byRank
   @State private var message: String?
-  @State private var showMenu = false
-  @State private var lastTap: (card: Card, time: Date)?
+  @State private var dialog: Dialog?
+
+  enum Dialog { case menu, preferences, history, about }
+
+  /// Palm units below the square for the tracker.
+  private static let trackerHeight: CGFloat = 100
+  private static let trackerGap: CGFloat = 6
 
   private var seat: Int { game.humanSeat ?? 1 }
-  private var hand: [Card] { sort.sorted(game.seats[seat].hand) }
-  private var isYourTurn: Bool { game.turn == seat && game.isHumanTurn }
+  private var hand: [Card] {
+    (game.preferences.sortBySuit ? HandSort.bySuit : .byRank).sorted(game.seats[seat].hand)
+  }
+  private var isYourTurn: Bool { game.turn == seat && game.isHumanTurn && game.result == nil }
+  /// Play order starting from you, as on the Palm: Bill, Carl, Dean, Adam.
+  private var rowOrder: [Int] { (0..<4).map { (seat + $0) % 4 } }
+  private var played: Set<Card> { Set(Card.deck).subtracting(game.seats.flatMap(\.hand)) }
 
   var body: some View {
-    VStack(spacing: 0) {
-      titleBar
-      historyStrip
-      opponents
-      table
-      handArea
+    GeometryReader { geo in
+      let side = min(geo.size.width,
+                     (geo.size.height - Self.trackerGap) / (1 + Self.trackerHeight / 320))
+      let u = side / 320
+      VStack(spacing: Self.trackerGap) {
+        screen(u).frame(width: side, height: side)
+        CardTrackerView(played: played).frame(width: side, height: Self.trackerHeight * u)
+      }
+      .environment(\.palmUnit, u)
+      .frame(width: geo.size.width, height: geo.size.height)
     }
-    .background(
-      LinearGradient(colors: [.felt, .feltDeep], startPoint: .top, endPoint: .bottom)
-        .ignoresSafeArea()
-    )
-    .sheet(isPresented: $showMenu) { MenuSheetView(game: game) }
-    // Read-only binding: only the sheet's OK button may move on to the next deal.
-    .sheet(item: Binding(get: { game.result }, set: { _ in })) { result in
-      ScoreSheetView(game: game, result: result)
-        .interactiveDismissDisabled()
-        .presentationDetents([.medium])
-        .palmSheetBackground()
-    }
+    .background(Color.bezel.ignoresSafeArea())
+    .statusBar(hidden: true)
     // Your hand only changes when you play (selection already cleared) or on a
     // redeal / new game — never carry a selection into a fresh hand.
     .onChange(of: game.seats[seat].hand) { _ in
@@ -47,148 +51,135 @@ struct GameView: View {
     }
   }
 
-  private var titleBar: some View {
-    HStack {
-      Text("Big Two").font(.palm(17, .heavy))
-      Spacer()
-      Text("Deal \(game.deal)/\(game.rules.dealsPerGame)")
-        .font(.palm(12))
-        .accessibilityIdentifier("deal_label")
-      Button { showMenu = true } label: {
-        Image(systemName: "line.3.horizontal")
-          .font(.palm(15))
-          .frame(width: 44, height: 44)
-          .contentShape(Rectangle())
-      }
-      .accessibilityLabel("Menu")
-      .accessibilityIdentifier("menu_button")
-    }
-    .foregroundColor(.ink)
-    .padding(.leading, 12)
-    .padding(.trailing, 2)
-    .background(Color.chrome)
-    .overlay(Rectangle().frame(height: 1).foregroundColor(.ink), alignment: .bottom)
-  }
+  // MARK: - The square
 
-  /// The old Dynamic Input Area: the last two things that happened.
-  private var historyStrip: some View {
-    Text(game.history.suffix(2).joined(separator: "   ·   "))
-      .font(.palm(11, .regular))
-      .foregroundColor(.feltText)
-      .lineLimit(1)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.horizontal, 12)
-      .padding(.vertical, 5)
-      .background(Color.feltDeep.opacity(0.6))
-      .accessibilityIdentifier("history_strip")
-  }
-
-  private var opponents: some View {
-    HStack(spacing: 8) {
-      ForEach(game.seats.filter { $0.id != seat }) { player in
-        VStack(spacing: 2) {
-          Text(player.name).font(.palm(12))
-          Text("\(player.hand.count) cards").font(.palm(10, .regular))
-          Text("\(player.score)").font(.palm(11))
+  private func screen(_ u: CGFloat) -> some View {
+    ZStack(alignment: .topLeading) {
+      VStack(spacing: 0) {
+        TitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) { dialog = .menu }
+          .frame(height: 24 * u)
+        ZStack(alignment: .bottomTrailing) {
+          VStack(spacing: 0) {
+            ForEach(rowOrder, id: \.self) { s in
+              PlayerRowView(player: game.seats[s], action: game.lastActions[s],
+                            isTurn: game.turn == s && game.result == nil)
+            }
+          }
+          controls(u).padding(.trailing, 2 * u)
         }
-        .foregroundColor(.ink)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
-        .background(RoundedRectangle(cornerRadius: 4).fill(Color.chrome.opacity(0.9)))
-        .overlay(
-          RoundedRectangle(cornerRadius: 4)
-            .strokeBorder(Color.ink, lineWidth: game.turn == player.id ? 2 : 1)
-        )
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(player.name), \(player.hand.count) cards, score \(player.score)")
-        .accessibilityIdentifier("seat_\(player.id)")
+        .frame(height: 200 * u, alignment: .top)
+        Text(prompt)
+          .font(.palm(13 * u, .heavy))
+          .foregroundColor(.ink)
+          .lineLimit(1)
+          .minimumScaleFactor(0.7)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, 4 * u)
+          .frame(height: 30 * u)
+          .accessibilityIdentifier("prompt")
+        CardRowView(cards: hand, height: 62 * u, selection: selection, idPrefix: "hand",
+                    onTap: { toggle($0) },
+                    onDoubleTap: { selectAll(sameSuitAs: $0) },
+                    onLongPress: { selectAll(sameRankAs: $0) })
+          .padding(.horizontal, 2 * u)
+          .frame(height: 66 * u, alignment: .top)
       }
+      overlay(u)
     }
-    .padding(12)
+    .background(Color.felt)
+    .clipped()
   }
 
-  private var table: some View {
-    VStack(spacing: 8) {
-      if let play = game.table, let owner = game.tableOwner {
-        Text("\(game.seats[owner].name) · \(play.kind.name)")
-          .font(.palm(12))
-          .foregroundColor(.feltText)
-          .accessibilityIdentifier("table_owner")
-        CardRowView(cards: play.cards, height: 66, idPrefix: "table")
-          .frame(maxWidth: 260)
-      } else {
-        Text("— new trick —")
-          .font(.palm(12))
-          .foregroundColor(.feltTextDim)
-          .accessibilityIdentifier("table_owner")
-      }
-      Spacer(minLength: 0)
-      Text(prompt)
-        .font(.palm(15, .heavy))
-        .foregroundColor(.feltText)
-        .accessibilityIdentifier("prompt")
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .padding(.horizontal, 12)
-  }
-
-  private var prompt: String {
-    if let message { return message }
-    if game.mustPlayThreeOfDiamonds && isYourTurn { return "Lead with the 3♦" }
-    if isYourTurn { return game.table == nil ? "Your Lead" : "Your Play" }
-    return "\(game.seats[game.turn].name) is thinking…"
-  }
-
-  private var handArea: some View {
-    VStack(spacing: 4) {
-      CardRowView(cards: hand, height: 82, selection: selection, idPrefix: "hand",
-                  onTap: { tapped($0) },
-                  onLongPress: { selectAll(sameRankAs: $0) })
-        .padding(.horizontal, 10)
-
-      HStack(spacing: 2) {
-        PalmButtonView(title: "2") { sort = .byRank }
-          .accessibilityLabel("Sort by rank")
-          .accessibilityIdentifier("button_sort_rank")
-        PalmButtonView(title: "♠") { sort = .bySuit }
-          .accessibilityLabel("Sort by suit")
-          .accessibilityIdentifier("button_sort_suit")
-        PalmButtonView(title: "Clear", enabled: !selection.isEmpty) { selection = [] }
-          .accessibilityIdentifier("button_clear")
-        Spacer()
+  private func controls(_ u: CGFloat) -> some View {
+    VStack(alignment: .trailing, spacing: 0) {
+      HStack(spacing: 2 * u) {
         // Hidden, not disabled, when it isn't your turn (Palm v0.3).
+        if isYourTurn {
+          PalmButtonView(title: game.table == nil ? "Lead" : "Play",
+                         enabled: !selection.isEmpty) { play() }
+            .accessibilityIdentifier("button_play")
+        }
+        PalmIconView(glyph: "", enabled: !selection.isEmpty) { selection = [] }
+          .accessibilityLabel("Clear selection")
+          .accessibilityIdentifier("button_clear")
+      }
+      HStack(spacing: 2 * u) {
         if isYourTurn {
           PalmButtonView(title: "Pass", enabled: game.table != nil) {
             message = nil
             game.pass(from: seat)
           }
           .accessibilityIdentifier("button_pass")
-          PalmButtonView(title: game.table == nil ? "Lead" : "Play",
-                         wide: true,
-                         enabled: !selection.isEmpty) { play() }
-            .accessibilityIdentifier("button_play")
         }
+        // Shows the order a tap switches to.
+        PalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
+          game.preferences.sortBySuit.toggle()
+        }
+        .accessibilityLabel(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit")
+        .accessibilityIdentifier("button_sort")
       }
-      .padding(.horizontal, 6)
-      .padding(.bottom, 4)
     }
-    .background(Color.feltDeep.opacity(0.35))
+  }
+
+  private var prompt: String {
+    if let message { return message }
+    if game.mustPlayThreeOfDiamonds && isYourTurn { return "Lead with the 3♦" }
+    if isYourTurn { return game.table == nil ? "Your Lead" : "Your Play" }
+    if game.result != nil { return "" }
+    return "\(game.seats[game.turn].name) is thinking…"
+  }
+
+  // MARK: - Menu and dialogs
+
+  @ViewBuilder
+  private func overlay(_ u: CGFloat) -> some View {
+    if let result = game.result {
+      modal(u) { ScoreDialogView(game: game, result: result) }
+    } else if let dialog {
+      switch dialog {
+      case .menu:
+        ZStack(alignment: .topLeading) {
+          // A tap anywhere else closes the menu, as on the Palm.
+          Color.clear.contentShape(Rectangle()).onTapGesture { self.dialog = nil }
+          PalmMenuView(items: menuItems)
+            .padding(.top, 22 * u)
+            .padding(.leading, 2 * u)
+        }
+      case .preferences:
+        modal(u) {
+          PreferencesDialogView(preferences: $game.preferences) { self.dialog = nil }
+        }
+      case .history:
+        modal(u) {
+          HistoryDialogView(deal: game.deal, text: game.historyText) { self.dialog = nil }
+        }
+      case .about:
+        modal(u) { AboutDialogView { self.dialog = nil } }
+      }
+    }
+  }
+
+  /// A Palm form is modal: taps outside it go nowhere.
+  private func modal<Content: View>(_ u: CGFloat, @ViewBuilder _ content: () -> Content) -> some View {
+    ZStack {
+      Color.clear.contentShape(Rectangle()).onTapGesture {}
+      content().padding(.horizontal, 6 * u)
+    }
+  }
+
+  private var menuItems: [PalmMenuView.Item] {
+    [
+      .init(id: "new_game", title: "New Game") {
+        game.startGame()
+        dialog = nil
+      },
+      .init(id: "preferences", title: "Preferences") { dialog = .preferences },
+      .init(id: "history", title: "Game History") { dialog = .history },
+      .init(id: "about", title: "About") { dialog = .about },
+    ]
   }
 
   // MARK: - Actions
-
-  /// Tap toggles at once; a second tap on the same card within 0.3s selects its whole suit
-  /// (the Palm's "hold DOWN"). A SwiftUI double-tap gesture would delay every single tap.
-  private func tapped(_ card: Card) {
-    let now = Date()
-    if let last = lastTap, last.card == card, now.timeIntervalSince(last.time) < 0.3 {
-      lastTap = nil
-      selectAll(sameSuitAs: card)
-    } else {
-      lastTap = (card, now)
-      toggle(card)
-    }
-  }
 
   private func toggle(_ card: Card) {
     if selection.contains(card) { selection.remove(card) } else { selection.insert(card) }
@@ -198,6 +189,7 @@ struct GameView: View {
     selection = Set(game.seats[seat].hand.filter { $0.rank == card.rank })
   }
 
+  /// Double tap — the Palm's "hold DOWN". The first tap has already toggled the card.
   private func selectAll(sameSuitAs card: Card) {
     selection = Set(game.seats[seat].hand.filter { $0.suit == card.suit })
   }

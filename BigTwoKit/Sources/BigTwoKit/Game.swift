@@ -23,6 +23,12 @@ public struct Seat: Identifiable, Sendable {
   }
 }
 
+/// What a seat did last in the current trick — the Palm's row shows the cards or "PASS".
+public enum SeatAction: Equatable, Sendable {
+  case played(Play)
+  case passed
+}
+
 public struct DealResult: Identifiable, Sendable {
   public let deal: Int
   public let winner: Int
@@ -49,13 +55,15 @@ public final class BigTwoGame: ObservableObject {
   @Published public private(set) var turn = 0
   @Published public private(set) var table: Play?  // the play to beat; nil means a lead
   @Published public private(set) var tableOwner: Int?
+  /// Each seat's last move this deal; nil until it has moved.
+  @Published public private(set) var lastActions: [SeatAction?] = [nil, nil, nil, nil]
   @Published public private(set) var deal = 1
   @Published public private(set) var history: [String] = []
   @Published public private(set) var result: DealResult?  // non-nil while the score sheet is up
   @Published public private(set) var gameOver = false
 
-  /// Pause before each bot move, so a human can follow the play.
-  public var botDelay: Duration = .milliseconds(700)
+  /// Replaces `preferences.gameSpeed` — UI tests run the bots fast.
+  public var botDelayOverride: TimeInterval?
 
   private var passes = 0
   private var lastWinner: Int?
@@ -104,6 +112,7 @@ public final class BigTwoGame: ObservableObject {
     prefersFiveCards = seats.map { _ in coinFlip() }  // after the deal, so seeds keep their hands
     table = nil
     tableOwner = nil
+    lastActions = [nil, nil, nil, nil]
     passes = 0
     result = nil
     history = ["— Deal \(deal) —"]
@@ -152,6 +161,7 @@ public final class BigTwoGame: ObservableObject {
     seats[seat].hand.removeAll { cards.contains($0) }
     table = play
     tableOwner = seat
+    lastActions[seat] = .played(play)
     passes = 0
     openingPlay = false
     log("\(seats[seat].name): \(play.label)")
@@ -167,6 +177,7 @@ public final class BigTwoGame: ObservableObject {
   public func pass(from seat: Int) {
     guard result == nil, seat == turn, table != nil else { return }
     log("\(seats[seat].name): pass")
+    lastActions[seat] = .passed
     passes += 1
     if passes >= 3 {  // everyone else folded — new trick
       turn = tableOwner ?? turn
@@ -195,9 +206,9 @@ public final class BigTwoGame: ObservableObject {
     botTask?.cancel()
     guard botsMoveThemselves, !seats[turn].isHuman, result == nil, !gameOver else { return }
     let seat = turn
-    let delay = botDelay
+    let delay = UInt64((botDelayOverride ?? preferences.gameSpeed.botDelay) * 1_000_000_000)
     botTask = Task { [weak self] in
-      try? await Task.sleep(for: delay)
+      try? await Task.sleep(nanoseconds: delay)
       guard !Task.isCancelled, let self, self.turn == seat else { return }
       self.playBotTurn(seat)
     }
