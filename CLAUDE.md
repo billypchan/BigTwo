@@ -282,8 +282,8 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
 Single-player against three bots is complete and runs on the simulator; 47 kit tests and
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval). When it
-   is live: tag `v1.0`, bump `MARKETING_VERSION`. Build 2 still needs Beta App Review for
+1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval); tag
+   `v1.0` when it is live. `main` is **1.1** (iOS 14 support onward) — builds restart at 1. Build 2 still needs Beta App Review for
    the external group once build 1's review is done. CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
