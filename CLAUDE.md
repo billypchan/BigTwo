@@ -220,6 +220,17 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
   App Store Connect → Apps → **+** (name, primary language, bundle id `com.billchan.BigTwo`,
   SKU), and the **App Privacy** questionnaire ("Data Not Collected") is web-only too.
   Archive/upload follow `~/dev/iChingSwiftUI/.claude/skills/local-archive-upload`.
+- App Store Connect app id **6811548119** ("Big Two 鋤大弟", primary locale en-US). Free;
+  every territory except mainland China (a game there needs a license number).
+- ⚠️ **No suit symbols in any App Store Connect text** — description, promotional text and
+  TestFlight "What to Test" all reject ♠♦♣♥ (409 *invalid characters*), and a `<` in the
+  description is refused as markup. Write "3 of diamonds". Keep store copy free of other
+  platforms' names too (guideline 2.3.10) — no "Palm".
+- **TestFlight**: internal groups mirror 周易占卜's ("App Store Connect Users", "testers")
+  plus "me"; **"External Testers"** holds every 周易占卜 tester. Internal groups only
+  accept people the API recognises as team members ("Tester(s) cannot be assigned"
+  otherwise) — add those to the external group. Each new version's first build goes
+  through Beta App Review before external testers get it.
 - ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
   `$ASC_KEY_ID` is App Manager: export fails with *Cloud signing permission error* and
   *No profiles for 'com.billchan.BigTwo'*. The second key has Admin and exported 1.0 (1)
