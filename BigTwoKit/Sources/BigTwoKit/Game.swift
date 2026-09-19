@@ -193,13 +193,33 @@ public final class BigTwoGame: ObservableObject {
 
   private func advance() {
     turn = (turn + 1) % 4
-    // Autopass: skip a seat that cannot answer.
-    if let table, preferences.autopass, table.count < 5 || preferences.autopassFiveCard,
-       !PlayFinder.canBeat(table, with: seats[turn].hand, rules: rules) {
-      pass(from: turn)
-      return
-    }
+    if tryAutopass() { return }
     scheduleBot()
+  }
+
+  /// Skip a seat that has no legal reply. Size no longer matters: a 5-card on the
+  /// table with no answer used to wait for a second preference that shipped off.
+  @discardableResult
+  func tryAutopass() -> Bool {
+    guard let table, preferences.autopass else { return false }
+    // The 5-card checkbox is an off-switch only. Leaving it off used to skip
+    // this path entirely — the screenshot case (7d 8c 9d Ts Jd vs Bill's 13).
+    if table.count >= 5 && !preferences.autopassFiveCard { return false }
+    guard !PlayFinder.canBeat(table, with: seats[turn].hand, rules: rules) else { return false }
+    pass(from: turn)
+    return true
+  }
+
+  /// Test hook: drop a mid-trick without dealing.
+  func plantTrick(hands: [[Card]], turn: Int, table: Play, tableOwner: Int) {
+    for i in seats.indices { seats[i].hand = i < hands.count ? hands[i] : [] }
+    self.turn = turn
+    self.table = table
+    self.tableOwner = tableOwner
+    openingPlay = false
+    passes = 0
+    result = nil
+    lastActions = [nil, nil, nil, nil]
   }
 
   private func scheduleBot() {
