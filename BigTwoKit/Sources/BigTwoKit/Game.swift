@@ -64,6 +64,10 @@ public final class BigTwoGame: ObservableObject {
 
   /// Replaces `preferences.gameSpeed` — UI tests run the bots fast.
   public var botDelayOverride: TimeInterval?
+  /// UI tests: a 1-deal game so autoplay lands on the Final Score sheet.
+  public var dealsPerGameOverride: Int? {
+    didSet { applyDealsPerGame() }
+  }
 
   private var passes = 0
   private var lastWinner: Int?
@@ -102,8 +106,13 @@ public final class BigTwoGame: ObservableObject {
     newDeal()
   }
 
+  private func applyDealsPerGame() {
+    rules.dealsPerGame = dealsPerGameOverride ?? 10
+  }
+
   private func newDeal() {
-    rules = RuleSet(hongKong: preferences.hongKong)
+    rules = RuleSet(hongKong: preferences.hongKong,
+                    dealsPerGame: dealsPerGameOverride ?? 10)
     var deck = shuffledDeck()
     for i in seats.indices {
       seats[i].hand = HandSort.byRank.sorted(Array(deck.prefix(13)))
@@ -117,6 +126,7 @@ public final class BigTwoGame: ObservableObject {
     result = nil
     history = ["— Deal \(deal) —"]
 
+    // HK rules: the winner of the last deal leads. Otherwise 3♦ leads and must be played.
     if rules.hongKong, let winner = lastWinner {
       turn = winner
       openingPlay = false
@@ -178,7 +188,7 @@ public final class BigTwoGame: ObservableObject {
     log("\(seats[seat].name): pass")
     lastActions[seat] = .passed
     passes += 1
-    if passes >= 3 {
+    if passes >= 3 {  // everyone else folded — new trick
       turn = tableOwner ?? turn
       table = nil
       tableOwner = nil
@@ -251,8 +261,10 @@ public final class BigTwoGame: ObservableObject {
                prefersFiveCards: prefersFiveCards[seat])
   }
 
+  /// What the bot would play from `seat` right now; nil is a pass.
   public func botChoice(for seat: Int) -> Play? {
-    BotPlayer.choose(botContext(for: seat))
+    let c = botContext(for: seat)
+    return preferences.strongBots ? StrongBot.choose(c) : BotPlayer.choose(c)
   }
 
   // MARK: - Scoring
@@ -264,7 +276,7 @@ public final class BigTwoGame: ObservableObject {
     for i in seats.indices where i != winner {
       left[i] = seats[i].hand.count
       var cost = seats[i].hand.reduce(0) { $0 + $1.rank.penalty }
-      if seats[i].hand.count >= 10 { cost *= 2 }
+      if seats[i].hand.count >= 10 { cost *= 2 }  // DOUBLE!
       points[i] = -cost
       points[winner] += cost
     }
@@ -276,6 +288,7 @@ public final class BigTwoGame: ObservableObject {
     gameOver = deal >= rules.dealsPerGame
   }
 
+  /// Called when the score sheet is dismissed.
   public func continueAfterScore() {
     guard result != nil else { return }
     result = nil
@@ -286,6 +299,8 @@ public final class BigTwoGame: ObservableObject {
       newDeal()
     }
   }
+
+  // MARK: - History ("export the history to Memo pad")
 
   private func log(_ line: String) { history.append(line) }
 
