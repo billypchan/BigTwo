@@ -13,7 +13,7 @@ struct NamesDialogView: View {
   @Environment(\.palmUnit) private var u
 
   var body: some View {
-    PalmDialogView(title: NSLocalizedString("Player names", comment: "")) {
+    PalmDialogView(title: L10n.string("Player names")) {
       VStack(alignment: .leading, spacing: 4 * u) {
         ForEach(0..<4, id: \.self) { i in
           HStack(spacing: 6 * u) {
@@ -34,7 +34,7 @@ struct NamesDialogView: View {
       }
       .padding(.bottom, 6 * u)
     } buttons: {
-      PalmButtonView(title: NSLocalizedString("OK", comment: ""), width: 40, action: onOK)
+      PalmButtonView(title: L10n.string("OK"), width: 40, action: onOK)
         .accessibilityIdentifier("names_ok")
     }
   }

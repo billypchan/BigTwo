@@ -43,4 +43,18 @@ struct PlayerNameGameTests {
     #expect(!game.hasCustomNames)
     #expect(game.preferences.playerNames.isEmpty)
   }
+
+  @Test func displayNamesDoNotOverwriteACustomName() {
+    let game = BigTwoGame(seed: 1, botsMoveThemselves: false)
+    game.applyNames(["", "Mei", "", ""], defaults: ["亞當", "比爾", "卡爾", "迪安"])
+    game.applyDisplayNames(["亞當", "比爾", "卡爾", "迪安"])
+    #expect(game.seats.map(\.name) == ["亞當", "Mei", "卡爾", "迪安"])
+  }
+
+  @Test func blankApplyNamesIsNotCustom() {
+    let game = BigTwoGame(seed: 1, botsMoveThemselves: false)
+    game.applyNames(["", "  ", "", ""], defaults: ["亞當", "比爾", "卡爾", "迪安"])
+    #expect(!game.hasCustomNames)
+    #expect(game.seats.map(\.name) == ["亞當", "比爾", "卡爾", "迪安"])
+  }
 }

@@ -41,3 +41,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-19 21:43 — BigTwoKit ✓ 55/55 · iOS (iPhone 17 Pro Max, 26.3) ✓ 13/13 (`Shared.xcconfig`; `IPHONEOS_DEPLOYMENT_TARGET=15.0`)
 - 2026-09-19 22:36 — BigTwoKit ✓ 55/55
 - 2026-09-19 22:42 — iOS (iPhone 17 Pro Max, 26.3) GameUITests+ScreenTour 8 passed then runner crash on first launch of `testAbout` / `testIllegalPlay`; rerun ✓ 2/2 those two. Screen tour extracted; score/final_score PNG diffs are deal numbers, not committed.
+- 2026-09-19 23:12 — BigTwoKit ✓ 63/63 (8 PlayerName tests; `resolvedNames` nonisolated). iOS (iPhone 17 Pro Max, 26.3) ✓ 1/1 `testNames_customNameShowsOnTheTableAndSurvivesARelaunch`

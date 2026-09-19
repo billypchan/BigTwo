@@ -193,7 +193,7 @@ struct PreferencesStoreTests {
     #expect(store.load() == Preferences())
     let changed = Preferences(hongKong: true, autopass: false, autopassFiveCard: true,
                               showCardsLeft: false, gameSpeed: .fast, sortBySuit: true,
-                              strongBots: false)
+                              strongBots: false, playerNames: ["", "Mei", "", ""])
     store.save(changed)
     #expect(store.load() == changed)
   }
@@ -206,6 +206,7 @@ struct PreferencesStoreTests {
     #expect(prefs.gameSpeed == .medium)
     #expect(prefs.autopass == Preferences().autopass)
     #expect(prefs.strongBots == Preferences().strongBots)
+    #expect(prefs.playerNames.isEmpty, "old JSON without playerNames must not reset")
   }
 
   @Test func corruptDataFallsBackToDefaults() throws {

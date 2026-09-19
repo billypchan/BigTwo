@@ -49,7 +49,7 @@ public struct DealResult: Identifiable, Sendable {
 public final class BigTwoGame: ObservableObject {
 
   /// Palm seats 0…3. Kit tests and history keep these English strings.
-  public static let defaultNames = ["Adam", "Bill", "Carl", "Dean"]
+  nonisolated public static let defaultNames = ["Adam", "Bill", "Carl", "Dean"]
 
   @Published public private(set) var seats: [Seat]
   @Published public var preferences: Preferences
@@ -105,8 +105,8 @@ public final class BigTwoGame: ObservableObject {
   }
 
   /// Empty / missing slot falls back to `defaults` (English kit names, or the app's locale).
-  public static func resolvedNames(_ stored: [String],
-                                  defaults: [String] = defaultNames) -> [String] {
+  nonisolated public static func resolvedNames(_ stored: [String],
+                                               defaults: [String] = defaultNames) -> [String] {
     let base = defaults.count == 4 ? defaults : defaultNames
     return (0..<4).map { i in
       let raw = i < stored.count ? stored[i] : ""
