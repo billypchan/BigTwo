@@ -13,6 +13,12 @@ and the evidence.
 
 ---
 
+## xcconfig-settings — IPHONEOS_DEPLOYMENT_TARGET 不要寫在 pbxproj
+
+**project-level pbxproj 會蓋過 xcconfig。** `options.deploymentTarget` 和 `settings.base` 裡的 `IPHONEOS_DEPLOYMENT_TARGET` 會寫進 pbxproj，Cloud 讀到的還是那份。放到 `Configurations/Shared.xcconfig`，`Version.xcconfig` `#include`，`project.yml` 不要再設。Kit 的 `Package.swift` `platforms` 仍要自己對齊，SPM 不讀 xcconfig。
+
+---
+
 ## ios15-target — Xcode Cloud 不收 14.0
 
 **`IPHONEOS_DEPLOYMENT_TARGET` 14.0 在 Cloud 的 SDK 範圍是 15.0–27.0。** 警告路徑是 `file:///Volumes/workspace/repository/BigTwo.xcodeproj`。改 `project.yml` `deploymentTarget.iOS: "15.0"` 和 kit `platforms: [.iOS(.v15)]`，再 `xcodegen generate`。

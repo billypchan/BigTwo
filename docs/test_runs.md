@@ -38,3 +38,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-19 13:18 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testScreenTour (+ About) · 8 shots in screenshots/ios
 - 2026-09-19 13:39 — BigTwoKit ✓ 56/56 (StrongBot) · iOS (iPhone 17 Pro Max) ✓ 2/2 testPreferences + testScreenTour
 - 2026-09-19 13:48 — BigTwoKit ✓ 55/55 (StrongBot: no peek, fights fellow bots; 1 Strong vs 3 greedy +220)
+- 2026-09-19 21:43 — BigTwoKit ✓ 55/55 · iOS (iPhone 17 Pro Max, 26.3) ✓ 13/13 (`Shared.xcconfig`; `IPHONEOS_DEPLOYMENT_TARGET=15.0`)

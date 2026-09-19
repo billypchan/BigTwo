@@ -30,8 +30,9 @@ the flat chrome, the green table, the button layout and the terse wording are th
   there needs no regenerate.
 - Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 15+**.
   Xcode Cloud / current SDKs only accept deployment targets 15.0–27.0; 14 was dropped
-  because `IPHONEOS_DEPLOYMENT_TARGET = 14.0` fails that range. Version and build
-  number live in `Configurations/Version.xcconfig`.
+  because `IPHONEOS_DEPLOYMENT_TARGET = 14.0` fails that range. Deployment target,
+  team and Swift version live in `Configurations/Shared.xcconfig`; version and build
+  number in `Configurations/Version.xcconfig` (which includes Shared).
 - Swift 6 language mode for the app and `BigTwoKit`. The UI-test target is Swift 5 on
   purpose: `XCUIApplication` is `@MainActor`, and Swift 6 would need isolation on every test.
 
