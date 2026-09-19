@@ -117,7 +117,6 @@ public final class BigTwoGame: ObservableObject {
     result = nil
     history = ["— Deal \(deal) —"]
 
-    // HK rules: the winner of the last deal leads. Otherwise 3♦ leads and must be played.
     if rules.hongKong, let winner = lastWinner {
       turn = winner
       openingPlay = false
@@ -179,7 +178,7 @@ public final class BigTwoGame: ObservableObject {
     log("\(seats[seat].name): pass")
     lastActions[seat] = .passed
     passes += 1
-    if passes >= 3 {  // everyone else folded — new trick
+    if passes >= 3 {
       turn = tableOwner ?? turn
       table = nil
       tableOwner = nil
@@ -197,14 +196,13 @@ public final class BigTwoGame: ObservableObject {
     scheduleBot()
   }
 
-  /// Skip a seat that has no legal reply. Size no longer matters: a 5-card on the
-  /// table with no answer used to wait for a second preference that shipped off.
+  /// Skip a seat that has no legal reply. Palm gated 5-card turns behind a second
+  /// preference that shipped off; that left a human staring at Pass when the table
+  /// was a straight they could not beat (7♦ 8♣ 9♦ 10♠ J♦). Auto pass now covers
+  /// every length. `autopassFiveCard` is kept in Preferences for the Palm form.
   @discardableResult
   func tryAutopass() -> Bool {
     guard let table, preferences.autopass else { return false }
-    // The 5-card checkbox is an off-switch only. Leaving it off used to skip
-    // this path entirely — the screenshot case (7d 8c 9d Ts Jd vs Bill's 13).
-    if table.count >= 5 && !preferences.autopassFiveCard { return false }
     guard !PlayFinder.canBeat(table, with: seats[turn].hand, rules: rules) else { return false }
     pass(from: turn)
     return true
@@ -253,7 +251,6 @@ public final class BigTwoGame: ObservableObject {
                prefersFiveCards: prefersFiveCards[seat])
   }
 
-  /// What the bot would play from `seat` right now; nil is a pass.
   public func botChoice(for seat: Int) -> Play? {
     BotPlayer.choose(botContext(for: seat))
   }
@@ -267,7 +264,7 @@ public final class BigTwoGame: ObservableObject {
     for i in seats.indices where i != winner {
       left[i] = seats[i].hand.count
       var cost = seats[i].hand.reduce(0) { $0 + $1.rank.penalty }
-      if seats[i].hand.count >= 10 { cost *= 2 }  // DOUBLE!
+      if seats[i].hand.count >= 10 { cost *= 2 }
       points[i] = -cost
       points[winner] += cost
     }
@@ -279,7 +276,6 @@ public final class BigTwoGame: ObservableObject {
     gameOver = deal >= rules.dealsPerGame
   }
 
-  /// Called when the score sheet is dismissed.
   public func continueAfterScore() {
     guard result != nil else { return }
     result = nil
@@ -290,8 +286,6 @@ public final class BigTwoGame: ObservableObject {
       newDeal()
     }
   }
-
-  // MARK: - History ("export the history to Memo pad")
 
   private func log(_ line: String) { history.append(line) }
 
