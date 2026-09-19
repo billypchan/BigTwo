@@ -17,7 +17,7 @@ and the evidence.
 
 **`playerNames` 空陣列 = 從未改過。** 寫入 `["","","",""]` 也算「改過」只是每格空白；`hasCustomNames` 看 trim 後有沒有字。語言一換，未改過的座位才套新的 localized default。
 
-**鍵盤會蓋住正方形裡的 OK。** `testNames_customNameShowsOnTheTableAndSurvivesARelaunch` 先點 `Player names` 標題收鍵盤，再點 `names_ok`。座位名 pill 的 identifier 是 `name_<seat>`（Bill 是 `name_1`）。
+**鍵盤會蓋住正方形裡的 OK。** `testNames_customNameShowsOnTheTableAndSurvivesARelaunch` 先點 `Player names` 標題收鍵盤，再點 `names_ok`。座位名 pill 的 identifier 是 `name_<seat>`（Bill 是 `name_1`）。Tour 只開對話框、不打字，否則鍵盤進截圖。編號變成 06_names、07_about、08_score、09_final_score — 舊的 06_about 要刪。
 
 **接到已有 l10n 的 main 時不要整份蓋掉 `Localizable.strings`。** 名稱 key 插進既有表；zh-Hant 還差一點就會把 Share/Rate 那組不屬於這支 PR 的 key 帶進來。
 

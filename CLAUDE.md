@@ -221,7 +221,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
-Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, about, score, final_score). `06_about` is the in-app SharedKit Support dialog after tapping `about_sharedkit`.
+Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, names, about, score, final_score).
 
 ## Simulator
 
