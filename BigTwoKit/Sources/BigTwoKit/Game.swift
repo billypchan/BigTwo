@@ -64,6 +64,10 @@ public final class BigTwoGame: ObservableObject {
 
   /// Replaces `preferences.gameSpeed` — UI tests run the bots fast.
   public var botDelayOverride: TimeInterval?
+  /// UI tests: a 1-deal game so autoplay lands on the Final Score sheet.
+  public var dealsPerGameOverride: Int? {
+    didSet { applyDealsPerGame() }
+  }
 
   private var passes = 0
   private var lastWinner: Int?
@@ -102,8 +106,13 @@ public final class BigTwoGame: ObservableObject {
     newDeal()
   }
 
+  private func applyDealsPerGame() {
+    rules.dealsPerGame = dealsPerGameOverride ?? 10
+  }
+
   private func newDeal() {
-    rules = RuleSet(hongKong: preferences.hongKong)
+    rules = RuleSet(hongKong: preferences.hongKong,
+                    dealsPerGame: dealsPerGameOverride ?? 10)
     var deck = shuffledDeck()
     for i in seats.indices {
       seats[i].hand = HandSort.byRank.sorted(Array(deck.prefix(13)))

@@ -180,6 +180,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `UITestMode` | 150ms bots; preferences in a throwaway suite, wiped each launch |
 | `-seed 2` | Fixed deal: your seat leads with `3d 4c 6h 8h 8s 9c 9s Tc Jd Jc Qc Ad 2c` |
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
+| `-dealsPerGame 1` | One-deal game, so autoplay opens **Final Score** / New Game |
 | `-keepPreferences YES` | Keep the UI-test preference suite across a relaunch |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
@@ -212,7 +213,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
-Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
+Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, about, score, final_score).
 
 ## Simulator
 

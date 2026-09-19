@@ -18,6 +18,7 @@ struct BigTwoApp: App {
                           seed: LaunchOptions.seed,
                           humanSeats: LaunchOptions.autoplay ? [] : [1])
     if LaunchOptions.uiTestMode { game.botDelayOverride = 0.15 }
+    if let n = LaunchOptions.dealsPerGame { game.dealsPerGameOverride = n }
     self.store = store
     _game = StateObject(wrappedValue: game)
   }

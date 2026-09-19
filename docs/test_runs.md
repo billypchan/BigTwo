@@ -34,3 +34,5 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-19 12:55 — iOS SE (3rd gen, 26.3) ✗ 4/5 (double-tap + About ✓; testScreenTour: title tab 22u, menu tap missed)
 - 2026-09-19 13:00 — iOS SE (3rd gen, 26.3) ✓ 5/5 (3 double-tap, About SharedKit, screen tour)
 - 2026-09-19 13:03 — iOS SE (3rd gen, 26.3) ✓ 1/1 testScreenTour after Play/Pass gap · screenshots/ios-se
+- 2026-09-19 13:12 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testScreenTour (+ Final Score, `-dealsPerGame 1`) · 7 shots in screenshots/ios
+- 2026-09-19 13:18 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testScreenTour (+ About) · 8 shots in screenshots/ios

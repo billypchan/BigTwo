@@ -21,6 +21,8 @@ and the evidence.
 
 **少於 5 張同花的雙擊不要選那門花色。** 改成有對就選對，沒有就不動（第一次 tap 已經選了那一張）。seed 2 的 8♥ 是對、6♥ 不是、Q♣ 有 6 張♣。
 
+**Final Score 不要真的打 10 局。** `-dealsPerGame 1` + autoplay 第一張分數表就是 Final Score / New Game。標題列會顯示 Deal 1/1。Tour 加 About 後編號是 06_about、07_score、08_final_score — 舊的 06_score 檔要刪掉，否則 repo 裡會留兩張。
+
 ---
 
 ## pref-source — Preferences 加 Source 開 GitHub

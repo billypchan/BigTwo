@@ -147,6 +147,20 @@ struct GameTests {
     }
   }
 
+  @Test func oneDealOverrideOpensTheFinalScore() {
+    let game = driven(seed: 2)
+    game.dealsPerGameOverride = 1
+    var steps = 0
+    while game.result == nil && steps < 5_000 {
+      steps += 1
+      guard step(game) else { return }
+    }
+    #expect(game.result != nil)
+    #expect(game.gameOver)
+    #expect(game.deal == 1)
+    #expect(game.rules.dealsPerGame == 1)
+  }
+
   @Test func autopassSkipsASeatThatCannotAnswer() {
     // Nobody can beat 2♠, so autopass hands a 2♠ lead straight back.
     let twoOfSpades = Card(rank: .two, suit: .spade)
