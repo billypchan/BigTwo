@@ -19,6 +19,8 @@ struct PalmButtonView: View {
       Text(title)
         .font(.palm(13 * u))
         .foregroundColor(enabled ? .ink : .inkDim)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
         .frame(width: width * u, height: 20 * u)
         .background(Capsule().fill(Color.cardFace))
         .overlay(Capsule().strokeBorder(enabled ? Color.ink : Color.inkDim, lineWidth: max(1, u)))

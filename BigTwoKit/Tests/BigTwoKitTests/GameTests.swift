@@ -147,6 +147,20 @@ struct GameTests {
     }
   }
 
+  @Test func oneDealOverrideOpensTheFinalScore() {
+    let game = driven(seed: 2)
+    game.dealsPerGameOverride = 1
+    var steps = 0
+    while game.result == nil && steps < 5_000 {
+      steps += 1
+      guard step(game) else { return }
+    }
+    #expect(game.result != nil)
+    #expect(game.gameOver)
+    #expect(game.deal == 1)
+    #expect(game.rules.dealsPerGame == 1)
+  }
+
   @Test func autopassSkipsASeatThatCannotAnswer() {
     // Nobody can beat 2♠, so autopass hands a 2♠ lead straight back.
     let twoOfSpades = Card(rank: .two, suit: .spade)
@@ -178,7 +192,8 @@ struct PreferencesStoreTests {
     let store = PreferencesStore(defaults: try freshDefaults())
     #expect(store.load() == Preferences())
     let changed = Preferences(hongKong: true, autopass: false, autopassFiveCard: true,
-                              showCardsLeft: false, gameSpeed: .fast, sortBySuit: true)
+                              showCardsLeft: false, gameSpeed: .fast, sortBySuit: true,
+                              strongBots: false)
     store.save(changed)
     #expect(store.load() == changed)
   }
@@ -190,6 +205,7 @@ struct PreferencesStoreTests {
     #expect(prefs.hongKong, "one unreadable value must not reset the rest")
     #expect(prefs.gameSpeed == .medium)
     #expect(prefs.autopass == Preferences().autopass)
+    #expect(prefs.strongBots == Preferences().strongBots)
   }
 
   @Test func corruptDataFallsBackToDefaults() throws {

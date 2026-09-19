@@ -25,6 +25,8 @@ struct TitleBarView: View {
             .padding(.trailing, 9 * u)
             .frame(height: 22 * u)
             .background(TitleTabShape(radius: 7 * u).fill(Color.titleNavy))
+            // Visual stays 22 Palm units; the extra 44pt is hit-testing only.
+            .frame(minHeight: PalmMetrics.minTouch, alignment: .top)
             .contentShape(Rectangle())
         }
         .buttonStyle(PalmPressStyle())

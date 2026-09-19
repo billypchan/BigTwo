@@ -28,17 +28,10 @@ the flat chrome, the green table, the button layout and the terse wording are th
   to the plist by hand is silently dropped on the next generate.
 - `BigTwoApp/`, `Resources/` and `BigTwoUITests/` are **synced folders** — adding a file
   there needs no regenerate.
-- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 14+**
-  (from 1.0 build 4; build 3 shipped at 15). Every device that runs 14 also runs 15 — 14 is
-  for people who never updated. No simulator runtime below 26 is installed here, so 14 is
-  verified by compiling only: `swiftc -typecheck -target arm64-apple-ios14.0-simulator`
-  over the kit and the app. Avoid iOS 15+ APIs (`.task`, `.foregroundStyle`,
-  `Button(role:)`, `.buttonStyle(.plain)` static syntax, `NavigationStack`,
-  `presentationDetents`, `Duration`) or guard them with `#available`.
-  ⚠️ StoreKit 2 (in-app purchases) and SharedKit need iOS 15: on 14, hide Remove Ads and
-  the tip jar rather than raising the target. Going to 13 means leaving the SwiftUI `App`
-  lifecycle (`@main App`, `WindowGroup`, `@StateObject` are 14+); 12 has no SwiftUI.
-  Version and build number live in `Configurations/Version.xcconfig`.
+- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 15+**.
+  Xcode Cloud / current SDKs only accept deployment targets 15.0–27.0; 14 was dropped
+  because `IPHONEOS_DEPLOYMENT_TARGET = 14.0` fails that range. Version and build
+  number live in `Configurations/Version.xcconfig`.
 - Swift 6 language mode for the app and `BigTwoKit`. The UI-test target is Swift 5 on
   purpose: `XCUIApplication` is `@MainActor`, and Swift 6 would need isolation on every test.
 
@@ -100,7 +93,7 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   navy title bar, white body, pill buttons) — never iOS sheets. They are modal: a clear
   layer swallows taps outside them. Preferences keep the Palm wording ("Auto pass",
   "Enable autopass for 5-card turn", "Use Hong Kong Rule Set", "Game speed: Slow | Medium |
-  Fast", "Sort cards by: Rank | Suit").
+  Fast", "Sort cards by: Rank | Suit", "Bots: Classic | Strong").
 - Table green is a **flat** `#00cc00`, as on the Palm screen. No shadows (the menu's hard
   2px offset is the one exception — it is the Palm's), no blur, no glass.
 - Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
@@ -149,6 +142,11 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 - The bots keep the Palm habits on purpose, including the two cheats: they **see every
   hand** (`BotContext.hands`) and a bot **lets a fellow bot's K/A/2 single stand**. Both
   are in `BotPlayerTests`; turning either off changes the game's difficulty.
+- **Strong bots** (`StrongBot`, default on, Preferences → Bots: Classic | Strong) do
+  **not** peek (own hand + `left: N` only) and **do** fight fellow bots. Classic still
+  peeks and lets a fellow bot's K/A/2 stand. `oneStrongBotOutscoresThreeGreedyBots`
+  keeps one Strong seat ahead of greedy. `Game.botChoice` picks Strong or Classic from
+  `preferences.strongBots`.
 
 ## Tests
 
@@ -180,8 +178,11 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `UITestMode` | 150ms bots; preferences in a throwaway suite, wiped each launch |
 | `-seed 2` | Fixed deal: your seat leads with `3d 4c 6h 8h 8s 9c 9s Tc Jd Jc Qc Ad 2c` |
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
+| `-dealsPerGame 1` | One-deal game, so autoplay opens **Final Score** / New Game |
 | `-keepPreferences YES` | Keep the UI-test preference suite across a relaunch |
 
+- ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
+  skip because the change looks small.
 - ⚠️ **Never pipe `xcodebuild` into `tail`/`head`** — `$?` becomes the pipe's. Redirect,
   then grep `Executed [0-9]+ test` (it says "1 test", singular — a `tests` pattern misses
   it). A mistyped `-only-testing:` runs zero tests and still prints `** TEST SUCCEEDED **`.
@@ -207,10 +208,13 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 0. **Check it ran**: `Executed N test(s)`, not the banner.
 1. **Extract**: `python3 scripts/extract_screenshots.py --latest screenshots/ios`
+   (keeps the old PNG if the new shot differs only in the status-bar clock;
+   `--force` overwrites). Freeze the clock first with
+   `scripts/freeze_status_bar.sh <udid>` so new shots show 9:41.
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
-Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
+Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, about, score, final_score).
 
 ## Simulator
 
@@ -237,7 +241,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
 - ⚠️ **Shipped user data**: `PreferencesStore.key` and `Preferences`' coding keys. Renaming
   either resets everyone's preferences; new preferences decode with `decodeIfPresent`.
 - Every tappable thing a test touches has an `accessibilityIdentifier` (`hand_<code>`,
-  `button_play`, `score_ok`, `pref_hongKong`, …); cards read as "3 of diamonds" to VoiceOver.
+  `button_play`, `score_ok`, `pref_hongKong`, `about_sharedkit`, …); cards read as "3 of diamonds" to VoiceOver.
 
 ## Release
 
@@ -283,7 +287,7 @@ Single-player against three bots is complete and runs on the simulator; 47 kit t
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval); tag
-   `v1.0` when it is live. `main` is **1.1** (iOS 14 support onward) — builds restart at 1. Build 2 still needs Beta App Review for
+   `v1.0` when it is live. `main` is **1.1** (iOS 15+) — builds restart at 1. Build 2 still needs Beta App Review for
    the external group once build 1's review is done. CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,

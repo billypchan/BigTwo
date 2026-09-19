@@ -56,17 +56,18 @@ struct GameView: View {
     ZStack(alignment: .topLeading) {
       VStack(spacing: 0) {
         TitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) { dialog = .menu }
-          .frame(height: 24 * u)
+          .frame(height: max(24 * u, PalmMetrics.minTouch), alignment: .top)
         ZStack(alignment: .bottomTrailing) {
           VStack(spacing: 0) {
             ForEach(rowOrder, id: \.self) { s in
               PlayerRowView(player: game.seats[s], action: game.lastActions[s],
-                            isTurn: game.turn == s && game.result == nil)
+                            isTurn: game.turn == s && game.result == nil,
+                            trailingReserve: controlsWidth(u) + 16 * u)
             }
           }
           controls(u).padding(.trailing, 2 * u)
         }
-        .frame(height: 200 * u, alignment: .top)
+        .frame(height: 224 * u - max(24 * u, PalmMetrics.minTouch), alignment: .top)
         Text(prompt)
           .font(.palm(13 * u, .heavy))
           .foregroundColor(.ink)
@@ -78,7 +79,7 @@ struct GameView: View {
           .accessibilityIdentifier("prompt")
         CardRowView(cards: hand, height: 62 * u, selection: selection, idPrefix: "hand",
                     onTap: { toggle($0) },
-                    onDoubleTap: { selectAll(sameSuitAs: $0) },
+                    onDoubleTap: { selectSuitOrPair($0) },
                     onLongPress: { selectAll(sameRankAs: $0) })
           .padding(.horizontal, 2 * u)
           .frame(height: 66 * u, alignment: .top)
@@ -141,7 +142,7 @@ struct GameView: View {
           // A tap anywhere else closes the menu, as on the Palm.
           Color.clear.contentShape(Rectangle()).onTapGesture { self.dialog = nil }
           PalmMenuView(items: menuItems)
-            .padding(.top, 22 * u)
+            .padding(.top, 24 * u)
             .padding(.leading, 2 * u)
         }
       case .preferences:
@@ -188,9 +189,24 @@ struct GameView: View {
     selection = Set(game.seats[seat].hand.filter { $0.rank == card.rank })
   }
 
-  /// Double tap — the Palm's "hold DOWN". The first tap has already toggled the card.
-  private func selectAll(sameSuitAs card: Card) {
-    selection = Set(game.seats[seat].hand.filter { $0.suit == card.suit })
+  /// Width of Play+icon / Pass+icon, including the 44pt hit boxes.
+  private func controlsWidth(_ u: CGFloat) -> CGFloat {
+    max(50 * u, PalmMetrics.minTouch) + 2 * u + max(20 * u, PalmMetrics.minTouch)
+  }
+
+  /// Double tap — the Palm's "hold DOWN": all of that suit when there are 5+
+  /// (a flush). Fewer than 5: the pair of that rank, or nothing.
+  private func selectSuitOrPair(_ card: Card) {
+    let cards = game.seats[seat].hand
+    let ofSuit = cards.filter { $0.suit == card.suit }
+    if ofSuit.count >= 5 {
+      selection = Set(ofSuit)
+      return
+    }
+    let ofRank = cards.filter { $0.rank == card.rank }
+    if ofRank.count >= 2 {
+      selection = Set(ofRank)
+    }
   }
 
   private func play() {

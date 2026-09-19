@@ -13,6 +13,50 @@ and the evidence.
 
 ---
 
+## ios15-target — Xcode Cloud 不收 14.0
+
+**`IPHONEOS_DEPLOYMENT_TARGET` 14.0 在 Cloud 的 SDK 範圍是 15.0–27.0。** 警告路徑是 `file:///Volumes/workspace/repository/BigTwo.xcodeproj`。改 `project.yml` `deploymentTarget.iOS: "15.0"` 和 kit `platforms: [.iOS(.v15)]`，再 `xcodegen generate`。
+
+---
+
+## screenshots-clock — 狀態列時鐘不要進 git diff
+
+**截圖是整台模擬器，含系統時鐘。** 每次 tour 時鐘不同，PNG 整張都變。`extract_screenshots.py` 解 PNG，略過最上面 8%（Dynamic Island + 時鐘），底下一樣就保留舊檔。`--force` 才覆寫。新圖要 9:41：`scripts/freeze_status_bar.sh <udid>`（scheme test preAction 會試 `booted`）。
+
+---
+
+## strong-bots-fair — 不偷看、也打同伴
+
+**3 個會互打的 Strong 對 1 個 greedy 會輸。** 不許偷看、不許讓同伴的 K 過，三個 Strong 互相蓋牌，greedy 坐收 +271。量尺改成 1 Strong vs 3 greedy（+220）。Classic 仍偷看、仍讓同伴。
+
+---
+
+## strong-bots — 新 AI 不能整套重寫最便宜出牌
+
+**對 greedy 的 −719 是 Classic 的量尺，不是「愈聰明愈負」。** 第一版 Strong 一有機會就出最大鎖死牌（先倒 2♠），greedy 8 局變成 +389。改成 Classic 出牌 + 三條覆蓋：整手能出就出、你剩一張用剛好壓死的單張、你 ≤5 張且能吃同伴的牌才蓋。之後 greedy −517、Classic 當人類 −505。
+
+---
+
+## se-doubletap — 雙擊對子、SE 版面
+
+**44pt 點擊框不跟正方形縮放。** Play/Pass 旁邊的 icon 在 SE（u≈1.17）佈局是 44pt，不是 20 Palm 單位；`left: N` 會伸進按鈕底下。每列加 `trailingReserve = controlsWidth + 16u`，牌列 `layoutPriority(-1)` 讓出空間。Pro Max 上看不出來，一定要在 SE 截圖。
+
+**標題分頁只有 22u，SE 上約 26pt，XCUITest 會點空。** `menu_button` 加上 44pt 點擊高度；tour 點一次沒出選單就再點一次。
+
+**少於 5 張同花的雙擊不要選那門花色。** 改成有對就選對，沒有就不動（第一次 tap 已經選了那一張）。seed 2 的 8♥ 是對、6♥ 不是、Q♣ 有 6 張♣。
+
+**Final Score 不要真的打 10 局。** `-dealsPerGame 1` + autoplay 第一張分數表就是 Final Score / New Game。標題列會顯示 Deal 1/1。Tour 加 About 後編號是 06_about、07_score、08_final_score — 舊的 06_score 檔要刪掉，否則 repo 裡會留兩張。
+
+---
+
+## pref-source — Preferences 加 Source 開 GitHub
+
+**選單點了不等就點下一項，重開後會失敗。** `testPreferences_surviveARelaunch` 第一次開 Preferences 過了（`pref_source` 也找得到），`terminate` 再 launch 後立刻點 `menu_preferences`：選單還沒出現。跟 Source 按鈕無關。改成先 `waitForExistence` 再 tap，跟 CLAUDE.md「等 tap 造成的狀態」同一條。
+
+**Source 連公開 repo，不要連 `/settings`。** GitHub 的 `/settings` 是管理員頁，使用者打不開。
+
+---
+
 ## palm-square-layout — Palm 正方形版面、記牌表、iOS 15
 
 **參考圖要全部看過再動手。** 使用者只貼了一張 v2.2.8 的主畫面；SourceForge 上另外還有 10 張，

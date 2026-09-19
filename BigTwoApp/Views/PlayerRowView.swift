@@ -11,6 +11,8 @@ struct PlayerRowView: View {
   let player: Seat
   let action: SeatAction?
   let isTurn: Bool
+  /// Points kept clear on the right for Play/Pass (44pt hit boxes don't scale).
+  var trailingReserve: CGFloat = 0
 
   @Environment(\.palmUnit) private var u
 
@@ -39,16 +41,22 @@ struct PlayerRowView: View {
           Color.clear
         }
       }
-      .frame(width: 134 * u, height: 46 * u, alignment: .leading)
+      .frame(minWidth: 0, maxWidth: 134 * u)
+      .frame(height: 46 * u, alignment: .leading)
+      .layoutPriority(-1)
 
       Text("left: \(player.hand.count)")
         .font(.palm(12 * u, .semibold))
         .foregroundColor(.ink)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .fixedSize(horizontal: true, vertical: false)
         .frame(height: 46 * u)
         .accessibilityIdentifier("left_\(player.id)")
       Spacer(minLength: 0)
     }
     .padding(.leading, 2 * u)
+    .padding(.trailing, trailingReserve)
     .frame(height: 50 * u, alignment: .top)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("seat_\(player.id)")
@@ -58,7 +66,8 @@ struct PlayerRowView: View {
 #Preview {
   VStack(spacing: 0) {
     PlayerRowView(player: Seat(id: 2, name: "Carl", isHuman: false),
-                  action: Play(Array(Card.deck.prefix(5))).map(SeatAction.played), isTurn: true)
+                  action: Play(Array(Card.deck.prefix(5))).map(SeatAction.played), isTurn: true,
+                  trailingReserve: 80)
     PlayerRowView(player: Seat(id: 3, name: "Dean", isHuman: false), action: .passed,
                   isTurn: false)
   }

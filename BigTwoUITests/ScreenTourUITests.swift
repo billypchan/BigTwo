@@ -26,6 +26,9 @@ final class ScreenTourUITests: XCTestCase {
     capture(app, "ios_screen_03_trick")
 
     app.buttons["menu_button"].tap()
+    if !app.buttons["menu_preferences"].waitForExistence(timeout: 3) {
+      app.buttons["menu_button"].tap()
+    }
     XCTAssertTrue(app.buttons["menu_preferences"].waitForExistence(timeout: 5))
     capture(app, "ios_screen_04_menu")
     app.buttons["menu_preferences"].tap()
@@ -33,12 +36,30 @@ final class ScreenTourUITests: XCTestCase {
     capture(app, "ios_screen_05_preferences")
     app.buttons["pref_ok"].tap()
 
+    app.buttons["menu_button"].tap()
+    if !app.buttons["menu_about"].waitForExistence(timeout: 3) {
+      app.buttons["menu_button"].tap()
+    }
+    XCTAssertTrue(app.buttons["menu_about"].waitForExistence(timeout: 5))
+    app.buttons["menu_about"].tap()
+    XCTAssertTrue(app.buttons["about_ok"].waitForExistence(timeout: 5))
+    waitUntilSettled(app.buttons["about_ok"])
+    capture(app, "ios_screen_06_about")
+
     app.terminate()
     let auto = XCUIApplication.bigTwo(["-autoplay", "YES"])
     auto.launch()
     XCTAssertTrue(auto.element("score_sheet").waitForExistence(timeout: 120))
     waitUntilSettled(auto.element("score_sheet"))
-    capture(auto, "ios_screen_06_score")
+    capture(auto, "ios_screen_07_score")
+
+    auto.terminate()
+    let final = XCUIApplication.bigTwo(["-autoplay", "YES", "-dealsPerGame", "1"])
+    final.launch()
+    XCTAssertTrue(final.element("score_sheet").waitForExistence(timeout: 120))
+    waitUntilSettled(final.element("score_sheet"))
+    XCTAssertEqual(final.buttons["score_ok"].label, "New Game")
+    capture(final, "ios_screen_08_final_score")
   }
 }
 

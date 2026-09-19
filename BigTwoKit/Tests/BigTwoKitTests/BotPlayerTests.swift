@@ -113,7 +113,9 @@ struct BotPlayerTests {
       while !(game.result != nil && game.gameOver) {
         if game.result != nil { game.continueAfterScore(); continue }
         let seat = game.turn
-        let choice = seat == 1 ? GreedyBot.choose(in: game, seat: seat) : game.botChoice(for: seat)
+        let choice = seat == 1
+          ? GreedyBot.choose(in: game, seat: seat)
+          : BotPlayer.choose(game.botContext(for: seat))
         if let choice { game.submit(choice.cards, from: seat) } else { game.pass(from: seat) }
       }
       greedyTotal += game.seats[1].score

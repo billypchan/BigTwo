@@ -29,16 +29,20 @@ public struct Preferences: Codable, Equatable, Sendable {
   public var gameSpeed = GameSpeed.medium
   /// "Sort cards by: Rank | Suit" — also flipped by the sort icon on the table.
   public var sortBySuit = false
+  /// Strong bots use every hand they can see to stop you and to go out.
+  public var strongBots = true
 
   public init(hongKong: Bool = false, autopass: Bool = true,
               autopassFiveCard: Bool = false, showCardsLeft: Bool = true,
-              gameSpeed: GameSpeed = .medium, sortBySuit: Bool = false) {
+              gameSpeed: GameSpeed = .medium, sortBySuit: Bool = false,
+              strongBots: Bool = true) {
     self.hongKong = hongKong
     self.autopass = autopass
     self.autopassFiveCard = autopassFiveCard
     self.showCardsLeft = showCardsLeft
     self.gameSpeed = gameSpeed
     self.sortBySuit = sortBySuit
+    self.strongBots = strongBots
   }
 
   // ⚠️ Shipped user data: every key is optional, and a value this build can't read falls
@@ -52,6 +56,7 @@ public struct Preferences: Codable, Equatable, Sendable {
     showCardsLeft = (try? c.decodeIfPresent(Bool.self, forKey: .showCardsLeft)) ?? d.showCardsLeft
     gameSpeed = (try? c.decodeIfPresent(GameSpeed.self, forKey: .gameSpeed)) ?? d.gameSpeed
     sortBySuit = (try? c.decodeIfPresent(Bool.self, forKey: .sortBySuit)) ?? d.sortBySuit
+    strongBots = (try? c.decodeIfPresent(Bool.self, forKey: .strongBots)) ?? d.strongBots
   }
 }
 

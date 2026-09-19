@@ -18,6 +18,12 @@ enum LaunchOptions {
   /// `-autoplay YES` gives your seat to the bot too, so a deal plays itself out.
   static var autoplay: Bool { UserDefaults.standard.bool(forKey: "autoplay") }
 
+  /// `-dealsPerGame 1` ends the game after one deal (Final Score screenshot).
+  static var dealsPerGame: Int? {
+    UserDefaults.standard.object(forKey: "dealsPerGame") as? Int
+      ?? UserDefaults.standard.string(forKey: "dealsPerGame").flatMap(Int.init)
+  }
+
   /// `-keepPreferences YES` keeps the UI-test preference suite across a relaunch.
   static var keepPreferences: Bool { UserDefaults.standard.bool(forKey: "keepPreferences") }
 
