@@ -24,10 +24,11 @@
 "About" = "关于";
 
 /* Player names */
-"Adam" = "亚当";
-"Bill" = "比尔";
-"Carl" = "卡尔";
-"Dean" = "迪安";
+/* Mainland given names popular in 2025 registries (锦程/沐宸, 雨桐/锦汐). */
+"Adam" = "锦程";
+"Bill" = "沐宸";
+"Carl" = "雨桐";
+"Dean" = "锦汐";
 "Names" = "名字";
 "Player names" = "玩家名字";
 
