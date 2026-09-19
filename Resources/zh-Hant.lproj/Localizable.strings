@@ -24,11 +24,11 @@
 "About" = "關於";
 
 /* Player names */
-/* HK Chinese given names (NameChef ranking: 梓軒/子謙 boys, 凱晴/凱琳 girls). */
+/* HK Chinese given names: 梓軒 + 子謙, 凱晴 + 曉彤 (next girl without 晴/凱). */
 "Adam" = "梓軒";
 "Bill" = "子謙";
 "Carl" = "凱晴";
-"Dean" = "凱琳";
+"Dean" = "曉彤";
 "Names" = "名稱";
 "Player names" = "玩家名稱";
 
