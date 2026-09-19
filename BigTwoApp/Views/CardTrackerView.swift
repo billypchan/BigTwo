@@ -34,7 +34,7 @@ struct CardTrackerView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.felt)
     .accessibilityElement(children: .ignore)
-    .accessibilityLabel("Cards played")
+    .accessibilityLabel(L10n.string("Cards played"))
     .accessibilityValue(Card.deck.filter(played.contains).map(\.code).joined(separator: " "))
     .accessibilityIdentifier("card_tracker")
   }

@@ -1,0 +1,72 @@
+/* Bahasa Indonesia — Capsa Banting */
+"Big Two" = "Capsa";
+"Menu" = "Menu";
+"Deal %d/%d" = "Ronde %d/%d";
+"left: %d" = "sisa %d";
+"%@, to play" = "%@, giliran";
+"PASS" = "PASS";
+"Lead" = "Turun";
+"Play" = "Turun";
+"Pass" = "Pass";
+"Clear selection" = "Batal pilih";
+"Sort by rank" = "Urut angka";
+"Sort by suit" = "Urut jenis";
+"Cards played" = "Kartu sudah keluar";
+
+"Lead with the 3♦" = "Turunkan 3♦ dulu";
+"Your Lead" = "Giliranmu turun";
+"Your Play" = "Giliranmu";
+"%@ is thinking…" = "%@ berpikir…";
+
+"New Game" = "Game baru";
+"Preferences" = "Pengaturan";
+"Game History" = "Riwayat";
+"About" = "Tentang";
+
+"Auto pass" = "Pass otomatis";
+"Enable autopass for 5-card turn" = "Autopass untuk 5 kartu";
+"Show card left in score dialog" = "Tampil sisa kartu di skor";
+"Use Hong Kong Rule Set" = "Pakai aturan Hong Kong";
+"Bots:" = "Bot:";
+"Classic" = "Klasik";
+"Strong" = "Kuat";
+"Game speed:" = "Kecepatan:";
+"Sort cards by:" = "Urut kartu:";
+"Slow" = "Lambat";
+"Medium" = "Sedang";
+"Fast" = "Cepat";
+"Rank" = "Angka";
+"Suit" = "Jenis";
+"OK" = "OK";
+"Source" = "Sumber";
+"SharedKit" = "SharedKit";
+
+"Final Score" = "Skor akhir";
+"Score — Deal %d" = "Skor — ronde %d";
+"I will not play with real money" = "Saya tidak main dengan uang asli";
+"*WIN!*" = "*MENANG!*";
+"%d left" = "sisa %d";
+"DOUBLE!" = "DOBEL!";
+
+"Game History of deal %d" = "Riwayat ronde %d";
+"Copy" = "Salin";
+"About Big Two" = "Tentang Capsa";
+"Big Two %@" = "Capsa %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "Dibuat ulang untuk iPhone oleh Chan Yiu Por Bill, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "Berdasarkan permainan genggam 1999 karya Woo Kok Tong dan Chan Yiu Por Bill.";
+
+"Not your turn" = "Bukan giliranmu";
+"Not your cards" = "Bukan kartumu";
+"Not a legal combination" = "Kombinasi tidak sah";
+"First play must include 3♦" = "Kartu pertama harus ada 3♦";
+"That does not beat %@" = "Tidak mengalahkan %@";
+
+"%@ of %@" = "%@ %@";
+"diamonds" = "wajik";
+"clubs" = "keriting";
+"hearts" = "hati";
+"spades" = "sekop";
+"jack" = "jack";
+"queen" = "queen";
+"king" = "king";
+"ace" = "as";

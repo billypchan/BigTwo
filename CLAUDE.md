@@ -28,20 +28,19 @@ the flat chrome, the green table, the button layout and the terse wording are th
   to the plist by hand is silently dropped on the next generate.
 - `BigTwoApp/`, `Resources/` and `BigTwoUITests/` are **synced folders** — adding a file
   there needs no regenerate.
-- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 15+**.
-  Xcode Cloud / current SDKs only accept deployment targets 15.0–27.0; 14 was dropped
-  because `IPHONEOS_DEPLOYMENT_TARGET = 14.0` fails that range. Deployment target,
-  team and Swift version live in `Configurations/Shared.xcconfig`; version and build
-  number in `Configurations/Version.xcconfig` (which includes Shared).
+- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 17+**
+  (SharedKit). Kit stays iOS 15. Xcode Cloud / current SDKs accept 15.0–27.0.
+  Deployment target, team and Swift version live in `Configurations/Shared.xcconfig`;
+  version and build number in `Configurations/Version.xcconfig` (which includes Shared).
 - Swift 6 language mode for the app and `BigTwoKit`. The UI-test target is Swift 5 on
   purpose: `XCUIApplication` is `@MainActor`, and Swift 6 would need isolation on every test.
 
 | Path | Contents |
 | --- | --- |
 | `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
-| `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
+| `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
-| `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy` |
+| `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
 | `docs/` | `pr_learnings.md`, `test_runs.md` |
 | `screenshots/ios/` | Screen-tour captures — committed |
@@ -100,6 +99,11 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
 - Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
   green; Palm greys the text and keeps the white pill.
 - Prompt strings stay terse: "Your Play", "Your Lead", "*WIN!*", "DOUBLE!", "PASS".
+  Visible copy goes through `L10n.string`; keys are the English UI text.
+  `PalmButtonView.title` is `String`, so a `Text("literal")` lookup never runs there.
+  Identifiers stay English (`pref_bots_Classic`). UI tests launch with
+  `-AppleLanguages (en)`. zh-Hant home/title name is 鋤大弟 (U+92E4), not 鍥.
+  Every locale table must have the same keys.
 - **Colors live only in `BigTwoApp/Palette.swift`** — no `Color(red:…)` or bare `.white`
   in a view. `Resources/Assets.xcassets/AccentColor` must hold the same components as
   `Color.feltDeep` (an asset catalog can't read a Swift constant).
@@ -177,6 +181,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | Launch argument | Effect (`LaunchOptions`) |
 | --- | --- |
 | `UITestMode` | 150ms bots; preferences in a throwaway suite, wiped each launch |
+| `-AppleLanguages (en)` | Set by `XCUIApplication.bigTwo` so prompt/button labels stay English |
 | `-seed 2` | Fixed deal: your seat leads with `3d 4c 6h 8h 8s 9c 9s Tc Jd Jc Qc Ad 2c` |
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
 | `-dealsPerGame 1` | One-deal game, so autoplay opens **Final Score** / New Game |
@@ -184,6 +189,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
+- ⚠️ **Do not tap `pref_source`.** It opens Safari; the test cannot come back.
 - ⚠️ **Never pipe `xcodebuild` into `tail`/`head`** — `$?` becomes the pipe's. Redirect,
   then grep `Executed [0-9]+ test` (it says "1 test", singular — a `tests` pattern misses
   it). A mistyped `-only-testing:` runs zero tests and still prints `** TEST SUCCEEDED **`.
@@ -215,7 +221,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
-Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, about, score, final_score).
+Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, about, score, final_score). `06_about` is the in-app SharedKit Support dialog after tapping `about_sharedkit`.
 
 ## Simulator
 
@@ -288,13 +294,12 @@ Single-player against three bots is complete and runs on the simulator; 47 kit t
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval); tag
-   `v1.0` when it is live. `main` is **1.1** (iOS 15+) — builds restart at 1. Build 2 still needs Beta App Review for
+   `v1.0` when it is live. `main` is **1.1** (iOS 17+, SharedKit) — builds restart at 1. Build 2 still needs Beta App Review for
    the external group once build 1's review is done. CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
    score balance (as in v2.2).
 4. Pass-and-play multiplayer: `Seat.isHuman` already drives the loop; it needs the
    "Next Player's Turn" cover screen that hides the previous player's hand.
-5. Localization — at least zh-Hant (鋤大弟) for the Hong Kong audience.
-6. Landscape layout / iPad.
-7. Editable player names (v2.0.11).
+5. Landscape layout / iPad.
+6. Editable player names (v2.0.11).

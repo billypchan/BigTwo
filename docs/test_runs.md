@@ -39,3 +39,5 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-19 13:39 — BigTwoKit ✓ 56/56 (StrongBot) · iOS (iPhone 17 Pro Max) ✓ 2/2 testPreferences + testScreenTour
 - 2026-09-19 13:48 — BigTwoKit ✓ 55/55 (StrongBot: no peek, fights fellow bots; 1 Strong vs 3 greedy +220)
 - 2026-09-19 21:43 — BigTwoKit ✓ 55/55 · iOS (iPhone 17 Pro Max, 26.3) ✓ 13/13 (`Shared.xcconfig`; `IPHONEOS_DEPLOYMENT_TARGET=15.0`)
+- 2026-09-19 22:36 — BigTwoKit ✓ 55/55
+- 2026-09-19 22:42 — iOS (iPhone 17 Pro Max, 26.3) GameUITests+ScreenTour 8 passed then runner crash on first launch of `testAbout` / `testIllegalPlay`; rerun ✓ 2/2 those two. Screen tour extracted; score/final_score PNG diffs are deal numbers, not committed.

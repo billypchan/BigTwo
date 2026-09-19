@@ -1,0 +1,72 @@
+/* Bahasa Melayu */
+"Big Two" = "Big Two";
+"Menu" = "Menu";
+"Deal %d/%d" = "Pusingan %d/%d";
+"left: %d" = "baki %d";
+"%@, to play" = "%@, giliran";
+"PASS" = "PASS";
+"Lead" = "Main";
+"Play" = "Main";
+"Pass" = "Pass";
+"Clear selection" = "Padam pilih";
+"Sort by rank" = "Susun nombor";
+"Sort by suit" = "Susun jenis";
+"Cards played" = "Kad sudah keluar";
+
+"Lead with the 3♦" = "Turunkan 3♦ dulu";
+"Your Lead" = "Giliran anda";
+"Your Play" = "Giliran anda";
+"%@ is thinking…" = "%@ sedang fikir…";
+
+"New Game" = "Permainan baharu";
+"Preferences" = "Tetapan";
+"Game History" = "Sejarah";
+"About" = "Perihal";
+
+"Auto pass" = "Pass automatik";
+"Enable autopass for 5-card turn" = "Autopass untuk 5 kad";
+"Show card left in score dialog" = "Tunjuk baki kad pada markah";
+"Use Hong Kong Rule Set" = "Guna peraturan Hong Kong";
+"Bots:" = "Bot:";
+"Classic" = "Klasik";
+"Strong" = "Kuat";
+"Game speed:" = "Kelajuan:";
+"Sort cards by:" = "Susun kad:";
+"Slow" = "Perlahan";
+"Medium" = "Sederhana";
+"Fast" = "Laju";
+"Rank" = "Nombor";
+"Suit" = "Jenis";
+"OK" = "OK";
+"Source" = "Sumber";
+"SharedKit" = "SharedKit";
+
+"Final Score" = "Markah akhir";
+"Score — Deal %d" = "Markah — pusingan %d";
+"I will not play with real money" = "Saya tidak bermain dengan wang sebenar";
+"*WIN!*" = "*MENANG!*";
+"%d left" = "baki %d";
+"DOUBLE!" = "GANDA!";
+
+"Game History of deal %d" = "Sejarah pusingan %d";
+"Copy" = "Salin";
+"About Big Two" = "Perihal Big Two";
+"Big Two %@" = "Big Two %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "Dibuat semula untuk iPhone oleh Chan Yiu Por Bill, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "Berdasarkan permainan genggam 1999 oleh Woo Kok Tong dan Chan Yiu Por Bill.";
+
+"Not your turn" = "Bukan giliran anda";
+"Not your cards" = "Bukan kad anda";
+"Not a legal combination" = "Gabungan tidak sah";
+"First play must include 3♦" = "Mainan pertama mesti ada 3♦";
+"That does not beat %@" = "Tidak menewaskan %@";
+
+"%@ of %@" = "%@ %@";
+"diamonds" = "daiman";
+"clubs" = "kelab";
+"hearts" = "hati";
+"spades" = "sodok";
+"jack" = "jack";
+"queen" = "queen";
+"king" = "king";
+"ace" = "ace";

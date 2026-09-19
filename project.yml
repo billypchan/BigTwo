@@ -1,6 +1,8 @@
 name: BigTwo
 options:
   bundleIdPrefix: com.billchan
+  developmentLanguage: en
+  knownRegions: [en, Base, zh-Hant, zh-Hans, id, fil, ms, vi]
   createIntermediateGroups: true
   groupSortPosition: top
 
@@ -37,6 +39,14 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
         ITSAppUsesNonExemptEncryption: false
+        CFBundleLocalizations:
+          - en
+          - zh-Hant
+          - zh-Hans
+          - id
+          - fil
+          - ms
+          - vi
         UILaunchScreen:
           UIColorName: LaunchBackground
         UIUserInterfaceStyle: Light

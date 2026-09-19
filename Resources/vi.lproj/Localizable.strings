@@ -1,0 +1,72 @@
+/* Tiếng Việt */
+"Big Two" = "Big Two";
+"Menu" = "Menu";
+"Deal %d/%d" = "Ván %d/%d";
+"left: %d" = "còn %d";
+"%@, to play" = "%@, tới lượt";
+"PASS" = "BỎ";
+"Lead" = "Đánh";
+"Play" = "Đánh";
+"Pass" = "Bỏ";
+"Clear selection" = "Bỏ chọn";
+"Sort by rank" = "Xếp theo số";
+"Sort by suit" = "Xếp theo chất";
+"Cards played" = "Bài đã đánh";
+
+"Lead with the 3♦" = "Đánh 3♦ trước";
+"Your Lead" = "Bạn đi trước";
+"Your Play" = "Tới lượt bạn";
+"%@ is thinking…" = "%@ đang nghĩ…";
+
+"New Game" = "Ván mới";
+"Preferences" = "Cài đặt";
+"Game History" = "Lịch sử";
+"About" = "Giới thiệu";
+
+"Auto pass" = "Tự bỏ";
+"Enable autopass for 5-card turn" = "Tự bỏ cả lượt 5 lá";
+"Show card left in score dialog" = "Hiện bài còn trên bảng điểm";
+"Use Hong Kong Rule Set" = "Dùng luật Hồng Kông";
+"Bots:" = "Máy:";
+"Classic" = "Cổ điển";
+"Strong" = "Mạnh";
+"Game speed:" = "Tốc độ:";
+"Sort cards by:" = "Xếp bài:";
+"Slow" = "Chậm";
+"Medium" = "Vừa";
+"Fast" = "Nhanh";
+"Rank" = "Số";
+"Suit" = "Chất";
+"OK" = "OK";
+"Source" = "Mã nguồn";
+"SharedKit" = "SharedKit";
+
+"Final Score" = "Tổng điểm";
+"Score — Deal %d" = "Điểm — ván %d";
+"I will not play with real money" = "Tôi không chơi bằng tiền thật";
+"*WIN!*" = "*THẮNG!*";
+"%d left" = "còn %d";
+"DOUBLE!" = "GẤP ĐÔI!";
+
+"Game History of deal %d" = "Lịch sử ván %d";
+"Copy" = "Sao chép";
+"About Big Two" = "Giới thiệu Big Two";
+"Big Two %@" = "Big Two %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "Làm lại cho iPhone bởi Chan Yiu Por Bill, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "Dựa trên trò chơi cầm tay năm 1999 của Woo Kok Tong và Chan Yiu Por Bill.";
+
+"Not your turn" = "Chưa tới lượt bạn";
+"Not your cards" = "Không phải bài của bạn";
+"Not a legal combination" = "Không phải bộ hợp lệ";
+"First play must include 3♦" = "Lá đầu phải có 3♦";
+"That does not beat %@" = "Không thắng được %@";
+
+"%@ of %@" = "%@ %@";
+"diamonds" = "rô";
+"clubs" = "nhép";
+"hearts" = "cơ";
+"spades" = "bích";
+"jack" = "J";
+"queen" = "Q";
+"king" = "K";
+"ace" = "A";

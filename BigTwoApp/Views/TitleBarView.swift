@@ -18,7 +18,7 @@ struct TitleBarView: View {
       Rectangle().fill(Color.titleNavy).frame(height: 2 * u)
       HStack(alignment: .bottom, spacing: 0) {
         Button(action: onMenu) {
-          Text("Big Two")
+          Text(L10n.string("Big Two"))
             .font(.palm(15 * u, .heavy))
             .foregroundColor(.felt)
             .padding(.leading, 5 * u)
@@ -30,10 +30,10 @@ struct TitleBarView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PalmPressStyle())
-        .accessibilityLabel("Menu")
+        .accessibilityLabel(L10n.string("Menu"))
         .accessibilityIdentifier("menu_button")
         Spacer()
-        Text("Deal \(deal)/\(dealsPerGame)")
+        Text(L10n.string("Deal %d/%d", deal, dealsPerGame))
           .font(.palm(12 * u))
           .foregroundColor(.ink)
           .padding(.trailing, 4 * u)

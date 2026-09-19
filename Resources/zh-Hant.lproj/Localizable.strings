@@ -1,0 +1,72 @@
+/* Title and chrome */
+"Big Two" = "鋤大弟";
+"Menu" = "選單";
+"Deal %d/%d" = "第 %d/%d 舖";
+"left: %d" = "剩 %d";
+"%@, to play" = "%@，輪到出牌";
+"PASS" = "過";
+"Lead" = "出牌";
+"Play" = "出牌";
+"Pass" = "過";
+"Clear selection" = "取消選擇";
+"Sort by rank" = "按點數排";
+"Sort by suit" = "按花色排";
+"Cards played" = "已出的牌";
+
+"Lead with the 3♦" = "先出 3♦";
+"Your Lead" = "你先出";
+"Your Play" = "輪到你";
+"%@ is thinking…" = "%@ 諗緊…";
+
+"New Game" = "新局";
+"Preferences" = "設定";
+"Game History" = "牌局紀錄";
+"About" = "關於";
+
+"Auto pass" = "自動過";
+"Enable autopass for 5-card turn" = "五張亦自動過";
+"Show card left in score dialog" = "分數表顯示剩牌";
+"Use Hong Kong Rule Set" = "用港式規則";
+"Bots:" = "電腦：";
+"Classic" = "經典";
+"Strong" = "強";
+"Game speed:" = "速度：";
+"Sort cards by:" = "排序：";
+"Slow" = "慢";
+"Medium" = "中";
+"Fast" = "快";
+"Rank" = "點數";
+"Suit" = "花色";
+"OK" = "確定";
+"Source" = "原始碼";
+"SharedKit" = "SharedKit";
+
+"Final Score" = "總分";
+"Score — Deal %d" = "分數 — 第 %d 舖";
+"I will not play with real money" = "我不會用真錢打牌";
+"*WIN!*" = "*贏!*";
+"%d left" = "剩 %d";
+"DOUBLE!" = "加倍！";
+
+"Game History of deal %d" = "第 %d 舖紀錄";
+"Copy" = "複製";
+"About Big Two" = "關於鋤大弟";
+"Big Two %@" = "鋤大弟 %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "2026 年由陳耀波改編為 iPhone 版。";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "改編自 1999 年 Woo Kok Tong 與陳耀波的掌上機遊戲。";
+
+"Not your turn" = "未到你";
+"Not your cards" = "不是你的牌";
+"Not a legal combination" = "不是合法牌型";
+"First play must include 3♦" = "首出必須有 3♦";
+"That does not beat %@" = "打不過 %@";
+
+"%@ of %@" = "%@%@";
+"diamonds" = "方塊";
+"clubs" = "梅花";
+"hearts" = "紅心";
+"spades" = "黑桃";
+"jack" = "J";
+"queen" = "Q";
+"king" = "K";
+"ace" = "A";

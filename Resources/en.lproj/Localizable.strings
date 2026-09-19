@@ -1,0 +1,79 @@
+/* Title and chrome */
+"Big Two" = "Big Two";
+"Menu" = "Menu";
+"Deal %d/%d" = "Deal %d/%d";
+"left: %d" = "left: %d";
+"%@, to play" = "%@, to play";
+"PASS" = "PASS";
+"Lead" = "Lead";
+"Play" = "Play";
+"Pass" = "Pass";
+"Clear selection" = "Clear selection";
+"Sort by rank" = "Sort by rank";
+"Sort by suit" = "Sort by suit";
+"Cards played" = "Cards played";
+
+/* Prompts */
+"Lead with the 3♦" = "Lead with the 3♦";
+"Your Lead" = "Your Lead";
+"Your Play" = "Your Play";
+"%@ is thinking…" = "%@ is thinking…";
+
+/* Menu */
+"New Game" = "New Game";
+"Preferences" = "Preferences";
+"Game History" = "Game History";
+"About" = "About";
+
+/* Preferences */
+"Auto pass" = "Auto pass";
+"Enable autopass for 5-card turn" = "Enable autopass for 5-card turn";
+"Show card left in score dialog" = "Show card left in score dialog";
+"Use Hong Kong Rule Set" = "Use Hong Kong Rule Set";
+"Bots:" = "Bots:";
+"Classic" = "Classic";
+"Strong" = "Strong";
+"Game speed:" = "Game speed:";
+"Sort cards by:" = "Sort cards by:";
+"Slow" = "Slow";
+"Medium" = "Medium";
+"Fast" = "Fast";
+"Rank" = "Rank";
+"Suit" = "Suit";
+"OK" = "OK";
+"Source" = "Source";
+"SharedKit" = "SharedKit";
+
+/* Score */
+"Final Score" = "Final Score";
+"Score — Deal %d" = "Score — Deal %d";
+"I will not play with real money" = "I will not play with real money";
+"*WIN!*" = "*WIN!*";
+"%d left" = "%d left";
+"DOUBLE!" = "DOUBLE!";
+
+/* History / About */
+"Game History of deal %d" = "Game History of deal %d";
+"Copy" = "Copy";
+"About Big Two" = "About Big Two";
+"Big Two %@" = "Big Two %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "Remade for iPhone by Chan Yiu Por Bill, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill.";
+
+/* Submit errors (English keys match BigTwoKit) */
+"Not your turn" = "Not your turn";
+"Not your cards" = "Not your cards";
+"Not a legal combination" = "Not a legal combination";
+"First play must include 3♦" = "First play must include 3♦";
+"That does not beat %@" = "That does not beat %@";
+
+/* VoiceOver card names */
+"%@ of %@" = "%@ of %@";
+"diamonds" = "diamonds";
+"clubs" = "clubs";
+"hearts" = "hearts";
+"spades" = "spades";
+"jack" = "jack";
+"queen" = "queen";
+"king" = "king";
+"ace" = "ace";

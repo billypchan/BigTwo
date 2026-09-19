@@ -95,17 +95,17 @@ struct GameView: View {
       HStack(spacing: 2 * u) {
         // Hidden, not disabled, when it isn't your turn (Palm v0.3).
         if isYourTurn {
-          PalmButtonView(title: game.table == nil ? "Lead" : "Play",
+          PalmButtonView(title: L10n.string(game.table == nil ? "Lead" : "Play"),
                          enabled: !selection.isEmpty) { play() }
             .accessibilityIdentifier("button_play")
         }
         PalmIconView(glyph: "", enabled: !selection.isEmpty) { selection = [] }
-          .accessibilityLabel("Clear selection")
+          .accessibilityLabel(L10n.string("Clear selection"))
           .accessibilityIdentifier("button_clear")
       }
       HStack(spacing: 2 * u) {
         if isYourTurn {
-          PalmButtonView(title: "Pass", enabled: game.table != nil) {
+          PalmButtonView(title: L10n.string("Pass"), enabled: game.table != nil) {
             message = nil
             game.pass(from: seat)
           }
@@ -115,7 +115,7 @@ struct GameView: View {
         PalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
           game.preferences.sortBySuit.toggle()
         }
-        .accessibilityLabel(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit")
+        .accessibilityLabel(L10n.string(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit"))
         .accessibilityIdentifier("button_sort")
       }
     }
@@ -123,10 +123,10 @@ struct GameView: View {
 
   private var prompt: String {
     if let message { return message }
-    if game.mustPlayThreeOfDiamonds && isYourTurn { return "Lead with the 3♦" }
-    if isYourTurn { return game.table == nil ? "Your Lead" : "Your Play" }
+    if game.mustPlayThreeOfDiamonds && isYourTurn { return L10n.string("Lead with the 3♦") }
+    if isYourTurn { return L10n.string(game.table == nil ? "Your Lead" : "Your Play") }
     if game.result != nil { return "" }
-    return "\(game.seats[game.turn].name) is thinking…"
+    return L10n.string("%@ is thinking…", game.seats[game.turn].name)
   }
 
   // MARK: - Menu and dialogs
@@ -169,13 +169,13 @@ struct GameView: View {
 
   private var menuItems: [PalmMenuView.Item] {
     [
-      .init(id: "new_game", title: "New Game") {
+      .init(id: "new_game", title: L10n.string("New Game")) {
         game.startGame()
         dialog = nil
       },
-      .init(id: "preferences", title: "Preferences") { dialog = .preferences },
-      .init(id: "history", title: "Game History") { dialog = .history },
-      .init(id: "about", title: "About") { dialog = .about },
+      .init(id: "preferences", title: L10n.string("Preferences")) { dialog = .preferences },
+      .init(id: "history", title: L10n.string("Game History")) { dialog = .history },
+      .init(id: "about", title: L10n.string("About")) { dialog = .about },
     ]
   }
 
@@ -211,7 +211,7 @@ struct GameView: View {
 
   private func play() {
     if let error = game.submit(Array(selection), from: seat) {
-      message = error
+      message = L10n.playError(error)
     } else {
       message = nil
       selection = []

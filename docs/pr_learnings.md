@@ -13,6 +13,43 @@ and the evidence.
 
 ---
 
+## l10n-big2-players — 中／印／菲／馬／越，覆蓋多數鋤大弟玩家
+
+**`Text(someString)` 不會查表。** 只有 `Text("字面量")` 才是 `LocalizedStringKey`。
+`PalmButtonView.title`、`PalmDialogView.title`、`PalmMenuView.Item.title` 都是 `String`，
+所以 lookup 必須在呼叫端（`L10n.string`），元件繼續顯示 verbatim。
+
+**UI 測試的 identifier 不能跟著譯文走。** `pref_speed_Fast` 用的是英文 label。
+`PalmPushButtonsView` 顯示譯文、identifier 仍用英文 key。測試再加 `-AppleLanguages (en)`，
+換模擬器語言也不炸。
+
+**Kit 的 history / `submit` 錯誤維持英文。** `testLead_showsInYourRowAndTheTracker`
+要 `"Bill: 3♦"`；`Game.submit` 回 `String?`。UI 只對 `"That does not beat "` 前綴做
+format 映射。把錯誤改成 enum 是下一步，現在不動 kit 就不用改邏輯測試。
+
+**主畫面名稱跟系統語言走，App Store 國別不必上中國。** `InfoPlist.strings`：zh-Hant
+鋤大弟、zh-Hans 大老二、id Capsa Banting、fil Pusoy Dos。簡體給新馬／海外，不是為了
+上架中國大陸。
+
+**短句優先。** 標題列與偏好列很窄；譯文壓成「剩 %d」「五張亦自動過」「速度：」。
+`minimumScaleFactor` 已經在標題與 prompt 上，長譯文先削字再靠縮放。
+
+**鍥 ≠ 鋤。** 第一版 `InfoPlist.strings` 改了 U+92E4，`Localizable.strings` 的標題仍是
+U+9358 鍥。主畫面跟正方形標題會不一致。`git grep $'\u9358'` 才找得到。
+
+**語系表要同一組 key。** id / fil / ms / vi 漏了 rebase 後才加的 `Bots:` / `Classic` /
+`Strong` / `Source` / `SharedKit`；缺 key 時 `L10n.string` 的 `value: key` 會顯示英文。
+
+**不要為了 rebase 把 `deploymentTarget` 寫回 `project.yml`。** 舊 l10n 分支停在 1.1 bump，
+再把 SE / Strong 當內容重做一次，結果蓋掉 #12 的 `Shared.xcconfig`，Cloud Archive 變
+ACTION_REQUIRED。正確做法：以現在的 `main` 為底，只疊 L10n 與 `CFBundleLocalizations`。
+
+**XcodeGen 2.46 的 `options.knownRegions` 寫了也不進 pbxproj。** 它是掃非 synced 的
+`*.lproj`；`Resources/` 是 synced folder，所以 pbxproj 只剩 `en, Base`。語系檔仍會
+被 synced group 拷進 bundle；App Store 語言列表靠 Info.plist 的 `CFBundleLocalizations`。
+
+---
+
 ## xcconfig-settings — IPHONEOS_DEPLOYMENT_TARGET 不要寫在 pbxproj
 
 **project-level pbxproj 會蓋過 xcconfig。** `options.deploymentTarget` 和 `settings.base` 裡的 `IPHONEOS_DEPLOYMENT_TARGET` 會寫進 pbxproj，Cloud 讀到的還是那份。放到 `Configurations/Shared.xcconfig`，`Version.xcconfig` `#include`，`project.yml` 不要再設。Kit 的 `Package.swift` `platforms` 仍要自己對齊，SPM 不讀 xcconfig。

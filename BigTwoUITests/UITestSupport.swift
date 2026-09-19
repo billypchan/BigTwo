@@ -6,7 +6,8 @@ let humanLeadsSeed = "2"
 extension XCUIApplication {
   static func bigTwo(seed: String = humanLeadsSeed, _ extra: [String] = []) -> XCUIApplication {
     let app = XCUIApplication()
-    app.launchArguments = ["UITestMode", "-seed", seed] + extra
+    // Pin English so prompt/button label assertions stay locale-stable.
+    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", seed] + extra
     return app
   }
 

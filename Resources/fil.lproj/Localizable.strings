@@ -1,0 +1,72 @@
+/* Filipino — Pusoy Dos */
+"Big Two" = "Pusoy Dos";
+"Menu" = "Menu";
+"Deal %d/%d" = "Ronda %d/%d";
+"left: %d" = "tira %d";
+"%@, to play" = "%@, ikaw na";
+"PASS" = "PASS";
+"Lead" = "Laban";
+"Play" = "Laban";
+"Pass" = "Pass";
+"Clear selection" = "I-clear";
+"Sort by rank" = "Ayusin sa numero";
+"Sort by suit" = "Ayusin sa suit";
+"Cards played" = "Mga kartang nailabas";
+
+"Lead with the 3♦" = "Ilaba muna ang 3♦";
+"Your Lead" = "Ikaw ang unang laban";
+"Your Play" = "Ikaw na";
+"%@ is thinking…" = "Nag-iisip si %@…";
+
+"New Game" = "Bagong laro";
+"Preferences" = "Settings";
+"Game History" = "History";
+"About" = "Tungkol";
+
+"Auto pass" = "Auto pass";
+"Enable autopass for 5-card turn" = "Autopass sa 5-kard";
+"Show card left in score dialog" = "Ipakita ang tira sa score";
+"Use Hong Kong Rule Set" = "Gamitin ang Hong Kong rules";
+"Bots:" = "Mga bot:";
+"Classic" = "Classic";
+"Strong" = "Strong";
+"Game speed:" = "Bilis:";
+"Sort cards by:" = "Ayusin:";
+"Slow" = "Bagal";
+"Medium" = "Katamtaman";
+"Fast" = "Bilis";
+"Rank" = "Numero";
+"Suit" = "Suit";
+"OK" = "OK";
+"Source" = "Source";
+"SharedKit" = "SharedKit";
+
+"Final Score" = "Huling iskor";
+"Score — Deal %d" = "Iskor — ronda %d";
+"I will not play with real money" = "Hindi ako maglalaro ng totoong pera";
+"*WIN!*" = "*PANALO!*";
+"%d left" = "tira %d";
+"DOUBLE!" = "DOBLE!";
+
+"Game History of deal %d" = "History ng ronda %d";
+"Copy" = "Kopyahin";
+"About Big Two" = "Tungkol sa Pusoy Dos";
+"Big Two %@" = "Pusoy Dos %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "Muling ginawa para sa iPhone ni Chan Yiu Por Bill, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "Batay sa handheld game noong 1999 nina Woo Kok Tong at Chan Yiu Por Bill.";
+
+"Not your turn" = "Hindi pa ikaw";
+"Not your cards" = "Hindi iyan cards mo";
+"Not a legal combination" = "Hindi wastong kombinasyon";
+"First play must include 3♦" = "Unang laban kailangan may 3♦";
+"That does not beat %@" = "Hindi matatalo ang %@";
+
+"%@ of %@" = "%@ ng %@";
+"diamonds" = "diamante";
+"clubs" = "trebol";
+"hearts" = "corazon";
+"spades" = "espada";
+"jack" = "jack";
+"queen" = "queen";
+"king" = "king";
+"ace" = "ace";

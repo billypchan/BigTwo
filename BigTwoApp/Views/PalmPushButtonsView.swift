@@ -8,7 +8,8 @@ import SwiftUI
 struct PalmPushButtonsView<Value: Hashable>: View {
   let options: [(value: Value, label: String)]
   @Binding var selection: Value
-  /// Each segment's accessibility identifier is `<idPrefix>_<label>`.
+  /// Each segment's accessibility identifier is `<idPrefix>_<English label>` so
+  /// UI tests stay locale-stable. The visible text is localized.
   let idPrefix: String
 
   @Environment(\.palmUnit) private var u
@@ -18,7 +19,7 @@ struct PalmPushButtonsView<Value: Hashable>: View {
       ForEach(Array(options.enumerated()), id: \.offset) { _, option in
         let chosen = option.value == selection
         Button { selection = option.value } label: {
-          Text(option.label)
+          Text(L10n.string(option.label))
             .font(.palm(12 * u))
             .foregroundColor(chosen ? .cardFace : .ink)
             .padding(.horizontal, 5 * u)
