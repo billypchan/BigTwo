@@ -2,8 +2,8 @@
 //  PlayerNames.swift
 //  Big Two — default seat names are local given names for that language,
 //  not translations of Adam / Bill / Carl / Dean.
-//  zh-Hant: HK Chinese ranking boys 梓軒 / 子謙 (skip 宇軒 so two seats
-//  don't share 軒), girls 凱晴 / 芷晴.
+//  zh-Hant: HK ranking boys 梓軒 / 子謙 (skip extra 軒), girls 凱晴 / 凱琳
+//  (skip extra 晴).
 //
 
 import Foundation
