@@ -23,6 +23,14 @@
 "Game History" = "Lịch sử";
 "About" = "Giới thiệu";
 
+/* Player names */
+"Adam" = "Adam";
+"Bill" = "Bill";
+"Carl" = "Carl";
+"Dean" = "Dean";
+"Names" = "Tên";
+"Player names" = "Tên người chơi";
+
 "Auto pass" = "Tự bỏ";
 "Enable autopass for 5-card turn" = "Tự bỏ cả lượt 5 lá";
 "Show card left in score dialog" = "Hiện bài còn trên bảng điểm";

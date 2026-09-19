@@ -25,6 +25,14 @@
 "Game History" = "Game History";
 "About" = "About";
 
+/* Player names */
+"Adam" = "Adam";
+"Bill" = "Bill";
+"Carl" = "Carl";
+"Dean" = "Dean";
+"Names" = "Names";
+"Player names" = "Player names";
+
 /* Preferences */
 "Auto pass" = "Auto pass";
 "Enable autopass for 5-card turn" = "Enable autopass for 5-card turn";

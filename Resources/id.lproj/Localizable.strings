@@ -23,6 +23,14 @@
 "Game History" = "Riwayat";
 "About" = "Tentang";
 
+/* Player names */
+"Adam" = "Adam";
+"Bill" = "Bill";
+"Carl" = "Carl";
+"Dean" = "Dean";
+"Names" = "Nama";
+"Player names" = "Nama pemain";
+
 "Auto pass" = "Pass otomatis";
 "Enable autopass for 5-card turn" = "Autopass untuk 5 kartu";
 "Show card left in score dialog" = "Tampil sisa kartu di skor";

@@ -23,6 +23,14 @@
 "Game History" = "牌局记录";
 "About" = "关于";
 
+/* Player names */
+"Adam" = "亚当";
+"Bill" = "比尔";
+"Carl" = "卡尔";
+"Dean" = "迪安";
+"Names" = "名字";
+"Player names" = "玩家名字";
+
 "Auto pass" = "自动过";
 "Enable autopass for 5-card turn" = "五张也自动过";
 "Show card left in score dialog" = "分数表显示剩牌";

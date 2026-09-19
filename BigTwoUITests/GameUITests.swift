@@ -113,8 +113,15 @@ final class GameUITests: XCTestCase {
     app.buttons["menu_button"].tap()
     XCTAssertTrue(app.buttons["menu_about"].waitForExistence(timeout: 5))
     app.buttons["menu_about"].tap()
-    XCTAssertTrue(app.buttons["about_sharedkit"].waitForExistence(timeout: 5))
-    XCTAssertTrue(app.buttons["about_ok"].exists)
+    XCTAssertTrue(app.buttons["about_ok"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["about_share"].exists)
+    XCTAssertTrue(app.buttons["about_rate"].exists)
+    XCTAssertTrue(app.buttons["about_report"].exists)
+    XCTAssertTrue(app.buttons["about_x"].exists)
+    XCTAssertFalse(app.buttons["about_sharedkit"].exists)
+    XCTAssertEqual(app.state, .runningForeground)
+    app.buttons["about_ok"].tap()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 5))
   }
 
   func testSortIcon_togglesBetweenRankAndSuit() {
