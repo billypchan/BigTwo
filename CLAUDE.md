@@ -28,17 +28,10 @@ the flat chrome, the green table, the button layout and the terse wording are th
   to the plist by hand is silently dropped on the next generate.
 - `BigTwoApp/`, `Resources/` and `BigTwoUITests/` are **synced folders** — adding a file
   there needs no regenerate.
-- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 14+**
-  (from 1.0 build 4; build 3 shipped at 15). Every device that runs 14 also runs 15 — 14 is
-  for people who never updated. No simulator runtime below 26 is installed here, so 14 is
-  verified by compiling only: `swiftc -typecheck -target arm64-apple-ios14.0-simulator`
-  over the kit and the app. Avoid iOS 15+ APIs (`.task`, `.foregroundStyle`,
-  `Button(role:)`, `.buttonStyle(.plain)` static syntax, `NavigationStack`,
-  `presentationDetents`, `Duration`) or guard them with `#available`.
-  ⚠️ StoreKit 2 (in-app purchases) and SharedKit need iOS 15: on 14, hide Remove Ads and
-  the tip jar rather than raising the target. Going to 13 means leaving the SwiftUI `App`
-  lifecycle (`@main App`, `WindowGroup`, `@StateObject` are 14+); 12 has no SwiftUI.
-  Version and build number live in `Configurations/Version.xcconfig`.
+- Bundle id `com.billchan.BigTwo`, team `G5GZ5MPEHS`, iPhone only, portrait, **iOS 15+**.
+  Xcode Cloud / current SDKs only accept deployment targets 15.0–27.0; 14 was dropped
+  because `IPHONEOS_DEPLOYMENT_TARGET = 14.0` fails that range. Version and build
+  number live in `Configurations/Version.xcconfig`.
 - Swift 6 language mode for the app and `BigTwoKit`. The UI-test target is Swift 5 on
   purpose: `XCUIApplication` is `@MainActor`, and Swift 6 would need isolation on every test.
 
@@ -294,7 +287,7 @@ Single-player against three bots is complete and runs on the simulator; 47 kit t
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval); tag
-   `v1.0` when it is live. `main` is **1.1** (iOS 14 support onward) — builds restart at 1. Build 2 still needs Beta App Review for
+   `v1.0` when it is live. `main` is **1.1** (iOS 15+) — builds restart at 1. Build 2 still needs Beta App Review for
    the external group once build 1's review is done. CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,

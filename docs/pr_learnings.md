@@ -13,6 +13,12 @@ and the evidence.
 
 ---
 
+## ios15-target — Xcode Cloud 不收 14.0
+
+**`IPHONEOS_DEPLOYMENT_TARGET` 14.0 在 Cloud 的 SDK 範圍是 15.0–27.0。** 警告路徑是 `file:///Volumes/workspace/repository/BigTwo.xcodeproj`。改 `project.yml` `deploymentTarget.iOS: "15.0"` 和 kit `platforms: [.iOS(.v15)]`，再 `xcodegen generate`。
+
+---
+
 ## screenshots-clock — 狀態列時鐘不要進 git diff
 
 **截圖是整台模擬器，含系統時鐘。** 每次 tour 時鐘不同，PNG 整張都變。`extract_screenshots.py` 解 PNG，略過最上面 8%（Dynamic Island + 時鐘），底下一樣就保留舊檔。`--force` 才覆寫。新圖要 9:41：`scripts/freeze_status_bar.sh <udid>`（scheme test preAction 會試 `booted`）。
