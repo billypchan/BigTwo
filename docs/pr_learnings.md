@@ -13,6 +13,14 @@ and the evidence.
 
 ---
 
+## pref-source — Preferences 加 Source 開 GitHub
+
+**選單點了不等就點下一項，重開後會失敗。** `testPreferences_surviveARelaunch` 第一次開 Preferences 過了（`pref_source` 也找得到），`terminate` 再 launch 後立刻點 `menu_preferences`：選單還沒出現。跟 Source 按鈕無關。改成先 `waitForExistence` 再 tap，跟 CLAUDE.md「等 tap 造成的狀態」同一條。
+
+**Source 連公開 repo，不要連 `/settings`。** GitHub 的 `/settings` 是管理員頁，使用者打不開。
+
+---
+
 ## palm-square-layout — Palm 正方形版面、記牌表、iOS 15
 
 **參考圖要全部看過再動手。** 使用者只貼了一張 v2.2.8 的主畫面；SourceForge 上另外還有 10 張，

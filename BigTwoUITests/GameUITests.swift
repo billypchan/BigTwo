@@ -124,10 +124,10 @@ final class GameUITests: XCTestCase {
 
   func testPreferences_surviveARelaunch() {
     app.launch()
-    app.buttons["menu_button"].tap()
-    app.buttons["menu_preferences"].tap()
+    openPreferences()
     let hk = app.buttons["pref_hongKong"]
     XCTAssertTrue(hk.waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["pref_source"].exists)
     XCTAssertEqual(hk.value as? String, "0")
     hk.tap()
     waitFor(hk, value: "1")
@@ -137,10 +137,17 @@ final class GameUITests: XCTestCase {
     app.terminate()
     app = .bigTwo(["-keepPreferences", "YES"])
     app.launch()
-    app.buttons["menu_button"].tap()
-    app.buttons["menu_preferences"].tap()
+    openPreferences()
     XCTAssertTrue(app.buttons["pref_hongKong"].waitForExistence(timeout: 5))
     XCTAssertEqual(app.buttons["pref_hongKong"].value as? String, "1")
     XCTAssertTrue(app.buttons["pref_speed_Fast"].isSelected)
+    XCTAssertTrue(app.buttons["pref_source"].exists)
+  }
+
+  /// Menu tap can lag the synthesized hit; wait for the item before tapping it.
+  private func openPreferences() {
+    app.buttons["menu_button"].tap()
+    XCTAssertTrue(app.buttons["menu_preferences"].waitForExistence(timeout: 5))
+    app.buttons["menu_preferences"].tap()
   }
 }

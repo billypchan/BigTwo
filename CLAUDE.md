@@ -182,6 +182,8 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
 | `-keepPreferences YES` | Keep the UI-test preference suite across a relaunch |
 
+- ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
+  skip because the change looks small.
 - ⚠️ **Never pipe `xcodebuild` into `tail`/`head`** — `$?` becomes the pipe's. Redirect,
   then grep `Executed [0-9]+ test` (it says "1 test", singular — a `tests` pattern misses
   it). A mistyped `-only-testing:` runs zero tests and still prints `** TEST SUCCEEDED **`.

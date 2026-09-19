@@ -29,3 +29,5 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-13 13:45 — BigTwoKit ✓ 47/47 · iOS ✗ 9/10 (iOS 14 deployment target; testScreenTour: Preferences dialog didn't open after the menu tap, line 32)
 - 2026-09-13 13:50 — iOS ✓ 1/1 ×2 (testScreenTour alone, twice — a flake, 1 in 4 full runs so far; watch it)
 - 2026-09-13 13:50 — iOS 14 / 13 compile check: kit + app typecheck at `arm64-apple-ios14.0-simulator` → 0 errors; at 13.0 → 14 errors (SwiftUI App lifecycle)
+- 2026-09-19 12:42 — iOS (iPhone 17 Pro Max, 26.2) ✗ 0/1 testPreferences_surviveARelaunch — relaunch tapped menu_preferences before the menu appeared
+- 2026-09-19 12:44 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testPreferences_surviveARelaunch (wait for the menu item after the title tap)
