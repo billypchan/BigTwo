@@ -2,9 +2,8 @@
 //  PlayerNames.swift
 //  Big Two — default seat names are local given names for that language,
 //  not translations of Adam / Bill / Carl / Dean.
-//  zh-Hant uses the latest published HK Chinese newborn ranking (NameChef):
-//  boys 梓軒 / 宇軒, girls 凱晴 / 芷晴. Hong Kong does not publish an
-//  official 2026 birth-name table.
+//  zh-Hant: HK Chinese ranking boys 梓軒 / 子謙 (skip 宇軒 so two seats
+//  don't share 軒), girls 凱晴 / 芷晴.
 //
 
 import Foundation
