@@ -38,12 +38,14 @@ Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
 
 ## The bots
 
-You sit as Bill. Adam, Carl and Dean play the way the 1999 handheld bots did — rewritten
-from a description of that behaviour, not from the GPL source.
+You sit as Bill. Adam, Carl and Dean default to **Strong** (Preferences → Bots). **Classic**
+is the 1999 handheld style, rewritten from a description of that behaviour, not from the
+GPL source.
 
-They **see every hand**. That is how the originals played (they peeked), and turning it
-off makes the game easier. They also **let a fellow bot's king, ace or two stand** as a
-single: they will not fight each other for the trick, but they will still beat a human's.
+**Classic** **sees every hand**. That is how the originals played (they peeked), and
+turning it off makes the game easier. They also **let a fellow bot's king, ace or two
+stand** as a single: they will not fight each other for the trick, but they will still
+beat a human's.
 
 Each turn they set aside the cards they want to keep (straights they are guarding, and
 often flushes, full houses and four of a kind), then play the **cheapest** legal thing
@@ -64,9 +66,15 @@ only straights (and they will not break a pair to make a high straight). Triples
 include a two while they still have more than four cards; pairs drop the twos until the
 end is near.
 
+**Strong** does **not** peek — only its own hand and the public `left: N` counts — and
+it fights every seat, including the other bots. It goes out when the whole hand is a
+play, leads a combo (or its highest single) when someone is on one card, will not lead
+a pair when someone has two, and will beat a fellow bot's king instead of letting it
+stand. Bombs and twos stay back until someone is short.
+
 The test `palmBotsOutscoreTheGreedyBot` keeps a greedy bot in the test target as a
-yardstick: over 8 seeded games the greedy seat finished at −719. A change that makes
-that number go up is a regression in strength.
+yardstick: over 8 seeded games the greedy seat finished at −719 against Classic.
+`oneStrongBotOutscoresThreeGreedyBots` keeps one Strong seat ahead of greedy.
 
 ## License
 

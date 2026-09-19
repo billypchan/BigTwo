@@ -25,6 +25,11 @@ struct PreferencesDialogView: View {
         PalmCheckboxView(title: "Use Hong Kong Rule Set", isOn: $preferences.hongKong)
           .accessibilityIdentifier("pref_hongKong")
         HStack(spacing: 6 * u) {
+          Text("Bots:").font(.palm(13 * u))
+          PalmPushButtonsView(options: [(false, "Classic"), (true, "Strong")],
+                              selection: $preferences.strongBots, idPrefix: "pref_bots")
+        }
+        HStack(spacing: 6 * u) {
           Text("Game speed:").font(.palm(13 * u))
           PalmPushButtonsView(options: [(.slow, "Slow"), (.medium, "Medium"), (.fast, "Fast")],
                               selection: $preferences.gameSpeed, idPrefix: "pref_speed")

@@ -192,7 +192,8 @@ struct PreferencesStoreTests {
     let store = PreferencesStore(defaults: try freshDefaults())
     #expect(store.load() == Preferences())
     let changed = Preferences(hongKong: true, autopass: false, autopassFiveCard: true,
-                              showCardsLeft: false, gameSpeed: .fast, sortBySuit: true)
+                              showCardsLeft: false, gameSpeed: .fast, sortBySuit: true,
+                              strongBots: false)
     store.save(changed)
     #expect(store.load() == changed)
   }
@@ -204,6 +205,7 @@ struct PreferencesStoreTests {
     #expect(prefs.hongKong, "one unreadable value must not reset the rest")
     #expect(prefs.gameSpeed == .medium)
     #expect(prefs.autopass == Preferences().autopass)
+    #expect(prefs.strongBots == Preferences().strongBots)
   }
 
   @Test func corruptDataFallsBackToDefaults() throws {

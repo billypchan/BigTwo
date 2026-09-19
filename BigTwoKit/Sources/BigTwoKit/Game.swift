@@ -244,7 +244,8 @@ public final class BigTwoGame: ObservableObject {
 
   /// What the bot would play from `seat` right now; nil is a pass.
   public func botChoice(for seat: Int) -> Play? {
-    BotPlayer.choose(botContext(for: seat))
+    let c = botContext(for: seat)
+    return preferences.strongBots ? StrongBot.choose(c) : BotPlayer.choose(c)
   }
 
   // MARK: - Scoring

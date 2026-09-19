@@ -82,5 +82,11 @@ schemes:
     test:
       config: Debug
       gatherCoverageData: false
+      preActions:
+        - name: Freeze status bar clock
+          script: |
+            # Ignore failure if the destination is not booted yet.
+            "${SRCROOT}/scripts/freeze_status_bar.sh" booted || true
+          settingsTarget: BigTwo
       targets:
         - BigTwoUITests

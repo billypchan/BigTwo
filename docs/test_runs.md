@@ -36,3 +36,5 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-19 13:03 — iOS SE (3rd gen, 26.3) ✓ 1/1 testScreenTour after Play/Pass gap · screenshots/ios-se
 - 2026-09-19 13:12 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testScreenTour (+ Final Score, `-dealsPerGame 1`) · 7 shots in screenshots/ios
 - 2026-09-19 13:18 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testScreenTour (+ About) · 8 shots in screenshots/ios
+- 2026-09-19 13:39 — BigTwoKit ✓ 56/56 (StrongBot) · iOS (iPhone 17 Pro Max) ✓ 2/2 testPreferences + testScreenTour
+- 2026-09-19 13:48 — BigTwoKit ✓ 55/55 (StrongBot: no peek, fights fellow bots; 1 Strong vs 3 greedy +220)

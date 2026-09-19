@@ -13,6 +13,24 @@ and the evidence.
 
 ---
 
+## screenshots-clock — 狀態列時鐘不要進 git diff
+
+**截圖是整台模擬器，含系統時鐘。** 每次 tour 時鐘不同，PNG 整張都變。`extract_screenshots.py` 解 PNG，略過最上面 8%（Dynamic Island + 時鐘），底下一樣就保留舊檔。`--force` 才覆寫。新圖要 9:41：`scripts/freeze_status_bar.sh <udid>`（scheme test preAction 會試 `booted`）。
+
+---
+
+## strong-bots-fair — 不偷看、也打同伴
+
+**3 個會互打的 Strong 對 1 個 greedy 會輸。** 不許偷看、不許讓同伴的 K 過，三個 Strong 互相蓋牌，greedy 坐收 +271。量尺改成 1 Strong vs 3 greedy（+220）。Classic 仍偷看、仍讓同伴。
+
+---
+
+## strong-bots — 新 AI 不能整套重寫最便宜出牌
+
+**對 greedy 的 −719 是 Classic 的量尺，不是「愈聰明愈負」。** 第一版 Strong 一有機會就出最大鎖死牌（先倒 2♠），greedy 8 局變成 +389。改成 Classic 出牌 + 三條覆蓋：整手能出就出、你剩一張用剛好壓死的單張、你 ≤5 張且能吃同伴的牌才蓋。之後 greedy −517、Classic 當人類 −505。
+
+---
+
 ## se-doubletap — 雙擊對子、SE 版面
 
 **44pt 點擊框不跟正方形縮放。** Play/Pass 旁邊的 icon 在 SE（u≈1.17）佈局是 44pt，不是 20 Palm 單位；`left: N` 會伸進按鈕底下。每列加 `trailingReserve = controlsWidth + 16u`，牌列 `layoutPriority(-1)` 讓出空間。Pro Max 上看不出來，一定要在 SE 截圖。

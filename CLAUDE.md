@@ -100,7 +100,7 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   navy title bar, white body, pill buttons) — never iOS sheets. They are modal: a clear
   layer swallows taps outside them. Preferences keep the Palm wording ("Auto pass",
   "Enable autopass for 5-card turn", "Use Hong Kong Rule Set", "Game speed: Slow | Medium |
-  Fast", "Sort cards by: Rank | Suit").
+  Fast", "Sort cards by: Rank | Suit", "Bots: Classic | Strong").
 - Table green is a **flat** `#00cc00`, as on the Palm screen. No shadows (the menu's hard
   2px offset is the one exception — it is the Palm's), no blur, no glass.
 - Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
@@ -149,6 +149,11 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 - The bots keep the Palm habits on purpose, including the two cheats: they **see every
   hand** (`BotContext.hands`) and a bot **lets a fellow bot's K/A/2 single stand**. Both
   are in `BotPlayerTests`; turning either off changes the game's difficulty.
+- **Strong bots** (`StrongBot`, default on, Preferences → Bots: Classic | Strong) do
+  **not** peek (own hand + `left: N` only) and **do** fight fellow bots. Classic still
+  peeks and lets a fellow bot's K/A/2 stand. `oneStrongBotOutscoresThreeGreedyBots`
+  keeps one Strong seat ahead of greedy. `Game.botChoice` picks Strong or Classic from
+  `preferences.strongBots`.
 
 ## Tests
 
@@ -210,6 +215,9 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 0. **Check it ran**: `Executed N test(s)`, not the banner.
 1. **Extract**: `python3 scripts/extract_screenshots.py --latest screenshots/ios`
+   (keeps the old PNG if the new shot differs only in the status-bar clock;
+   `--force` overwrites). Freeze the clock first with
+   `scripts/freeze_status_bar.sh <udid>` so new shots show 9:41.
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 

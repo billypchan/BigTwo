@@ -155,9 +155,11 @@ final class GameUITests: XCTestCase {
     let hk = app.buttons["pref_hongKong"]
     XCTAssertTrue(hk.waitForExistence(timeout: 5))
     XCTAssertTrue(app.buttons["pref_source"].exists)
+    XCTAssertTrue(app.buttons["pref_bots_Strong"].isSelected)
     XCTAssertEqual(hk.value as? String, "0")
     hk.tap()
     waitFor(hk, value: "1")
+    app.buttons["pref_bots_Classic"].tap()
     app.buttons["pref_speed_Fast"].tap()
     app.buttons["pref_ok"].tap()
 
@@ -168,6 +170,7 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.buttons["pref_hongKong"].waitForExistence(timeout: 5))
     XCTAssertEqual(app.buttons["pref_hongKong"].value as? String, "1")
     XCTAssertTrue(app.buttons["pref_speed_Fast"].isSelected)
+    XCTAssertTrue(app.buttons["pref_bots_Classic"].isSelected)
     XCTAssertTrue(app.buttons["pref_source"].exists)
   }
 

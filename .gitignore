@@ -25,6 +25,8 @@ fastlane/test_output
 # OS
 .DS_Store
 /build
+__pycache__/
+*.pyc
 
 # Claude harness runtime
 .claude/*.lock
