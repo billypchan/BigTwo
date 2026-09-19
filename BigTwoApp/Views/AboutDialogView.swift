@@ -19,20 +19,20 @@ struct AboutDialogView: View {
   }
 
   var body: some View {
-    PalmDialogView(title: "About Big Two") {
+    PalmDialogView(title: L10n.string("About Big Two")) {
       VStack(spacing: 6 * u) {
-        Text("Big Two \(version)").font(.palm(15 * u, .heavy))
-        Text("Remade for iPhone by Chan Yiu Por Bill, 2026.")
+        Text(L10n.string("Big Two %@", version)).font(.palm(15 * u, .heavy))
+        Text(L10n.string("Remade for iPhone by Chan Yiu Por Bill, 2026."))
         // ⚠️ No other platform's name here or in the store copy (guideline 2.3.10).
-        Text("After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill.")
-        Text("I will not play with real money.").foregroundColor(.inkDim)
+        Text(L10n.string("After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill."))
+        Text(L10n.string("I will not play with real money.")).foregroundColor(.inkDim)
       }
       .font(.palm(12 * u, .regular))
       .multilineTextAlignment(.center)
     } buttons: {
-      PalmButtonView(title: "OK", width: 40, action: onOK)
+      PalmButtonView(title: L10n.string("OK"), width: 40, action: onOK)
         .accessibilityIdentifier("about_ok")
-      PalmButtonView(title: "SharedKit", width: 72, action: openSharedKit)
+      PalmButtonView(title: L10n.string("SharedKit"), width: 72, action: openSharedKit)
         .accessibilityIdentifier("about_sharedkit")
     }
   }

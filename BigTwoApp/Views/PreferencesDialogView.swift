@@ -14,36 +14,38 @@ struct PreferencesDialogView: View {
   @Environment(\.openURL) private var openURL
 
   var body: some View {
-    PalmDialogView(title: "Preferences") {
+    PalmDialogView(title: L10n.string("Preferences")) {
       VStack(alignment: .leading, spacing: 0) {
-        PalmCheckboxView(title: "Auto pass", isOn: $preferences.autopass)
+        PalmCheckboxView(title: L10n.string("Auto pass"), isOn: $preferences.autopass)
           .accessibilityIdentifier("pref_autopass")
-        PalmCheckboxView(title: "Enable autopass for 5-card turn", isOn: $preferences.autopassFiveCard)
+        PalmCheckboxView(title: L10n.string("Enable autopass for 5-card turn"),
+                         isOn: $preferences.autopassFiveCard)
           .accessibilityIdentifier("pref_autopassFiveCard")
-        PalmCheckboxView(title: "Show card left in score dialog", isOn: $preferences.showCardsLeft)
+        PalmCheckboxView(title: L10n.string("Show card left in score dialog"),
+                         isOn: $preferences.showCardsLeft)
           .accessibilityIdentifier("pref_showCardsLeft")
-        PalmCheckboxView(title: "Use Hong Kong Rule Set", isOn: $preferences.hongKong)
+        PalmCheckboxView(title: L10n.string("Use Hong Kong Rule Set"), isOn: $preferences.hongKong)
           .accessibilityIdentifier("pref_hongKong")
         HStack(spacing: 6 * u) {
-          Text("Bots:").font(.palm(13 * u))
+          Text(L10n.string("Bots:")).font(.palm(13 * u))
           PalmPushButtonsView(options: [(false, "Classic"), (true, "Strong")],
                               selection: $preferences.strongBots, idPrefix: "pref_bots")
         }
         HStack(spacing: 6 * u) {
-          Text("Game speed:").font(.palm(13 * u))
+          Text(L10n.string("Game speed:")).font(.palm(13 * u))
           PalmPushButtonsView(options: [(.slow, "Slow"), (.medium, "Medium"), (.fast, "Fast")],
                               selection: $preferences.gameSpeed, idPrefix: "pref_speed")
         }
         HStack(spacing: 6 * u) {
-          Text("Sort cards by:").font(.palm(13 * u))
+          Text(L10n.string("Sort cards by:")).font(.palm(13 * u))
           PalmPushButtonsView(options: [(false, "Rank"), (true, "Suit")],
                               selection: $preferences.sortBySuit, idPrefix: "pref_sort")
         }
       }
     } buttons: {
-      PalmButtonView(title: "OK", width: 40, action: onOK)
+      PalmButtonView(title: L10n.string("OK"), width: 40, action: onOK)
         .accessibilityIdentifier("pref_ok")
-      PalmButtonView(title: "Source", width: 56, action: openSource)
+      PalmButtonView(title: L10n.string("Source"), width: 56, action: openSource)
         .accessibilityIdentifier("pref_source")
     }
   }

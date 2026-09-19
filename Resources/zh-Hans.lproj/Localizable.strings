@@ -1,0 +1,72 @@
+/* Simplified Chinese */
+"Big Two" = "大老二";
+"Menu" = "菜单";
+"Deal %d/%d" = "第 %d/%d 局";
+"left: %d" = "剩 %d";
+"%@, to play" = "%@，轮到出牌";
+"PASS" = "过";
+"Lead" = "出牌";
+"Play" = "出牌";
+"Pass" = "过";
+"Clear selection" = "取消选择";
+"Sort by rank" = "按点数排";
+"Sort by suit" = "按花色排";
+"Cards played" = "已出的牌";
+
+"Lead with the 3♦" = "先出 3♦";
+"Your Lead" = "你先出";
+"Your Play" = "轮到你";
+"%@ is thinking…" = "%@ 思考中…";
+
+"New Game" = "新局";
+"Preferences" = "设置";
+"Game History" = "牌局记录";
+"About" = "关于";
+
+"Auto pass" = "自动过";
+"Enable autopass for 5-card turn" = "五张也自动过";
+"Show card left in score dialog" = "分数表显示剩牌";
+"Use Hong Kong Rule Set" = "用港式规则";
+"Bots:" = "电脑：";
+"Classic" = "经典";
+"Strong" = "强";
+"Game speed:" = "速度：";
+"Sort cards by:" = "排序：";
+"Slow" = "慢";
+"Medium" = "中";
+"Fast" = "快";
+"Rank" = "点数";
+"Suit" = "花色";
+"OK" = "确定";
+"Source" = "源码";
+"SharedKit" = "SharedKit";
+
+"Final Score" = "总分";
+"Score — Deal %d" = "分数 — 第 %d 局";
+"I will not play with real money" = "我不会用真钱打牌";
+"*WIN!*" = "*赢!*";
+"%d left" = "剩 %d";
+"DOUBLE!" = "加倍！";
+
+"Game History of deal %d" = "第 %d 局记录";
+"Copy" = "复制";
+"About Big Two" = "关于大老二";
+"Big Two %@" = "大老二 %@";
+"Remade for iPhone by Chan Yiu Por Bill, 2026." = "2026 年由陈耀波改编为 iPhone 版。";
+"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "改编自 1999 年 Woo Kok Tong 与陈耀波的掌上机游戏。";
+
+"Not your turn" = "还没轮到你";
+"Not your cards" = "不是你的牌";
+"Not a legal combination" = "不是合法牌型";
+"First play must include 3♦" = "首出必须有 3♦";
+"That does not beat %@" = "打不过 %@";
+
+"%@ of %@" = "%@%@";
+"diamonds" = "方块";
+"clubs" = "梅花";
+"hearts" = "红心";
+"spades" = "黑桃";
+"jack" = "J";
+"queen" = "Q";
+"king" = "K";
+"ace" = "A";

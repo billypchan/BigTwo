@@ -13,19 +13,21 @@ struct ScoreDialogView: View {
   @Environment(\.palmUnit) private var u
 
   var body: some View {
-    PalmDialogView(title: game.gameOver ? "Final Score" : "Score — Deal \(result.deal)") {
+    PalmDialogView(title: game.gameOver
+                    ? L10n.string("Final Score")
+                    : L10n.string("Score — Deal %d", result.deal)) {
       VStack(spacing: 4 * u) {
         ForEach(game.seats) { player in
           row(player)
         }
         if game.seats.allSatisfy({ $0.score == 0 }) {
-          Text("I will not play with real money")
+          Text(L10n.string("I will not play with real money"))
             .font(.palm(11 * u, .regular))
             .foregroundColor(.inkDim)
         }
       }
     } buttons: {
-      PalmButtonView(title: game.gameOver ? "New Game" : "OK",
+      PalmButtonView(title: L10n.string(game.gameOver ? "New Game" : "OK"),
                      width: game.gameOver ? 80 : 40) {
         game.continueAfterScore()
       }
@@ -39,12 +41,12 @@ struct ScoreDialogView: View {
       Text(player.name).font(.palm(14 * u))
       if player.id == result.winner {
         // verbatim: a literal would read the asterisks as Markdown italics (v2.2 added them).
-        Text(verbatim: "*WIN!*").font(.palm(14 * u, .heavy)).foregroundColor(.suitRed)
+        Text(verbatim: L10n.string("*WIN!*")).font(.palm(14 * u, .heavy)).foregroundColor(.suitRed)
       }
       if game.preferences.showCardsLeft && player.id != result.winner {
-        Text("\(result.cardsLeft[player.id]) left").font(.palm(12 * u, .regular))
+        Text(L10n.string("%d left", result.cardsLeft[player.id])).font(.palm(12 * u, .regular))
         if result.cardsLeft[player.id] >= 10 {
-          Text("DOUBLE!").font(.palm(11 * u, .heavy)).foregroundColor(.suitRed)
+          Text(L10n.string("DOUBLE!")).font(.palm(11 * u, .heavy)).foregroundColor(.suitRed)
         }
       }
       Spacer(minLength: 0)

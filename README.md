@@ -3,6 +3,16 @@
 Remake of Big Two v2.2.8 for Palm OS (鋤大弟). SwiftUI, iOS 15+, iPhone, no third-party
 dependencies.
 
+UI follows the phone language:
+
+- English — Big Two
+- Traditional Chinese — 鋤大弟
+- Simplified Chinese — 大老二
+- Bahasa Indonesia — Capsa Banting
+- Filipino — Pusoy Dos
+- Bahasa Melayu — Big Two
+- Tiếng Việt — Big Two
+
 ## Build
 
 ```bash

@@ -25,14 +25,14 @@ struct PlayerRowView: View {
         .background(RoundedRectangle(cornerRadius: 3 * u).fill(isTurn ? Color.ink : Color.chrome))
         .overlay(RoundedRectangle(cornerRadius: 3 * u).strokeBorder(Color.inkDim, lineWidth: 1))
         .padding(.top, 3 * u)
-        .accessibilityLabel(isTurn ? "\(player.name), to play" : player.name)
+        .accessibilityLabel(isTurn ? L10n.string("%@, to play", player.name) : player.name)
 
       Group {
         switch action {
         case .played(let play)?:
           CardRowView(cards: play.cards, height: 44 * u, idPrefix: "row\(player.id)")
         case .passed?:
-          Text("PASS")
+          Text(L10n.string("PASS"))
             .font(.palm(19 * u, .regular))
             .foregroundColor(.ink)
             .padding(.leading, 12 * u)
@@ -45,7 +45,7 @@ struct PlayerRowView: View {
       .frame(height: 46 * u, alignment: .leading)
       .layoutPriority(-1)
 
-      Text("left: \(player.hand.count)")
+      Text(L10n.string("left: %d", player.hand.count))
         .font(.palm(12 * u, .semibold))
         .foregroundColor(.ink)
         .lineLimit(1)

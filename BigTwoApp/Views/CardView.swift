@@ -30,7 +30,7 @@ struct CardView: View {
     }
     .frame(width: height * CardView.aspect, height: height)
     .accessibilityElement(children: .ignore)
-    .accessibilityLabel(card.spokenName)
+    .accessibilityLabel(L10n.spokenCard(rankName: card.rank.name, suitName: card.suit.name))
     .accessibilityAddTraits(selected ? .isSelected : [])
   }
 

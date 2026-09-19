@@ -15,7 +15,7 @@ struct HistoryDialogView: View {
   @Environment(\.palmUnit) private var u
 
   var body: some View {
-    PalmDialogView(title: "Game History of deal \(deal)") {
+    PalmDialogView(title: L10n.string("Game History of deal %d", deal)) {
       ScrollView {
         Text(text)
           .font(.system(size: 11 * u, weight: .semibold, design: .monospaced))
@@ -24,9 +24,9 @@ struct HistoryDialogView: View {
       }
       .frame(height: 200 * u)
     } buttons: {
-      PalmButtonView(title: "OK", width: 40, action: onOK)
+      PalmButtonView(title: L10n.string("OK"), width: 40, action: onOK)
         .accessibilityIdentifier("history_ok")
-      PalmButtonView(title: "Copy", width: 50) {
+      PalmButtonView(title: L10n.string("Copy"), width: 50) {
         UIPasteboard.general.string = text
       }
       .accessibilityIdentifier("history_copy")
