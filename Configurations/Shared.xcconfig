@@ -1,0 +1,12 @@
+// Project-wide settings. Version.xcconfig includes this for Debug and Release.
+// Keep IPHONEOS_DEPLOYMENT_TARGET here — not in project.yml — so it is not
+// also baked into the pbxproj (project-level pbxproj overrides xcconfig).
+// Xcode Cloud / current SDKs accept 15.0–27.0.
+IPHONEOS_DEPLOYMENT_TARGET = 15.0
+DEVELOPMENT_TEAM = G5GZ5MPEHS
+SWIFT_VERSION = 6.0
+TARGETED_DEVICE_FAMILY = 1
+CODE_SIGN_STYLE = Automatic
+ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+ENABLE_USER_SCRIPT_SANDBOXING = YES
