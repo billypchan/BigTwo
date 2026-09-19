@@ -13,6 +13,16 @@ and the evidence.
 
 ---
 
+## se-doubletap — 雙擊對子、SE 版面
+
+**44pt 點擊框不跟正方形縮放。** Play/Pass 旁邊的 icon 在 SE（u≈1.17）佈局是 44pt，不是 20 Palm 單位；`left: N` 會伸進按鈕底下。每列加 `trailingReserve = controlsWidth + 16u`，牌列 `layoutPriority(-1)` 讓出空間。Pro Max 上看不出來，一定要在 SE 截圖。
+
+**標題分頁只有 22u，SE 上約 26pt，XCUITest 會點空。** `menu_button` 加上 44pt 點擊高度；tour 點一次沒出選單就再點一次。
+
+**少於 5 張同花的雙擊不要選那門花色。** 改成有對就選對，沒有就不動（第一次 tap 已經選了那一張）。seed 2 的 8♥ 是對、6♥ 不是、Q♣ 有 6 張♣。
+
+---
+
 ## pref-source — Preferences 加 Source 開 GitHub
 
 **選單點了不等就點下一項，重開後會失敗。** `testPreferences_surviveARelaunch` 第一次開 Preferences 過了（`pref_source` 也找得到），`terminate` 再 launch 後立刻點 `menu_preferences`：選單還沒出現。跟 Source 按鈕無關。改成先 `waitForExistence` 再 tap，跟 CLAUDE.md「等 tap 造成的狀態」同一條。

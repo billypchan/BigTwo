@@ -9,6 +9,7 @@ struct AboutDialogView: View {
   let onOK: () -> Void
 
   @Environment(\.palmUnit) private var u
+  @Environment(\.openURL) private var openURL
 
   private var version: String {
     let info = Bundle.main.infoDictionary
@@ -31,7 +32,14 @@ struct AboutDialogView: View {
     } buttons: {
       PalmButtonView(title: "OK", width: 40, action: onOK)
         .accessibilityIdentifier("about_ok")
+      PalmButtonView(title: "SharedKit", width: 72, action: openSharedKit)
+        .accessibilityIdentifier("about_sharedkit")
     }
+  }
+
+  private func openSharedKit() {
+    guard let url = URL(string: "https://github.com/billypchan/SharedKit") else { return }
+    openURL(url)
   }
 }
 

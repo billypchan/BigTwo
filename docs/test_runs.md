@@ -31,3 +31,6 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-13 13:50 — iOS 14 / 13 compile check: kit + app typecheck at `arm64-apple-ios14.0-simulator` → 0 errors; at 13.0 → 14 errors (SwiftUI App lifecycle)
 - 2026-09-19 12:42 — iOS (iPhone 17 Pro Max, 26.2) ✗ 0/1 testPreferences_surviveARelaunch — relaunch tapped menu_preferences before the menu appeared
 - 2026-09-19 12:44 — iOS (iPhone 17 Pro Max, 26.2) ✓ 1/1 testPreferences_surviveARelaunch (wait for the menu item after the title tap)
+- 2026-09-19 12:55 — iOS SE (3rd gen, 26.3) ✗ 4/5 (double-tap + About ✓; testScreenTour: title tab 22u, menu tap missed)
+- 2026-09-19 13:00 — iOS SE (3rd gen, 26.3) ✓ 5/5 (3 double-tap, About SharedKit, screen tour)
+- 2026-09-19 13:03 — iOS SE (3rd gen, 26.3) ✓ 1/1 testScreenTour after Play/Pass gap · screenshots/ios-se

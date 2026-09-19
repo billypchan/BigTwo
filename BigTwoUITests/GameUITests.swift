@@ -83,11 +83,38 @@ final class GameUITests: XCTestCase {
     app.launch()
     XCTAssertTrue(app.element("hand_Qc").waitForExistence(timeout: 10))
     app.element("hand_Qc").doubleTap()
-    waitForCount(app.selectedHandCards, 6)  // 4c 9c Tc Jc Qc 2c
+    waitForCount(app.selectedHandCards, 6)  // 4c 9c Tc Jc Qc 2c — 5+ of a suit
     XCTAssertFalse(app.element("hand_3d").isSelected)
 
     app.buttons["button_clear"].tap()
     waitForCount(app.selectedHandCards, 0)
+  }
+
+  func testDoubleTap_selectsPairWhenSuitIsShort() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_8h").waitForExistence(timeout: 10))
+    app.element("hand_8h").doubleTap()
+    waitForCount(app.selectedHandCards, 2)  // two hearts; pair of eights
+    XCTAssertTrue(app.element("hand_8s").isSelected)
+    XCTAssertFalse(app.element("hand_6h").isSelected)
+  }
+
+  func testDoubleTap_doesNothingWithoutAPair() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_6h").waitForExistence(timeout: 10))
+    app.element("hand_6h").doubleTap()
+    waitForCount(app.selectedHandCards, 1)  // two hearts, only one 6
+    XCTAssertTrue(app.element("hand_6h").isSelected)
+    XCTAssertFalse(app.element("hand_8h").isSelected)
+  }
+
+  func testAbout_showsSharedKit() {
+    app.launch()
+    app.buttons["menu_button"].tap()
+    XCTAssertTrue(app.buttons["menu_about"].waitForExistence(timeout: 5))
+    app.buttons["menu_about"].tap()
+    XCTAssertTrue(app.buttons["about_sharedkit"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["about_ok"].exists)
   }
 
   func testSortIcon_togglesBetweenRankAndSuit() {

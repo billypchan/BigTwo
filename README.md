@@ -32,7 +32,7 @@ Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
 | --- | --- |
 | Tap card | Tap card |
 | Press DOWN — select same rank | Long press a card |
-| Hold DOWN — select same suit | Double tap a card |
+| Hold DOWN — select same suit | Double tap a card (pair if fewer than 5 of that suit) |
 | Sort icons `2` / `♠` | Same two buttons, bottom left |
 | Export history to Memo Pad | Menu → Copy history |
 

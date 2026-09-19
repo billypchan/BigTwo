@@ -25,7 +25,8 @@ struct ScoreDialogView: View {
         }
       }
     } buttons: {
-      PalmButtonView(title: game.gameOver ? "New Game" : "OK", width: 60) {
+      PalmButtonView(title: game.gameOver ? "New Game" : "OK",
+                     width: game.gameOver ? 80 : 40) {
         game.continueAfterScore()
       }
       .accessibilityIdentifier("score_ok")

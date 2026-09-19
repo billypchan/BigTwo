@@ -26,6 +26,9 @@ final class ScreenTourUITests: XCTestCase {
     capture(app, "ios_screen_03_trick")
 
     app.buttons["menu_button"].tap()
+    if !app.buttons["menu_preferences"].waitForExistence(timeout: 3) {
+      app.buttons["menu_button"].tap()
+    }
     XCTAssertTrue(app.buttons["menu_preferences"].waitForExistence(timeout: 5))
     capture(app, "ios_screen_04_menu")
     app.buttons["menu_preferences"].tap()

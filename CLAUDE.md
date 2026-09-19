@@ -239,7 +239,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, score).
 - ⚠️ **Shipped user data**: `PreferencesStore.key` and `Preferences`' coding keys. Renaming
   either resets everyone's preferences; new preferences decode with `decodeIfPresent`.
 - Every tappable thing a test touches has an `accessibilityIdentifier` (`hand_<code>`,
-  `button_play`, `score_ok`, `pref_hongKong`, …); cards read as "3 of diamonds" to VoiceOver.
+  `button_play`, `score_ok`, `pref_hongKong`, `about_sharedkit`, …); cards read as "3 of diamonds" to VoiceOver.
 
 ## Release
 

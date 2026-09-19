@@ -23,6 +23,8 @@ struct PalmMenuView: View {
           Text(item.title)
             .font(.palm(14 * u, .heavy))
             .foregroundColor(.ink)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
             .padding(.horizontal, 6 * u)
             .frame(maxWidth: .infinity, minHeight: PalmMetrics.minTouch, alignment: .leading)
             .contentShape(Rectangle())
