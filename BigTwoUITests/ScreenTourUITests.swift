@@ -3,6 +3,10 @@ import XCTest
 /// App Store / review screenshots: `ios_screen_NN_<name>`.
 final class ScreenTourUITests: XCTestCase {
 
+  /// Label assertions below are English copy; a re-pinned run (TEST_RUNNER_UITEST_LANG)
+  /// is there for the screenshots, so they check existence instead.
+  private var isEnglish: Bool { XCUIApplication.uiTestLanguage == "en" }
+
   override func setUp() {
     continueAfterFailure = false
   }
@@ -21,8 +25,12 @@ final class ScreenTourUITests: XCTestCase {
 
     app.buttons["button_play"].tap()
     waitForCount(app.handCards, 12)
-    let yourTurn = NSPredicate(format: "label IN %@", ["Your Play", "Your Lead"])
-    XCTAssertTrue(app.prompt.wait(for: yourTurn, timeout: 20))
+    if isEnglish {
+      let yourTurn = NSPredicate(format: "label IN %@", ["Your Play", "Your Lead"])
+      XCTAssertTrue(app.prompt.wait(for: yourTurn, timeout: 20))
+    } else {
+      XCTAssertTrue(app.prompt.waitForExistence(timeout: 20))
+    }
     capture(app, "ios_screen_03_trick")
 
     app.buttons["menu_button"].tap()
@@ -70,7 +78,7 @@ final class ScreenTourUITests: XCTestCase {
     final.launch()
     XCTAssertTrue(final.element("score_sheet").waitForExistence(timeout: 120))
     waitUntilSettled(final.element("score_sheet"))
-    XCTAssertEqual(final.buttons["score_ok"].label, "New Game")
+    if isEnglish { XCTAssertEqual(final.buttons["score_ok"].label, "New Game") }
     capture(final, "ios_screen_09_final_score")
   }
 }

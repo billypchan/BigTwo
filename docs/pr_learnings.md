@@ -13,6 +13,18 @@ and the evidence.
 
 ---
 
+## release-skill-and-locale-sweep — 七語言查核、`/release` 設定化
+
+**`L10n.string` 找不到 key 就回傳 key 本身，所以打錯字在英文機上看起來永遠是對的。** About 對話框寫 `"I will not play with real money."`（多一個句點），表裡的 key 沒句點 → 六種語言全部顯示英文；四個 About 列（Share/Rate/Report/Follow）根本沒進任何語系表。沒有任何測試會紅。查核方式：把 `L10n.string("…")` 的字面 key 全掃出來，跟 en 表對差集；再掃 views 裡「像 UI 文案但不是表中 key」的字面字串（`row("Share this App"…)` 這種間接傳入的才抓得到）。
+
+**`TEST_RUNNER_<VAR>=…` 放在 xcodebuild 命令列不會送到 runner**（探針：runner 裡 `environment["UITEST_LANG"]` 是 nil，那個前綴要走 test plan）。能用的是 `-testLanguage <lang>`：它把 `-AppleLanguages (<lang>)` 放進 **runner 自己的 arguments**，所以 `XCUIApplication.uiTestLanguage` 改讀 `ProcessInfo.arguments` — 模擬器本身的語言不會出現在 arguments 裡，預設仍然釘死英文，不會被某台機器的語言偷改。第一次用錯機制時測試全綠、截圖卻是英文，正好示範「綠燈不是證據」。
+
+**固定寬度的 pill 不會長大。** `PalmButtonView.width` 是 `.frame(width:)` + `minimumScaleFactor(0.7)`，越南文 "Mã nguồn"（Source, 56 units）縮到底還是壓出邊框。解法是縮短譯文（"Nguồn"／fil 用 "Kodigo"），不是放寬 pill — 放寬會擠到牌桌上 Play/Pass 旁邊的清除框與排序圖示。同理 fil 的 "Bilis:" 既是「Game speed:」的標籤又是 Fast 的選項，改成 Mabagal／Katamtaman／Mabilis 才分得開。
+
+**`/release` 變成全域 skill**（`~/.claude/skills/release/`），專案只留 `.claude/release.json`：bundle id、scheme、版本檔、build 來源、preflight（BigTwo 跑 kit tests）與上架文案禁忌（花色符號、"Palm"）。`asc.swift` 也搬過去共用，bundle id 從設定讀，`swift …/asc.swift config` 不用金鑰就能驗設定。
+
+---
+
 ## edit-player-names — 可改名、空白仍跟系統語言走
 
 **`playerNames` 空陣列 = 從未改過。** 寫入 `["","","",""]` 也算「改過」只是每格空白；`hasCustomNames` 看 trim 後有沒有字。語言一換，未改過的座位才套新的 localized default。

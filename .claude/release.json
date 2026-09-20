@@ -1,0 +1,45 @@
+{
+  "bundleId": "com.billchan.BigTwo",
+  "appStoreId": "6811548119",
+  "repo": "billypchan/BigTwo",
+  "teamId": "G5GZ5MPEHS",
+  "scheme": "BigTwo",
+  "versionFile": "Configurations/Version.xcconfig",
+  "tagFormat": "v{version}",
+  "releaseLog": "docs/test_runs.md",
+  "build": {
+    "source": "local-archive",
+    "destination": "generic/platform=iOS"
+  },
+  "metadata": {
+    "tool": "manual",
+    "dir": null,
+    "locales": ["en-US"]
+  },
+  "screenshots": {
+    "tool": "manual",
+    "dir": null,
+    "source": "screenshots/ios",
+    "displayTypes": { "default": "APP_IPHONE_67" }
+  },
+  "preflight": [
+    {
+      "name": "kit tests",
+      "run": "swift test --package-path BigTwoKit",
+      "why": "the rules in CLAUDE.md are only pinned by these tests; a release ships the rules"
+    },
+    {
+      "name": "beta review slot",
+      "run": "swift ~/.claude/skills/release/scripts/asc.swift builds --version {version} --limit 20",
+      "why": "only one build per version can sit in Beta App Review (ANOTHER_BUILD_IN_REVIEW) — the next build joins the external group once the previous review finishes"
+    }
+  ],
+  "notes": [
+    "No suit symbols in any App Store Connect text — description, promotional text and TestFlight What to Test all reject the four suit characters (409 invalid characters), and a '<' in the description is refused as markup. Write '3 of diamonds'.",
+    "No 'Palm' anywhere a user or reviewer can read (guideline 2.3.10): app strings, store metadata, TestFlight What to Test. Say 'the 1999 handheld game'. Type names, comments and the GitHub repo are fine — which is why TestFlight notes carry the commit hash, not the branch name.",
+    "Export with the *other* key in ~/.appstoreconnect/private_keys/, not $ASC_KEY_ID: that one is App Manager and the export fails with 'Cloud signing permission error'. Same issuer id for both.",
+    "Metadata and screenshots are web-only for this app — there is no fastlane here, and the App Privacy questionnaire is web-only for every app.",
+    "Every territory except mainland China (a game there needs a license number).",
+    "No Xcode Cloud yet, so every build is a local archive (reference/archive.md). Marketing URL stays empty on purpose: it pointed at the GitHub README, which tells the Palm story."
+  ]
+}

@@ -4,10 +4,10 @@
 "Deal %d/%d" = "Ronde %d/%d";
 "left: %d" = "sisa %d";
 "%@, to play" = "%@, giliran";
-"PASS" = "PASS";
+"PASS" = "PAS";
 "Lead" = "Turun";
 "Play" = "Turun";
-"Pass" = "Pass";
+"Pass" = "Pas";
 "Clear selection" = "Batal pilih";
 "Sort by rank" = "Urut angka";
 "Sort by suit" = "Urut jenis";
@@ -63,6 +63,10 @@
 "Big Two %@" = "Capsa %@";
 "Remade for iPhone by Bill Chan, 2026." = "Dibuat ulang untuk iPhone oleh Bill Chan, 2026.";
 "After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "Berdasarkan permainan genggam 1999 karya Woo Kok Tong dan Bill Chan.";
+"Share this App" = "Bagikan aplikasi";
+"Rate this App" = "Beri nilai aplikasi";
+"Report an Issue" = "Laporkan masalah";
+"Follow on X" = "Ikuti di X";
 
 "Not your turn" = "Bukan giliranmu";
 "Not your cards" = "Bukan kartumu";
@@ -76,6 +80,6 @@
 "hearts" = "hati";
 "spades" = "sekop";
 "jack" = "jack";
-"queen" = "queen";
-"king" = "king";
+"queen" = "ratu";
+"king" = "raja";
 "ace" = "as";

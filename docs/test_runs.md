@@ -46,3 +46,10 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-19 23:22 — iOS (iPhone 17 Pro Max, 26.3) ✓ 2/2 testAbout_showsSharedKit + testScreenTour (About has share/rate/report/X, no SharedKit button)
 - 2026-09-20 12:37 — iOS (iPhone 17 Pro Max, 26.3) ✓ 2/2 testNames + testScreenTour (human seat marker: row 2's number inverted). Screenshots re-extracted
 - 2026-09-20 12:44 — iOS ✗ 0/1 deliberate (testNames with `humanSeat: 0` — label read "Player 1, you"), then restored ✓. BigTwoKit ✓ 63/63
+- 2026-09-20 13:16 — iOS (iPhone 17 Pro Max, 26.3) ✓ 2/2 (testAbout_showsSharedKit + testScreenTour, after the About dialog's "I will not play with real money." key lost its trailing period and the four About rows got table entries)
+- 2026-09-20 13:24 — iOS ✗ locale re-pin did nothing — `xcodebuild … TEST_RUNNER_UITEST_LANG=zh-Hant` ran green and shot **English**: the TEST_RUNNER_ prefix only reaches the runner through a test plan, not from the command line (probe: `ProcessInfo…environment["UITEST_LANG"]` = nil). `-testLanguage zh-Hant` passes `-AppleLanguages (zh-Hant)` in the runner's *arguments*, which is what `XCUIApplication.uiTestLanguage` now reads
+- 2026-09-20 13:40 — iOS ✓ 6×1 testScreenTour, one per shipped locale (`-testLanguage zh-Hant|zh-Hans|id|fil|ms|vi`) — screenshots to a scratch dir, not the repo; each came back in its own language
+- 2026-09-20 13:52 — iOS ✓ 1/1 testScreenTour (`-testLanguage vi`, after "Source" was shortened to "Nguồn" — "Mã nguồn" overflowed the 56-unit pill)
+- 2026-09-20 14:00 — iOS ✓ 14/14 full suite in English (UITestSupport changed, so every UI test was re-run) + BigTwoKit ✓ 63/63
+- 2026-09-20 14:20 — iOS ✓ 3×1 testScreenTour (`-testLanguage fil|ms|id`) after the leftover English strings were localized (fil PASA/Klasiko/Malakas/Palo/Kodigo, ms+id PAS/ratu/raja)
+- 2026-09-20 14:28 — iOS ✓ 1/1 testScreenTour (`-testLanguage fil`, Slow/Fast → Mabagal/Mabilis: "Bilis:" was both the label and the Fast option)

@@ -102,7 +102,17 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   `PalmButtonView.title` is `String`, so a `Text("literal")` lookup never runs there.
   Identifiers stay English (`pref_bots_Classic`). UI tests launch with
   `-AppleLanguages (en)`. zh-Hant home/title name is 鋤大弟 (U+92E4), not 鍥.
-  Every locale table must have the same keys.
+  Every locale table must have the same keys, **and every key a view asks for must be
+  in them** — `L10n.string` falls back to the key, so a typo ships English to all seven
+  languages and no test fails (`"I will not play with real money."` with a trailing
+  period did exactly that in the About dialog; the four About rows had no entry at all).
+  ⚠️ A fixed-width pill (`PalmButtonView.width`) does not grow: check a long
+  translation in the screenshot, or shorten it (vi "Source" is "Nguồn", not "Mã nguồn").
+  **Screenshot another language**: `xcodebuild test … -only-testing:BigTwoUITests/ScreenTourUITests/testScreenTour -testLanguage vi`
+  and extract into a scratch dir. `XCUIApplication.uiTestLanguage` reads the runner's
+  own `-AppleLanguages` argument, so the label assertions stand aside; the run stays
+  English-pinned on any simulator otherwise. `TEST_RUNNER_<VAR>=…` on the xcodebuild
+  command line does **not** reach the runner — that needs a test plan.
 - **Colors live only in `BigTwoApp/Palette.swift`** — no `Color(red:…)` or bare `.white`
   in a view. `Resources/Assets.xcassets/AccentColor` must hold the same components as
   `Color.feltDeep` (an asset catalog can't read a Swift constant).
@@ -251,6 +261,13 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## Release
 
+- **Run `/release`** to ship a version: the flow (version check, release notes,
+  metadata, screenshots, build, submit, tag, bump) is the global `release` skill,
+  `~/.claude/skills/release/SKILL.md`, and this app's values — bundle id, scheme, the
+  kit-test preflight, the store-text rules below — are in **`.claude/release.json`**.
+  App Store Connect from the command line:
+  `swift ~/.claude/skills/release/scripts/asc.swift builds --version 1.1` (run from
+  the repo root; auth is `ASC_KEY_ID` / `ASC_ISSUER_ID` + the `.p8`).
 - App icon: `scripts/make_app_icon.swift` (1024², no alpha — see its header for how to run).
 - `PrivacyInfo.xcprivacy` declares UserDefaults (CA92.1) — update it if the app starts
   using another required-reason API. `ITSAppUsesNonExemptEncryption` is `false`.
@@ -259,7 +276,8 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - ⚠️ **The App Store Connect API cannot create an app record** — the first version needs
   App Store Connect → Apps → **+** (name, primary language, bundle id `com.billchan.BigTwo`,
   SKU), and the **App Privacy** questionnaire ("Data Not Collected") is web-only too.
-  Archive/upload follow `~/dev/iChingSwiftUI/.claude/skills/local-archive-upload`.
+  Archive/upload follow `~/.claude/skills/release/reference/archive.md` — there is no
+  Xcode Cloud here yet, so every build is a local archive.
 - App Store Connect app id **6811548119** ("Big Two 鋤大弟", primary locale en-US). Free;
   every territory except mainland China (a game there needs a license number).
 - ⚠️ **No suit symbols in any App Store Connect text** — description, promotional text and

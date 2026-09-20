@@ -47,7 +47,7 @@
 "Rank" = "Số";
 "Suit" = "Chất";
 "OK" = "OK";
-"Source" = "Mã nguồn";
+"Source" = "Nguồn";
 "SharedKit" = "SharedKit";
 
 "Final Score" = "Tổng điểm";
@@ -63,6 +63,10 @@
 "Big Two %@" = "Big Two %@";
 "Remade for iPhone by Bill Chan, 2026." = "Làm lại cho iPhone bởi Bill Chan, 2026.";
 "After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "Dựa trên trò chơi cầm tay năm 1999 của Woo Kok Tong và Bill Chan.";
+"Share this App" = "Chia sẻ ứng dụng";
+"Rate this App" = "Đánh giá ứng dụng";
+"Report an Issue" = "Báo lỗi";
+"Follow on X" = "Theo dõi trên X";
 
 "Not your turn" = "Chưa tới lượt bạn";
 "Not your cards" = "Không phải bài của bạn";
