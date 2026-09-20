@@ -4,13 +4,13 @@
 "Deal %d/%d" = "Ronda %d/%d";
 "left: %d" = "tira %d";
 "%@, to play" = "%@, ikaw na";
-"PASS" = "PASS";
+"PASS" = "PASA";
 "Lead" = "Laban";
 "Play" = "Laban";
-"Pass" = "Pass";
-"Clear selection" = "I-clear";
+"Pass" = "Pasa";
+"Clear selection" = "Alisin ang pinili";
 "Sort by rank" = "Ayusin sa numero";
-"Sort by suit" = "Ayusin sa suit";
+"Sort by suit" = "Ayusin sa palo";
 "Cards played" = "Mga kartang nailabas";
 
 "Lead with the 3♦" = "Ilaba muna ang 3♦";
@@ -19,8 +19,8 @@
 "%@ is thinking…" = "Nag-iisip si %@…";
 
 "New Game" = "Bagong laro";
-"Preferences" = "Settings";
-"Game History" = "History";
+"Preferences" = "Mga setting";
+"Game History" = "Kasaysayan";
 "About" = "Tungkol";
 
 /* Player names */
@@ -32,22 +32,22 @@
 "Player names" = "Pangalan ng manlalaro";
 "Player %d, you" = "Manlalaro %d, ikaw";
 
-"Auto pass" = "Auto pass";
-"Enable autopass for 5-card turn" = "Autopass sa 5-kard";
+"Auto pass" = "Awtomatikong pasa";
+"Enable autopass for 5-card turn" = "Awtomatikong pasa sa 5 kard";
 "Show card left in score dialog" = "Ipakita ang tira sa score";
 "Use Hong Kong Rule Set" = "Gamitin ang Hong Kong rules";
 "Bots:" = "Mga bot:";
-"Classic" = "Classic";
-"Strong" = "Strong";
+"Classic" = "Klasiko";
+"Strong" = "Malakas";
 "Game speed:" = "Bilis:";
 "Sort cards by:" = "Ayusin:";
-"Slow" = "Bagal";
+"Slow" = "Mabagal";
 "Medium" = "Katamtaman";
-"Fast" = "Bilis";
+"Fast" = "Mabilis";
 "Rank" = "Numero";
-"Suit" = "Suit";
+"Suit" = "Palo";
 "OK" = "OK";
-"Source" = "Source";
+"Source" = "Kodigo";
 "SharedKit" = "SharedKit";
 
 "Final Score" = "Huling iskor";
@@ -57,12 +57,16 @@
 "%d left" = "tira %d";
 "DOUBLE!" = "DOBLE!";
 
-"Game History of deal %d" = "History ng ronda %d";
+"Game History of deal %d" = "Kasaysayan ng ronda %d";
 "Copy" = "Kopyahin";
 "About Big Two" = "Tungkol sa Pusoy Dos";
 "Big Two %@" = "Pusoy Dos %@";
 "Remade for iPhone by Bill Chan, 2026." = "Muling ginawa para sa iPhone ni Bill Chan, 2026.";
 "After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "Batay sa handheld game noong 1999 nina Woo Kok Tong at Bill Chan.";
+"Share this App" = "Ibahagi ang app";
+"Rate this App" = "I-rate ang app";
+"Report an Issue" = "Mag-ulat ng isyu";
+"Follow on X" = "Sundan sa X";
 
 "Not your turn" = "Hindi pa ikaw";
 "Not your cards" = "Hindi iyan cards mo";
@@ -75,7 +79,7 @@
 "clubs" = "trebol";
 "hearts" = "corazon";
 "spades" = "espada";
-"jack" = "jack";
-"queen" = "queen";
-"king" = "king";
-"ace" = "ace";
+"jack" = "sota";
+"queen" = "reyna";
+"king" = "hari";
+"ace" = "alas";

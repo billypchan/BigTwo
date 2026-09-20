@@ -6,9 +6,24 @@ let humanLeadsSeed = "2"
 extension XCUIApplication {
   static func bigTwo(seed: String = humanLeadsSeed, _ extra: [String] = []) -> XCUIApplication {
     let app = XCUIApplication()
-    // Pin English so prompt/button label assertions stay locale-stable.
-    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", seed] + extra
+    // Pin the language so prompt/button label assertions stay locale-stable — English
+    // unless the run asked for another one (see `uiTestLanguage`).
+    app.launchArguments = ["UITestMode", "-AppleLanguages", "(\(Self.uiTestLanguage))", "-seed", seed] + extra
     return app
+  }
+
+  /// `en`, unless this run was started with `xcodebuild … -testLanguage <lang>` to
+  /// screenshot another shipped locale.
+  ///
+  /// ⚠️ Read from the *runner's own arguments*, which `-testLanguage` sets: the
+  /// device's language never appears there, so a simulator set to another language
+  /// can't silently re-pin the suite. (`TEST_RUNNER_UITEST_LANG=…` on the xcodebuild
+  /// command line does **not** arrive — that prefix only works through a test plan.)
+  static var uiTestLanguage: String {
+    let arguments = ProcessInfo.processInfo.arguments
+    guard let index = arguments.firstIndex(of: "-AppleLanguages"), index + 1 < arguments.count
+    else { return "en" }
+    return arguments[index + 1].trimmingCharacters(in: CharacterSet(charactersIn: "()\" "))
   }
 
   func element(_ id: String) -> XCUIElement {

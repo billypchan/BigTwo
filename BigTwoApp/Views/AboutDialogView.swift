@@ -30,7 +30,7 @@ struct AboutDialogView: View {
           Text(L10n.string("Remade for iPhone by Bill Chan, 2026."))
           // ⚠️ No other platform's name here or in the store copy (guideline 2.3.10).
           Text(L10n.string("After the 1999 handheld game by Woo Kok Tong and Bill Chan."))
-          Text(L10n.string("I will not play with real money.")).foregroundColor(.inkDim)
+          Text(L10n.string("I will not play with real money")).foregroundColor(.inkDim)
         }
         .font(.palm(12 * u, .regular))
         .multilineTextAlignment(.center)
