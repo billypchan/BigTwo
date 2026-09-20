@@ -32,6 +32,13 @@ Filipino copy of record — the app runs in Filipino and the Philippines storefr
 shows the English listing — but **do not** try to upload it; the locale will be
 rejected.
 
+## Every locale needs its own URLs
+
+⚠️ A locale `deliver` creates starts with an **empty support URL**, and Apple requires
+one per localization — the version then cannot be submitted, and the error names
+nothing: *"appStoreVersions … is not in valid state"*. That is why every locale here
+carries `support_url.txt` and `privacy_url.txt`; do not drop them from a new one.
+
 ## Rules these files already follow
 
 - **No suit symbols.** `♠♦♣♥` are rejected as *invalid characters* (409), and a `<` in
