@@ -1,7 +1,7 @@
 //
 //  BigTwoApp.swift
 //  Big Two — iOS remake of the Palm OS game.
-//  Original © Woo Kok Tong, 1999 · © Chan Yiu Por Bill, 2006 · GPL
+//  Original © Woo Kok Tong, 1999 · © Bill Chan, 2006 · GPL
 //
 
 import BigTwoKit

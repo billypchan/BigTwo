@@ -93,5 +93,5 @@ Privacy: [PRIVACY.md](PRIVACY.md).
 
 ## Credits
 
-Big Two for Palm OS © Woo Kok Tong 1999, © Chan Yiu Por Bill 2006, GPL —
+Big Two for Palm OS © Woo Kok Tong 1999, © Bill Chan 2006, GPL —
 https://bigtwo-palmos.sourceforge.net

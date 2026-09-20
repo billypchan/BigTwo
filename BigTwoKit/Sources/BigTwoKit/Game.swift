@@ -48,6 +48,9 @@ public struct DealResult: Identifiable, Sendable {
 @MainActor
 public final class BigTwoGame: ObservableObject {
 
+  /// Palm seats 0…3. Kit tests and history keep these English strings.
+  nonisolated public static let defaultNames = ["Adam", "Bill", "Carl", "Dean"]
+
   @Published public private(set) var seats: [Seat]
   @Published public var preferences: Preferences
   /// The rules the deal in progress is played under; picked up from `preferences` at each deal.
@@ -86,7 +89,7 @@ public final class BigTwoGame: ObservableObject {
     self.rules = RuleSet(hongKong: preferences.hongKong)
     self.rng = seed.map(SeededGenerator.init(seed:))
     self.botsMoveThemselves = botsMoveThemselves
-    self.seats = ["Adam", "Bill", "Carl", "Dean"].enumerated().map {
+    self.seats = Self.resolvedNames(preferences.playerNames).enumerated().map {
       Seat(id: $0.offset, name: $0.element, isHuman: humanSeats.contains($0.offset))
     }
     startGame()
@@ -95,6 +98,37 @@ public final class BigTwoGame: ObservableObject {
   public var humanSeat: Int? { seats.firstIndex { $0.isHuman } }
   public var isHumanTurn: Bool { seats[turn].isHuman }
   public var mustPlayThreeOfDiamonds: Bool { openingPlay }
+
+  /// True once the player has typed at least one custom name.
+  public var hasCustomNames: Bool {
+    preferences.playerNames.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+  }
+
+  /// Empty / missing slot falls back to `defaults` (English kit names, or the app's locale).
+  nonisolated public static func resolvedNames(_ stored: [String],
+                                               defaults: [String] = defaultNames) -> [String] {
+    let base = defaults.count == 4 ? defaults : defaultNames
+    return (0..<4).map { i in
+      let raw = i < stored.count ? stored[i] : ""
+      let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+      return trimmed.isEmpty ? base[i] : String(trimmed.prefix(10))
+    }
+  }
+
+  /// Show names. Custom prefs win; otherwise `localizedDefaults` (phone language).
+  public func applyDisplayNames(_ localizedDefaults: [String]) {
+    let source = hasCustomNames ? preferences.playerNames : localizedDefaults
+    let resolved = Self.resolvedNames(source, defaults: localizedDefaults)
+    for i in seats.indices { seats[i].name = resolved[i] }
+  }
+
+  /// Persist what the player typed (blank = default) and refresh the table.
+  public func applyNames(_ names: [String], defaults: [String] = defaultNames) {
+    preferences.playerNames = (0..<4).map { i in
+      i < names.count ? names[i].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+    }
+    applyDisplayNames(defaults)
+  }
 
   // MARK: - Setup
 

@@ -13,8 +13,9 @@ struct GameView: View {
   @State private var selection: Set<Card> = []
   @State private var message: String?
   @State private var dialog: Dialog?
+  @State private var nameDraft = ["", "", "", ""]
 
-  enum Dialog { case menu, preferences, history, about }
+  enum Dialog { case menu, preferences, names, history, about }
 
   /// Palm units below the square for the tracker.
   private static let trackerHeight: CGFloat = 100
@@ -42,6 +43,7 @@ struct GameView: View {
       .frame(width: geo.size.width, height: geo.size.height)
     }
     .background(Color.bezel.ignoresSafeArea())
+    .onAppear { game.applyDisplayNames(PlayerNames.defaults) }
     // Your hand only changes when you play (selection already cleared) or on a
     // redeal / new game — never carry a selection into a fresh hand.
     .onChange(of: game.seats[seat].hand) { _ in
@@ -93,7 +95,6 @@ struct GameView: View {
   private func controls(_ u: CGFloat) -> some View {
     VStack(alignment: .trailing, spacing: 0) {
       HStack(spacing: 2 * u) {
-        // Hidden, not disabled, when it isn't your turn (Palm v0.3).
         if isYourTurn {
           PalmButtonView(title: L10n.string(game.table == nil ? "Lead" : "Play"),
                          enabled: !selection.isEmpty) { play() }
@@ -111,7 +112,6 @@ struct GameView: View {
           }
           .accessibilityIdentifier("button_pass")
         }
-        // Shows the order a tap switches to.
         PalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
           game.preferences.sortBySuit.toggle()
         }
@@ -139,7 +139,6 @@ struct GameView: View {
       switch dialog {
       case .menu:
         ZStack(alignment: .topLeading) {
-          // A tap anywhere else closes the menu, as on the Palm.
           Color.clear.contentShape(Rectangle()).onTapGesture { self.dialog = nil }
           PalmMenuView(items: menuItems)
             .padding(.top, 24 * u)
@@ -148,6 +147,14 @@ struct GameView: View {
       case .preferences:
         modal(u) {
           PreferencesDialogView(preferences: $game.preferences) { self.dialog = nil }
+        }
+      case .names:
+        modal(u) {
+          NamesDialogView(names: $nameDraft, placeholders: PlayerNames.defaults,
+                          humanSeat: game.humanSeat) {
+            game.applyNames(nameDraft, defaults: PlayerNames.defaults)
+            self.dialog = nil
+          }
         }
       case .history:
         modal(u) {
@@ -159,7 +166,6 @@ struct GameView: View {
     }
   }
 
-  /// A Palm form is modal: taps outside it go nowhere.
   private func modal<Content: View>(_ u: CGFloat, @ViewBuilder _ content: () -> Content) -> some View {
     ZStack {
       Color.clear.contentShape(Rectangle()).onTapGesture {}
@@ -174,6 +180,12 @@ struct GameView: View {
         dialog = nil
       },
       .init(id: "preferences", title: L10n.string("Preferences")) { dialog = .preferences },
+      .init(id: "names", title: L10n.string("Names")) {
+        nameDraft = (0..<4).map { i in
+          i < game.preferences.playerNames.count ? game.preferences.playerNames[i] : ""
+        }
+        dialog = .names
+      },
       .init(id: "history", title: L10n.string("Game History")) { dialog = .history },
       .init(id: "about", title: L10n.string("About")) { dialog = .about },
     ]
@@ -189,13 +201,10 @@ struct GameView: View {
     selection = Set(game.seats[seat].hand.filter { $0.rank == card.rank })
   }
 
-  /// Width of Play+icon / Pass+icon, including the 44pt hit boxes.
   private func controlsWidth(_ u: CGFloat) -> CGFloat {
     max(50 * u, PalmMetrics.minTouch) + 2 * u + max(20 * u, PalmMetrics.minTouch)
   }
 
-  /// Double tap — the Palm's "hold DOWN": all of that suit when there are 5+
-  /// (a flush). Fewer than 5: the pair of that rank, or nothing.
   private func selectSuitOrPair(_ card: Card) {
     let cards = game.seats[seat].hand
     let ofSuit = cards.filter { $0.suit == card.suit }

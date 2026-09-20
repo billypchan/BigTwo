@@ -26,6 +26,7 @@ struct PlayerRowView: View {
         .overlay(RoundedRectangle(cornerRadius: 3 * u).strokeBorder(Color.inkDim, lineWidth: 1))
         .padding(.top, 3 * u)
         .accessibilityLabel(isTurn ? L10n.string("%@, to play", player.name) : player.name)
+        .accessibilityIdentifier("name_\(player.id)")
 
       Group {
         switch action {

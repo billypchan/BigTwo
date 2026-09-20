@@ -31,11 +31,14 @@ public struct Preferences: Codable, Equatable, Sendable {
   public var sortBySuit = false
   /// Strong bots use every hand they can see to stop you and to go out.
   public var strongBots = true
+  /// Custom names for seats 0…3. Empty string / missing slot = use the localized default.
+  /// Not written until the player edits a name, so a language change still updates defaults.
+  public var playerNames: [String] = []
 
   public init(hongKong: Bool = false, autopass: Bool = true,
               autopassFiveCard: Bool = false, showCardsLeft: Bool = true,
               gameSpeed: GameSpeed = .medium, sortBySuit: Bool = false,
-              strongBots: Bool = true) {
+              strongBots: Bool = true, playerNames: [String] = []) {
     self.hongKong = hongKong
     self.autopass = autopass
     self.autopassFiveCard = autopassFiveCard
@@ -43,6 +46,7 @@ public struct Preferences: Codable, Equatable, Sendable {
     self.gameSpeed = gameSpeed
     self.sortBySuit = sortBySuit
     self.strongBots = strongBots
+    self.playerNames = playerNames
   }
 
   // ⚠️ Shipped user data: every key is optional, and a value this build can't read falls
@@ -57,6 +61,7 @@ public struct Preferences: Codable, Equatable, Sendable {
     gameSpeed = (try? c.decodeIfPresent(GameSpeed.self, forKey: .gameSpeed)) ?? d.gameSpeed
     sortBySuit = (try? c.decodeIfPresent(Bool.self, forKey: .sortBySuit)) ?? d.sortBySuit
     strongBots = (try? c.decodeIfPresent(Bool.self, forKey: .strongBots)) ?? d.strongBots
+    playerNames = (try? c.decodeIfPresent([String].self, forKey: .playerNames)) ?? d.playerNames
   }
 }
 

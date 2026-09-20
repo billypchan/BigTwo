@@ -23,6 +23,16 @@
 "Game History" = "牌局紀錄";
 "About" = "關於";
 
+/* Player names */
+/* HK Chinese given names: 梓軒 + 子謙, 凱晴 + 曉彤 (next girl without 晴/凱). */
+"Adam" = "梓軒";
+"Bill" = "子謙";
+"Carl" = "凱晴";
+"Dean" = "曉彤";
+"Names" = "名稱";
+"Player names" = "玩家名稱";
+"Player %d, you" = "玩家 %d，你";
+
 "Auto pass" = "自動過";
 "Enable autopass for 5-card turn" = "五張亦自動過";
 "Show card left in score dialog" = "分數表顯示剩牌";
@@ -52,8 +62,8 @@
 "Copy" = "複製";
 "About Big Two" = "關於鋤大弟";
 "Big Two %@" = "鋤大弟 %@";
-"Remade for iPhone by Chan Yiu Por Bill, 2026." = "2026 年由陳耀波改編為 iPhone 版。";
-"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "改編自 1999 年 Woo Kok Tong 與陳耀波的掌上機遊戲。";
+"Remade for iPhone by Bill Chan, 2026." = "2026 年由Bill Chan改編為 iPhone 版。";
+"After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "改編自 1999 年 Woo Kok Tong 與Bill Chan的掌上機遊戲。";
 
 "Not your turn" = "未到你";
 "Not your cards" = "不是你的牌";

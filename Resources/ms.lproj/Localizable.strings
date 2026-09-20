@@ -23,6 +23,15 @@
 "Game History" = "Sejarah";
 "About" = "Perihal";
 
+/* Player names */
+"Adam" = "Ahmad";
+"Bill" = "Irfan";
+"Carl" = "Aisyah";
+"Dean" = "Nurul";
+"Names" = "Nama";
+"Player names" = "Nama pemain";
+"Player %d, you" = "Pemain %d, anda";
+
 "Auto pass" = "Pass automatik";
 "Enable autopass for 5-card turn" = "Autopass untuk 5 kad";
 "Show card left in score dialog" = "Tunjuk baki kad pada markah";
@@ -52,8 +61,8 @@
 "Copy" = "Salin";
 "About Big Two" = "Perihal Big Two";
 "Big Two %@" = "Big Two %@";
-"Remade for iPhone by Chan Yiu Por Bill, 2026." = "Dibuat semula untuk iPhone oleh Chan Yiu Por Bill, 2026.";
-"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "Berdasarkan permainan genggam 1999 oleh Woo Kok Tong dan Chan Yiu Por Bill.";
+"Remade for iPhone by Bill Chan, 2026." = "Dibuat semula untuk iPhone oleh Bill Chan, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "Berdasarkan permainan genggam 1999 oleh Woo Kok Tong dan Bill Chan.";
 
 "Not your turn" = "Bukan giliran anda";
 "Not your cards" = "Bukan kad anda";

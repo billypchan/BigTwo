@@ -113,8 +113,15 @@ final class GameUITests: XCTestCase {
     app.buttons["menu_button"].tap()
     XCTAssertTrue(app.buttons["menu_about"].waitForExistence(timeout: 5))
     app.buttons["menu_about"].tap()
-    XCTAssertTrue(app.buttons["about_sharedkit"].waitForExistence(timeout: 5))
-    XCTAssertTrue(app.buttons["about_ok"].exists)
+    XCTAssertTrue(app.buttons["about_ok"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.element("about_share").waitForExistence(timeout: 5))
+    XCTAssertTrue(app.element("about_rate").exists)
+    XCTAssertTrue(app.element("about_report").exists)
+    XCTAssertTrue(app.element("about_x").exists)
+    XCTAssertFalse(app.buttons["about_sharedkit"].exists)
+    XCTAssertEqual(app.state, .runningForeground)
+    app.buttons["about_ok"].tap()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 5))
   }
 
   func testSortIcon_togglesBetweenRankAndSuit() {
@@ -174,10 +181,43 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.buttons["pref_source"].exists)
   }
 
+  func testNames_customNameShowsOnTheTableAndSurvivesARelaunch() {
+    app.launch()
+    XCTAssertTrue(app.element("name_1").waitForExistence(timeout: 10))
+    XCTAssertEqual(app.element("name_1").label, "Bill, to play")
+
+    openNames()
+    let field = app.element("pref_name_1")
+    XCTAssertTrue(field.waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["names_ok"].exists)
+    // Row 2 is the human seat: its number is inverted and says so to VoiceOver.
+    XCTAssertTrue(app.element("names_you").exists)
+    XCTAssertEqual(app.element("names_you").label, "Player 2, you")
+    XCTAssertTrue(app.element("names_seat_0").exists)
+    field.tap()
+    field.typeText("Mei")
+    // Keyboard covers the square's OK; tap the form title to dismiss it.
+    app.staticTexts["Player names"].tap()
+    app.buttons["names_ok"].tap()
+    waitFor(app.element("name_1"), label: "Mei, to play")
+
+    app.terminate()
+    app = .bigTwo(["-keepPreferences", "YES"])
+    app.launch()
+    XCTAssertTrue(app.element("name_1").waitForExistence(timeout: 10))
+    waitFor(app.element("name_1"), label: "Mei, to play")
+  }
+
   /// Menu tap can lag the synthesized hit; wait for the item before tapping it.
   private func openPreferences() {
     app.buttons["menu_button"].tap()
     XCTAssertTrue(app.buttons["menu_preferences"].waitForExistence(timeout: 5))
     app.buttons["menu_preferences"].tap()
+  }
+
+  private func openNames() {
+    app.buttons["menu_button"].tap()
+    XCTAssertTrue(app.buttons["menu_names"].waitForExistence(timeout: 5))
+    app.buttons["menu_names"].tap()
   }
 }

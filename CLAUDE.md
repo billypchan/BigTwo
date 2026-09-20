@@ -12,8 +12,7 @@ only what applies to this app is repeated here.
 
 ## Project
 
-iOS remake of **Big Two** (鋤大弟), originally a Palm OS game by Bill (Chan Yiu Por Bill,
-2006; earlier version by Woo Kok Tong, 1999). Original site, rules and full changelog:
+iOS remake of **Big Two** (鋤大弟), originally a Palm OS game by Bill Chan, 2006; earlier version by Woo Kok Tong, 1999. Original site, rules and full changelog:
 https://bigtwo-palmos.sourceforge.net — treat that page as the spec.
 
 **Brief: keep the design and feel of the Palm version.** Not a modern reinterpretation —
@@ -221,7 +220,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
-Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, about, score, final_score). `06_about` is the in-app SharedKit Support dialog after tapping `about_sharedkit`.
+Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, names, about, score, final_score).
 
 ## Simulator
 
@@ -294,7 +293,7 @@ Single-player against three bots is complete and runs on the simulator; 47 kit t
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval); tag
-   `v1.0` when it is live. `main` is **1.1** (iOS 17+, SharedKit) — builds restart at 1. Build 2 still needs Beta App Review for
+   `v1.0` when it is live. `main` is **1.1** (iOS 15+) — builds restart at 1. Build 2 still needs Beta App Review for
    the external group once build 1's review is done. CI (Xcode Cloud) after that.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
@@ -302,4 +301,3 @@ Single-player against three bots is complete and runs on the simulator; 47 kit t
 4. Pass-and-play multiplayer: `Seat.isHuman` already drives the loop; it needs the
    "Next Player's Turn" cover screen that hides the previous player's hand.
 5. Landscape layout / iPad.
-6. Editable player names (v2.0.11).

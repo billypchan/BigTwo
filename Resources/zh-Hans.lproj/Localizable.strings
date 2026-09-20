@@ -23,6 +23,16 @@
 "Game History" = "牌局记录";
 "About" = "关于";
 
+/* Player names */
+/* Mainland given names popular in 2025 registries (锦程/沐宸, 雨桐/锦汐). */
+"Adam" = "锦程";
+"Bill" = "沐宸";
+"Carl" = "雨桐";
+"Dean" = "锦汐";
+"Names" = "名字";
+"Player names" = "玩家名字";
+"Player %d, you" = "玩家 %d，你";
+
 "Auto pass" = "自动过";
 "Enable autopass for 5-card turn" = "五张也自动过";
 "Show card left in score dialog" = "分数表显示剩牌";
@@ -52,8 +62,8 @@
 "Copy" = "复制";
 "About Big Two" = "关于大老二";
 "Big Two %@" = "大老二 %@";
-"Remade for iPhone by Chan Yiu Por Bill, 2026." = "2026 年由陈耀波改编为 iPhone 版。";
-"After the 1999 handheld game by Woo Kok Tong and Chan Yiu Por Bill." = "改编自 1999 年 Woo Kok Tong 与陈耀波的掌上机游戏。";
+"Remade for iPhone by Bill Chan, 2026." = "2026 年由Bill Chan改编为 iPhone 版。";
+"After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "改编自 1999 年 Woo Kok Tong 与Bill Chan的掌上机游戏。";
 
 "Not your turn" = "还没轮到你";
 "Not your cards" = "不是你的牌";

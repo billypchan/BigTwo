@@ -13,6 +13,20 @@ and the evidence.
 
 ---
 
+## edit-player-names — 可改名、空白仍跟系統語言走
+
+**`playerNames` 空陣列 = 從未改過。** 寫入 `["","","",""]` 也算「改過」只是每格空白；`hasCustomNames` 看 trim 後有沒有字。語言一換，未改過的座位才套新的 localized default。
+
+**鍵盤會蓋住正方形裡的 OK。** `testNames_customNameShowsOnTheTableAndSurvivesARelaunch` 先點 `Player names` 標題收鍵盤，再點 `names_ok`。座位名 pill 的 identifier 是 `name_<seat>`（Bill 是 `name_1`）。Tour 只開對話框、不打字，否則鍵盤進截圖。編號變成 06_names、07_about、08_score、09_final_score — 舊的 06_about 要刪。
+
+**接到已有 l10n 的 main 時不要整份蓋掉 `Localizable.strings`。** 名稱 key 插進既有表；zh-Hant 還差一點就會把 Share/Rate 那組不屬於這支 PR 的 key 帶進來。
+
+**`resolvedNames` 要 `nonisolated`。** `BigTwoGame` 是 `@MainActor`，純函式若跟著隔離，Swift 6 的 `#expect(BigTwoGame.resolvedNames([]))` 編不過。Kit 測試本來就沒跑過。
+
+**人類座位在改名對話框要看得出來。** 座位 2 是玩家（`humanSeat`），編號用反白（黑底白字）標示 — 沿用桌面上「該誰出牌就反白」的同一套語彙，不加新圖示。VoiceOver 讀 `Player %d, you`（7 個語系都要補 key），UI 測試斷言 `names_you` 的 label 是 `Player 2, you`；把 `humanSeat` 寫死成 0 會讀到 `Player 1, you`，測試確實會紅。
+
+---
+
 ## l10n-big2-players — 中／印／菲／馬／越，覆蓋多數鋤大弟玩家
 
 **`Text(someString)` 不會查表。** 只有 `Text("字面量")` 才是 `LocalizedStringKey`。
