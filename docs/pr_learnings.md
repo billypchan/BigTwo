@@ -23,6 +23,8 @@ and the evidence.
 
 **`resolvedNames` 要 `nonisolated`。** `BigTwoGame` 是 `@MainActor`，純函式若跟著隔離，Swift 6 的 `#expect(BigTwoGame.resolvedNames([]))` 編不過。Kit 測試本來就沒跑過。
 
+**人類座位在改名對話框要看得出來。** 座位 2 是玩家（`humanSeat`），編號用反白（黑底白字）標示 — 沿用桌面上「該誰出牌就反白」的同一套語彙，不加新圖示。VoiceOver 讀 `Player %d, you`（7 個語系都要補 key），UI 測試斷言 `names_you` 的 label 是 `Player 2, you`；把 `humanSeat` 寫死成 0 會讀到 `Player 1, you`，測試確實會紅。
+
 ---
 
 ## l10n-big2-players — 中／印／菲／馬／越，覆蓋多數鋤大弟玩家

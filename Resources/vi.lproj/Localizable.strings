@@ -30,6 +30,7 @@
 "Dean" = "Anh";
 "Names" = "Tên";
 "Player names" = "Tên người chơi";
+"Player %d, you" = "Người chơi %d, bạn";
 
 "Auto pass" = "Tự bỏ";
 "Enable autopass for 5-card turn" = "Tự bỏ cả lượt 5 lá";

@@ -32,6 +32,7 @@
 "Dean" = "Dean";
 "Names" = "Names";
 "Player names" = "Player names";
+"Player %d, you" = "Player %d, you";
 
 /* Preferences */
 "Auto pass" = "Auto pass";

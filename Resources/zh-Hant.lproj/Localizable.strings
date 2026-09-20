@@ -31,6 +31,7 @@
 "Dean" = "曉彤";
 "Names" = "名稱";
 "Player names" = "玩家名稱";
+"Player %d, you" = "玩家 %d，你";
 
 "Auto pass" = "自動過";
 "Enable autopass for 5-card turn" = "五張亦自動過";

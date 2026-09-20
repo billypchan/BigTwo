@@ -150,7 +150,8 @@ struct GameView: View {
         }
       case .names:
         modal(u) {
-          NamesDialogView(names: $nameDraft, placeholders: PlayerNames.defaults) {
+          NamesDialogView(names: $nameDraft, placeholders: PlayerNames.defaults,
+                          humanSeat: game.humanSeat) {
             game.applyNames(nameDraft, defaults: PlayerNames.defaults)
             self.dialog = nil
           }

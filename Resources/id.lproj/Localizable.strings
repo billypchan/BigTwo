@@ -30,6 +30,7 @@
 "Dean" = "Alika";
 "Names" = "Nama";
 "Player names" = "Nama pemain";
+"Player %d, you" = "Pemain %d, Anda";
 
 "Auto pass" = "Pass otomatis";
 "Enable autopass for 5-card turn" = "Autopass untuk 5 kartu";

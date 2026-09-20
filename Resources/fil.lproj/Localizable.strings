@@ -30,6 +30,7 @@
 "Dean" = "Althea";
 "Names" = "Pangalan";
 "Player names" = "Pangalan ng manlalaro";
+"Player %d, you" = "Manlalaro %d, ikaw";
 
 "Auto pass" = "Auto pass";
 "Enable autopass for 5-card turn" = "Autopass sa 5-kard";

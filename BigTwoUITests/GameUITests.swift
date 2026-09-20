@@ -190,6 +190,10 @@ final class GameUITests: XCTestCase {
     let field = app.element("pref_name_1")
     XCTAssertTrue(field.waitForExistence(timeout: 5))
     XCTAssertTrue(app.buttons["names_ok"].exists)
+    // Row 2 is the human seat: its number is inverted and says so to VoiceOver.
+    XCTAssertTrue(app.element("names_you").exists)
+    XCTAssertEqual(app.element("names_you").label, "Player 2, you")
+    XCTAssertTrue(app.element("names_seat_0").exists)
     field.tap()
     field.typeText("Mei")
     // Keyboard covers the square's OK; tap the form title to dismiss it.
