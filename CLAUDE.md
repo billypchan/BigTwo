@@ -62,8 +62,8 @@ the flat chrome, the green table, the button layout and the terse wording are th
   actually built and tested** — never imply a green run that didn't happen.
 - **Every PR ends with an entry in `docs/pr_learnings.md`** (newest first), committed with
   the work. A learning that is a *rule* gets promoted into this file too.
-- **Commit after green tests; push once per batch** (a push to `main` will cost a CI build
-  once Xcode Cloud is set up).
+- **Commit after green tests; push once per batch** — every push to `main` costs an
+  Xcode Cloud build (workflow "Default", GitHub check run `BigTwo | Default | Archive - iOS`).
 
 ## Visual rules (do not drift from these)
 
@@ -276,8 +276,8 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - ⚠️ **The App Store Connect API cannot create an app record** — the first version needs
   App Store Connect → Apps → **+** (name, primary language, bundle id `com.billchan.BigTwo`,
   SKU), and the **App Privacy** questionnaire ("Data Not Collected") is web-only too.
-  Archive/upload follow `~/.claude/skills/release/reference/archive.md` — there is no
-  Xcode Cloud here yet, so every build is a local archive.
+  Xcode Cloud archives every push to `main`; `reference/archive.md` in the global
+  `release` skill covers building locally when the quota is spent.
 - App Store Connect app id **6811548119** ("Big Two 鋤大弟", primary locale en-US). Free;
   every territory except mainland China (a game there needs a license number).
 - ⚠️ **No suit symbols in any App Store Connect text** — description, promotional text and
@@ -297,7 +297,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
   version can be in Beta App Review** (`ANOTHER_BUILD_IN_REVIEW`): add the next build to
   the group, submit it once the previous review finishes.
 - Build numbers so far: 1.0 (1) old layout, 1.0 (2) square layout (submitted, then pulled),
-  1.0 (3) = (2) without "Palm" + white status bar — the one in review. Marketing URL left
+  1.0 (3) = (2) without "Palm" + white status bar — **released 2026-09-19**. Marketing URL left
   empty on purpose: it pointed at the GitHub README, which tells the Palm story. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
   expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
 - ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
@@ -310,9 +310,14 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 Single-player against three bots is complete and runs on the simulator; 47 kit tests and
 10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. App Store: **1.0 (3) submitted for review 2026-09-13** (release after approval); tag
-   `v1.0` when it is live. `main` is **1.1** (iOS 15+) — builds restart at 1. Build 2 still needs Beta App Review for
-   the external group once build 1's review is done. CI (Xcode Cloud) after that.
+1. App Store: **1.0 is live (released 2026-09-19)** — still untagged, tag `v1.0` at the
+   commit it was built from. `main` is **1.1** (iOS 15+, seven UI languages); Xcode Cloud
+   archives each push. ⚠️ The store listing is **en-US only** and the live 1.0 binary
+   declares English only (`languageCodesISO2A: ['EN']`); the localized listing text and
+   per-locale screenshots are ready in `docs/store/`, but each locale has to be created
+   in App Store Connect by hand first. ⚠️ No App Store Connect API key exists on this
+   Mac (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing
+   builds, uploading screenshots, submitting — is web-only until one is made.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
    score balance (as in v2.2).

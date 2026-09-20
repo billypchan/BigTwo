@@ -1,0 +1,16 @@
+Pusoy Dos — ang climbing card game mula Hong Kong, na may hitsura at pakiramdam ng handheld na laro noong 1999.
+
+Berdeng mesa, patag na kulay-abong title bar, maiikling paalala, at tatlong kalaro sa computer na sumusunod sa lakad ng orihinal na bot: hindi sinisira ang pares at sunod, nauunang ilabas ang limang kard, at ginagamit lang ang malalaking kard kapag may malapit nang maubos.
+
+• Klasikong tuntunin: 3 diamante ang unang laban; maglaro ng isahan, pares, tatluhan o limang kard; 2 espada ang pinakamalaki.
+• Sunod mula A2345 hanggang TJQKA. Ang limang kard, mula sa pinakamababa: sunod, flush, full house, four of a kind, straight flush.
+• Klasikong iskor: bawat kard na natira sa kamay ay katumbas ng numero nito, doble kapag sampu o higit pa ang tira, at sa panalo napupunta ang lahat. Sampung ronda bawat laro.
+• Tuntunin ng Hong Kong: ang nanalo sa nakaraang ronda ang unang laban, at ang 23456 ang pinakamalaking sunod.
+• Dalawang uri ng kalaban: ang Klasikong bot ay tulad ng orihinal at hindi nag-aagawan sa K, A, 2; ang Malakas na bot ay tumitingin lang sa sariling kard at nakikipaglaban sa lahat.
+• Palitan ang pangalan ng mga manlalaro, o panatilihin ang pangalang kasama ng iyong wika.
+• Awtomatikong pasa, ayusin ang kard sa numero o sa palo, pindutin nang matagal para kunin ang buong numero, i-double tap para sa buong palo.
+• Kopyahin ang kasaysayan ng laro para i-paste kahit saan.
+
+Walang ad, walang account, walang pagsubaybay — walang anumang datos na kinukuha ang app. Libre at open source (lisensyang MIT).
+
+Hindi ako maglalaro ng totoong pera.

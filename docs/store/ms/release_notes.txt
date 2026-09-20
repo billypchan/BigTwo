@@ -1,0 +1,9 @@
+Versi 1.1
+
+• Kini dalam bahasa Cina tradisional, Cina ringkas, Indonesia, Filipina, Melayu dan Vietnam
+• Nama pemain: pilih Nama dalam menu untuk menukar nama mana-mana tempat duduk; tempat anda ditanda
+• Bot Kuat — hanya melihat kadnya sendiri dan melawan semua orang. Tetapan, Bot: Klasik atau Kuat
+• Ketik dua kali untuk mengambil pasangan apabila jenis itu tinggal dua kad
+• Sumber dalam Tetapan membuka kod permainan di GitHub
+• Pembetulan susun atur kad pada skrin iPhone terkecil
+• Berjalan pada iOS 15 ke atas

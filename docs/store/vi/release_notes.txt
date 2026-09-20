@@ -1,0 +1,9 @@
+Phiên bản 1.1
+
+• Thêm tiếng Trung phồn thể, Trung giản thể, Indonesia, Philippines, Mã Lai và Việt
+• Đặt tên người chơi: chọn Tên trong menu; ghế của bạn được đánh dấu
+• Máy Mạnh — chỉ nhìn bài của mình và đánh với mọi người. Cài đặt, Máy: Cổ điển hoặc Mạnh
+• Chạm hai lần để lấy đôi khi chất đó chỉ còn hai lá
+• Nguồn trong Cài đặt mở mã nguồn trên GitHub
+• Sửa cách xếp bài trên màn hình iPhone nhỏ nhất
+• Chạy trên iOS 15 trở lên

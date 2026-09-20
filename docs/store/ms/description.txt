@@ -1,0 +1,16 @@
+Big Two — permainan kad naik tingkat dari Hong Kong, dengan rupa dan rasa permainan genggam tahun 1999.
+
+Meja hijau, bar tajuk kelabu rata, arahan ringkas, dan tiga pemain komputer yang bermain seperti bot asal: pasangan dan straight tidak dipecahkan, kombinasi lima kad diturunkan dahulu, dan kad besar hanya digunakan apabila ada yang hampir habis.
+
+• Peraturan klasik: 3 daiman turun dahulu; main satu kad, pasangan, tiga kad atau kombinasi lima kad; 2 sodok paling besar.
+• Straight dari A2345 hingga TJQKA. Kombinasi lima kad dari terkecil: straight, flush, full house, four of a kind, straight flush.
+• Markah klasik: setiap kad yang tinggal di tangan dikira mengikut nombornya, digandakan apabila tinggal sepuluh kad atau lebih, dan pemenang mengambil semuanya. Sepuluh pusingan satu permainan.
+• Peraturan Hong Kong: pemenang pusingan sebelumnya turun dahulu, dan 23456 menjadi straight terbesar.
+• Dua jenis lawan: bot Klasik bermain seperti asalnya dan tidak berebut K, A, 2 sesama sendiri; bot Kuat hanya melihat kadnya sendiri dan melawan semua orang.
+• Tukar nama pemain sendiri, atau kekalkan nama lalai mengikut bahasa anda.
+• Pass automatik, susun kad mengikut nombor atau jenis, tekan lama untuk memilih satu nombor, ketik dua kali untuk satu jenis.
+• Salin sejarah permainan untuk ditampal di mana-mana.
+
+Tiada iklan, tiada akaun, tiada penjejakan — aplikasi ini tidak mengumpul sebarang data. Percuma dan sumber terbuka (lesen MIT).
+
+Saya tidak bermain dengan wang sebenar.
