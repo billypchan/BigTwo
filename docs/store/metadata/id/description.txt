@@ -1,0 +1,16 @@
+Capsa Banting — permainan kartu naik tingkat ala Hong Kong, dengan tampilan dan rasa permainan genggam tahun 1999.
+
+Meja hijau, bilah judul abu-abu polos, petunjuk singkat, dan tiga pemain komputer yang bermain seperti bot aslinya: pasangan dan straight tidak dipecah, kombinasi lima kartu diturunkan lebih dulu, dan kartu besar baru dipakai saat ada yang hampir habis.
+
+• Aturan klasik: 3 wajik turun pertama; mainkan satu kartu, pasangan, tiga kartu, atau kombinasi lima kartu; 2 sekop paling besar.
+• Straight dari A2345 sampai TJQKA. Kombinasi lima kartu dari terkecil: straight, flush, full house, four of a kind, straight flush.
+• Skor klasik: setiap kartu yang tersisa di tangan dihitung sesuai angkanya, dua kali lipat bila sisa sepuluh kartu atau lebih, dan pemenang mengambil semuanya. Sepuluh ronde satu permainan.
+• Aturan Hong Kong: pemenang ronde sebelumnya turun pertama, dan 23456 menjadi straight terbesar.
+• Dua macam lawan: bot Klasik bermain seperti aslinya dan tidak berebut K, A, 2 satu sama lain; bot Kuat hanya melihat kartunya sendiri dan melawan semua orang.
+• Ganti nama pemain sendiri, atau pakai nama bawaan sesuai bahasa Anda.
+• Pass otomatis, urut kartu menurut angka atau jenis, tekan lama untuk memilih satu angka, ketuk dua kali untuk satu jenis.
+• Salin riwayat permainan untuk ditempel di mana saja.
+
+Tanpa iklan, tanpa akun, tanpa pelacakan — aplikasi ini tidak mengumpulkan data apa pun. Gratis dan sumber terbuka (lisensi MIT).
+
+Saya tidak main dengan uang asli.

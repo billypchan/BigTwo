@@ -13,6 +13,30 @@ and the evidence.
 
 ---
 
+## store-localized-metadata（續）— 用 fastlane 真的把六個語系推上去了
+
+**`deliver` 會自己建立商店上還沒有的語系。** 實測：商店原本只有 en-US 與 zh-Hant（zh-Hant 是手動加的），metadata 目錄放一個 `zh-Hans/` 跑一次，回讀就變三個語系；vi／id／ms 一次上完。所以「語系一定要先在網頁建立」只對 `asc.swift` 成立（它列舉商店既有語系），對 deliver 不成立。
+
+**沒有 API key 也能跑**：`fastlane spaceauth` 登入一次會把 session 存到 `~/.fastlane/spaceship/<apple id>/cookie`，之後 deliver 就不需要互動。⚠️ 但 **deliver 在 cwd 沒有 `fastlane/Deliverfile` 時會先問「Do you want to setup deliver?」**，那是在驗證身分之前、讀任何參數之前；非互動 shell 直接 crash（`Could not retrieve response as fastlane runs in non-interactive mode`）。所以這個 repo 現在有兩行的 Deliverfile 和 Appfile。
+
+**⚠️ `metadata_path` 裡面只能有語系資料夾**（加 deliver 自己的 `copyright.txt` 等根層檔案）。其他任何目錄都會被當成語言去對 `ALL_LANGUAGES`，所以 `docs/store/screenshots/` 不能放在 `docs/store/` 裡面——已改成 `docs/store/{metadata,screenshots}/`。
+
+**回讀不需要金鑰**：`deliver download_metadata` / `download_screenshots` 用同一個 session。這次五個語系逐欄 diff 全等、每語系 5 張截圖，並打開其中一張確認真的是中文畫面（Apple 會重新編碼，比 checksum 沒有意義）。
+
+---
+
+## store-localized-metadata — 上架頁面七語系
+
+**App 內有七種語言 ≠ App Store 頁面有七種語言。** 商店頁的「語言」欄是從**已上架 binary** 的 .lproj 推出來的（公開 API `languageCodesISO2A`，1.0 還是 `['EN']`，因為 1.0 是 9/13 封存、語系 9/19 才進 main）；上架文案（名稱／副標／說明／關鍵字／What's New）則是完全獨立的一份，只有 en-US。兩者都要各自處理。
+
+**不用金鑰也能查商店現況**：`curl "https://itunes.apple.com/lookup?id=<appId>&country=tw"` 給出名稱、版本、發佈日、語言、說明全文與截圖檔名順序。這次靠它發現 1.0 其實**早就上架了**（2026-09-19），CLAUDE.md 還寫著「送審中」。⚠️ 連續打多個 storefront 會被限流，回傳空結果 — 要一個一個打。
+
+**⚠️ 語系必須先在 App Store Connect 網頁建立**，任何上傳工具才看得到它；工具是列舉「商店上的」語系再去找對應目錄，不是反過來。另外 Filipino 不確定在 Apple 的語系清單裡 —— app 內有 fil，但商店可能只能讓那個地區看英文。
+
+`docs/store/` 用 fastlane `deliver` 的檔名排版（`<locale>/description.txt` 等），現在用手貼，將來接上工具不用搬家；截圖放 `docs/store/screenshots/<locale>/`，正好是 `asc.swift screenshots --dir` 期望的 `<dir>/<locale>/<檔案>` 結構。五張截圖照 1.0 商店既有的順序（trick／selected／score／preferences／menu）。
+
+---
+
 ## release-skill-and-locale-sweep — 七語言查核、`/release` 設定化
 
 **`L10n.string` 找不到 key 就回傳 key 本身，所以打錯字在英文機上看起來永遠是對的。** About 對話框寫 `"I will not play with real money."`（多一個句點），表裡的 key 沒句點 → 六種語言全部顯示英文；四個 About 列（Share/Rate/Report/Follow）根本沒進任何語系表。沒有任何測試會紅。查核方式：把 `L10n.string("…")` 的字面 key 全掃出來，跟 en 表對差集；再掃 views 裡「像 UI 文案但不是表中 key」的字面字串（`row("Share this App"…)` 這種間接傳入的才抓得到）。

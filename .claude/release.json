@@ -8,19 +8,28 @@
   "tagFormat": "v{version}",
   "releaseLog": "docs/test_runs.md",
   "build": {
-    "source": "local-archive",
+    "source": "xcode-cloud",
     "destination": "generic/platform=iOS"
   },
   "metadata": {
-    "tool": "manual",
-    "dir": null,
-    "locales": ["en-US"]
+    "tool": "fastlane",
+    "dir": "docs/store/metadata",
+    "locales": [
+      "en-US",
+      "zh-Hant",
+      "zh-Hans",
+      "vi",
+      "id",
+      "ms"
+    ]
   },
   "screenshots": {
-    "tool": "manual",
-    "dir": null,
+    "tool": "asc",
+    "dir": "docs/store/screenshots",
     "source": "screenshots/ios",
-    "displayTypes": { "default": "APP_IPHONE_67" }
+    "displayTypes": {
+      "default": "APP_IPHONE_67"
+    }
   },
   "preflight": [
     {
@@ -38,8 +47,8 @@
     "No suit symbols in any App Store Connect text — description, promotional text and TestFlight What to Test all reject the four suit characters (409 invalid characters), and a '<' in the description is refused as markup. Write '3 of diamonds'.",
     "No 'Palm' anywhere a user or reviewer can read (guideline 2.3.10): app strings, store metadata, TestFlight What to Test. Say 'the 1999 handheld game'. Type names, comments and the GitHub repo are fine — which is why TestFlight notes carry the commit hash, not the branch name.",
     "Export with the *other* key in ~/.appstoreconnect/private_keys/, not $ASC_KEY_ID: that one is App Manager and the export fails with 'Cloud signing permission error'. Same issuer id for both.",
-    "Metadata and screenshots are web-only for this app — there is no fastlane here, and the App Privacy questionnaire is web-only for every app.",
     "Every territory except mainland China (a game there needs a license number).",
-    "No Xcode Cloud yet, so every build is a local archive (reference/archive.md). Marketing URL stays empty on purpose: it pointed at the GitHub README, which tells the Palm story."
+    "Xcode Cloud archives every push to main (GitHub check run \"BigTwo | Default | Archive - iOS\"). Metadata and screenshots are still web-only — there is no fastlane here, and the release notes are kept in docs/release_notes/<version>-<locale>.txt to be pasted in.",
+    "Store text and per-locale screenshots live in docs/store/ (see its README). Metadata is typed into App Store Connect by hand; the screenshots can go through asc.swift once an API key exists on the machine. Each locale must be created in App Store Connect before either can be uploaded, Filipino is not an App Store metadata language at all (no fil/tl in fastlane's ALL_LANGUAGES), so docs/store/fil is reference only."
   ]
 }

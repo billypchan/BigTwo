@@ -1,0 +1,9 @@
+Bersyon 1.1
+
+• Nasa Tsinong tradisyonal, Tsinong pinasimple, Indonesian, Filipino, Malay at Vietnamese na
+• Pangalan ng manlalaro: piliin ang Pangalan sa menu para palitan ang kahit aling upuan; may marka ang upuan mo
+• Malakas na bot — sariling kard lang ang tinitingnan at nakikipaglaban sa lahat. Mga setting, Mga bot: Klasiko o Malakas
+• I-double tap para kunin ang pares kapag dalawa na lang ang natira sa palong iyon
+• Ang Kodigo sa Mga setting ay nagbubukas ng code ng laro sa GitHub
+• Naayos ang ayos ng kard sa pinakamaliit na screen ng iPhone
+• Tumatakbo sa iOS 15 pataas

@@ -1,0 +1,17 @@
+Big Two (鋤大弟) — the Hong Kong climbing card game, with the look and feel of the 1999 handheld classic.
+
+A green table, a flat grey title bar, terse prompts, and three computer players who play the way the original bots did: they keep their pairs and straights together, lead five-card hands first, and spend their big cards only when someone is about to go out.
+
+• Classic rules: the 3 of diamonds leads; play singles, pairs, triples or five-card hands; the 2 of spades is the highest card.
+• Straights from A2345 to TJQKA. Five-card hands rank, lowest first: straight, flush, full house, four of a kind, straight flush.
+• Classic scoring: every card left in your hand costs its rank, doubled at ten cards or more, and the winner collects it all. Ten deals to a game.
+• Hong Kong rule set: the last deal's winner leads, and 23456 becomes the biggest straight.
+• Two kinds of opponent: Classic bots play like the original and leave each other's high cards alone; Strong bots read only their own hand and fight every seat.
+• Name the players yourself, or keep the names that come with your language.
+• Autopass, sort by rank or by suit, long-press a card to pick its whole rank, double-tap for its whole suit.
+• Copy the game history to paste anywhere.
+• Seven languages: English, Traditional Chinese, Simplified Chinese, Indonesian, Filipino, Malay and Vietnamese.
+
+No ads, no accounts, no tracking — the app collects no data at all. Free and open source (MIT license).
+
+I will not play with real money.

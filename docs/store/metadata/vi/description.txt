@@ -1,0 +1,17 @@
+Big Two (Tiến lên kiểu Hồng Kông) — bài leo bậc, giữ nguyên dáng vẻ và cảm giác của bản máy cầm tay năm 1999.
+
+Mặt bàn xanh, thanh tiêu đề xám phẳng, lời nhắc ngắn gọn, và ba máy chơi theo đúng lối của bản gốc: không phá đôi hay sảnh, ra bài năm lá trước, và chỉ tiêu bài lớn khi có người sắp hết bài.
+
+• Luật cổ điển: 3 rô đi trước; đánh một lá, đôi, ba lá hoặc bộ năm lá; 2 bích là lá lớn nhất.
+• Sảnh từ A2345 đến TJQKA. Bộ năm lá xếp từ nhỏ đến lớn: sảnh, thùng, cù lũ, tứ quý, thùng phá sảnh.
+• Tính điểm cổ điển: mỗi lá còn trên tay trừ theo bậc của nó, gấp đôi khi còn từ mười lá, người thắng thu hết. Mười ván một game.
+• Luật Hồng Kông: người thắng ván trước đi trước, và 23456 thành sảnh lớn nhất.
+• Hai kiểu đối thủ: máy Cổ điển chơi như bản gốc và không tranh K, A, 2 của nhau; máy Mạnh chỉ nhìn bài của mình và đánh với mọi người.
+• Tự đặt tên người chơi, hoặc giữ tên mặc định theo ngôn ngữ của bạn.
+• Tự bỏ lượt, xếp bài theo số hoặc theo chất, giữ một lá để chọn cả bậc, chạm hai lần để chọn cả chất.
+• Sao chép lịch sử ván đấu để dán ra ngoài.
+• Bảy ngôn ngữ: Anh, Trung phồn thể, Trung giản thể, Indonesia, Philippines, Mã Lai và Việt.
+
+Không quảng cáo, không tài khoản, không theo dõi — ứng dụng không thu thập dữ liệu nào. Miễn phí và mã nguồn mở (giấy phép MIT).
+
+Tôi không chơi bằng tiền thật.

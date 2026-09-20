@@ -1,0 +1,9 @@
+Version 1.1
+
+• Now in Traditional Chinese, Simplified Chinese, Indonesian, Filipino, Malay and Vietnamese
+• Name the players: pick Names in the menu to rename any seat; your own seat is marked
+• Strong bots — they play their own hand and fight every seat. Preferences, Bots: Classic or Strong
+• Double-tap a card to take the pair when that suit is short
+• Source in Preferences opens the game's code on GitHub
+• Fixed the hand layout on the smallest iPhone screens
+• Runs on iOS 15 and later

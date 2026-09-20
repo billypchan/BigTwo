@@ -1,0 +1,9 @@
+Versi 1.1
+
+• Kini dalam bahasa Mandarin tradisional, Mandarin sederhana, Indonesia, Filipina, Melayu, dan Vietnam
+• Nama pemain: pilih Nama di menu untuk mengganti nama tiap kursi; kursi Anda ditandai
+• Bot Kuat — hanya melihat kartunya sendiri dan melawan semua orang. Pengaturan, Bot: Klasik atau Kuat
+• Ketuk dua kali untuk mengambil pasangan bila jenis itu tinggal dua kartu
+• Sumber di Pengaturan membuka kode permainan di GitHub
+• Perbaikan tata letak kartu di layar iPhone terkecil
+• Jalan di iOS 15 ke atas

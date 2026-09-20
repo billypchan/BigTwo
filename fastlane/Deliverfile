@@ -1,0 +1,13 @@
+# The listing lives in docs/store, not fastlane/metadata — it is documentation first
+# and an upload second. deliver takes the paths, so nothing had to move.
+metadata_path "./docs/store/metadata"
+screenshots_path "./docs/store/screenshots"
+
+# This repo never uploads a binary through fastlane: Xcode Cloud does that.
+skip_binary_upload true
+
+# Skip the HTML preview prompt — it blocks a non-interactive run.
+force true
+
+# precheck's in-app-purchase inspection has crashed a release outright.
+precheck_include_in_app_purchases false
