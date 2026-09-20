@@ -12,8 +12,8 @@
     "destination": "generic/platform=iOS"
   },
   "metadata": {
-    "tool": "manual",
-    "dir": "docs/store",
+    "tool": "fastlane",
+    "dir": "docs/store/metadata",
     "locales": [
       "en-US",
       "zh-Hant",

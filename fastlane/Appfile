@@ -1,0 +1,3 @@
+# deliver only. There is no build lane here — Xcode Cloud archives every push to main.
+app_identifier "com.billchan.BigTwo"
+team_id "G5GZ5MPEHS"
