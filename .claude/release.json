@@ -20,8 +20,7 @@
       "zh-Hans",
       "vi",
       "id",
-      "ms",
-      "fil"
+      "ms"
     ]
   },
   "screenshots": {
@@ -50,6 +49,6 @@
     "Export with the *other* key in ~/.appstoreconnect/private_keys/, not $ASC_KEY_ID: that one is App Manager and the export fails with 'Cloud signing permission error'. Same issuer id for both.",
     "Every territory except mainland China (a game there needs a license number).",
     "Xcode Cloud archives every push to main (GitHub check run \"BigTwo | Default | Archive - iOS\"). Metadata and screenshots are still web-only — there is no fastlane here, and the release notes are kept in docs/release_notes/<version>-<locale>.txt to be pasted in.",
-    "Store text and per-locale screenshots live in docs/store/ (see its README). Metadata is typed into App Store Connect by hand; the screenshots can go through asc.swift once an API key exists on the machine. Each locale must be created in App Store Connect before either can be uploaded, and Filipino may not be on Apple's list."
+    "Store text and per-locale screenshots live in docs/store/ (see its README). Metadata is typed into App Store Connect by hand; the screenshots can go through asc.swift once an API key exists on the machine. Each locale must be created in App Store Connect before either can be uploaded, Filipino is not an App Store metadata language at all (no fil/tl in fastlane's ALL_LANGUAGES), so docs/store/fil is reference only."
   ]
 }

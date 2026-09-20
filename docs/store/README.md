@@ -19,9 +19,18 @@ language picker). A locale that has never been created there is invisible to eve
 upload tool no matter what is on disk — the tools enumerate the *store's*
 localizations and then look for a matching directory.
 
-⚠️ **Filipino may not be offered** in App Store Connect's localization list. The app
-ships a `fil` UI and `fil/` is written here; if the list has no Filipino, leave that
-storefront on English metadata — the app itself still runs in Filipino.
+⛔ **Filipino is not an App Store metadata language.** Apple's list — the one fastlane
+carries as `FastlaneCore::Languages::ALL_LANGUAGES` — has no `fil` and no `tl`:
+
+```bash
+grep ALL_LANGUAGES "$(dirname "$(gem which fastlane_core)")/fastlane_core/languages.rb"
+# ar-SA bn-BD ca cs da de-DE el en-AU … id it ja … ms nl-NL … vi zh-Hans zh-Hant
+```
+
+So the listing can be in six of the app's seven languages. `fil/` stays here as the
+Filipino copy of record — the app runs in Filipino and the Philippines storefront
+shows the English listing — but **do not** try to upload it; the locale will be
+rejected.
 
 ## Rules these files already follow
 
@@ -31,6 +40,25 @@ storefront on English metadata — the app itself still runs in Filipino.
   name of the device it ran on.
 - Limits, checked when these were written: name 30, subtitle 30, keywords 100,
   description 4000, release notes 4000.
+
+## Uploading with fastlane
+
+`deliver` **creates a localization that doesn't exist yet** from the directory, which
+is the one thing the website is otherwise needed for. It takes this layout as-is:
+
+```bash
+KEYJSON=$(python3 ~/.claude/skills/release/scripts/asc_key_json.py)
+fastlane deliver --api_key_path "$KEYJSON" --app_version 1.1 \
+  --metadata_path docs/store --screenshots_path docs/store/screenshots \
+  --skip_binary_upload --force --precheck_include_in_app_purchases false
+```
+
+- Needs credentials: the API key above, or `-u <Apple ID>` with the password and 2FA
+  typed in (interactive — run it yourself with `! fastlane …`).
+- Drop `docs/store/fil` out of the way first, or deliver will reject the locale.
+- ⚠️ Screenshots through `deliver` are the path with the recorded silent failure —
+  read them back, or upload them with `asc.swift screenshots` instead
+  (`~/.claude/skills/release/reference/screenshots.md`).
 
 ## Screenshots
 
