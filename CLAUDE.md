@@ -12,8 +12,7 @@ only what applies to this app is repeated here.
 
 ## Project
 
-iOS remake of **Big Two** (鋤大弟), originally a Palm OS game by Bill (Chan Yiu Por Bill,
-2006; earlier version by Woo Kok Tong, 1999). Original site, rules and full changelog:
+iOS remake of **Big Two** (鋤大弟), originally a Palm OS game by Bill Chan, 2006; earlier version by Woo Kok Tong, 1999. Original site, rules and full changelog:
 https://bigtwo-palmos.sourceforge.net — treat that page as the spec.
 
 **Brief: keep the design and feel of the Palm version.** Not a modern reinterpretation —
