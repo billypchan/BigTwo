@@ -227,6 +227,9 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
    (keeps the old PNG if the new shot differs only in the status-bar clock;
    `--force` overwrites). Freeze the clock first with
    `scripts/freeze_status_bar.sh <udid>` so new shots show 9:41.
+   ⚠️ Those two layers reach the **status bar** only. Nothing here draws a date yet;
+   the day something does, it needs pinning inside the app as well — that layer, the
+   reasoning and the run-twice proof are in the **`screenshot-determinism`** skill.
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
