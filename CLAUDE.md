@@ -174,7 +174,10 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 ## Game record
 
 Menu → Game History is the whole game, not only the deal on the table: the four hands
-as dealt, then every play and pass. A game that has had a step is kept on device
+as dealt, then every play and pass. The deal still in play shows `***` instead of
+those hands — the steps stay, because those cards are already on the table. Export
+writes that same text to `BigTwo.txt` and opens the share sheet; do not tap
+`history_export` in a UI test. A game that has had a step is kept on device
 (`Application Support/BigTwo/game-record.json`, 20 games) and shown under the current
 one. A launch that deals and quits before anyone plays is not kept — every cold start
 would otherwise archive an empty deal. Open-hand names update until the first step,

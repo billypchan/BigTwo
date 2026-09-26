@@ -37,6 +37,8 @@ final class GameUITests: XCTestCase {
     app.buttons["menu_history"].tap()
     XCTAssertTrue(app.element("history_text").waitForExistence(timeout: 5))
     XCTAssertTrue(app.element("history_text").label.contains("Bill: 3♦"))
+    XCTAssertTrue(app.element("history_text").label.contains("***"), "hands stay hidden during the deal")
+    XCTAssertTrue(app.buttons["history_export"].exists)
   }
 
   func testPass_showsPassInYourRow() {

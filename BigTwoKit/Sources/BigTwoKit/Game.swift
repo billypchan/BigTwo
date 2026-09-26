@@ -349,20 +349,16 @@ public final class BigTwoGame: ObservableObject {
 
   // MARK: - History ("export the history to Memo pad")
 
-  /// The current game: deal header, the four hands as dealt, then each step.
+  /// The current game. A deal still in play shows `***` instead of the dealt hands.
   public var history: [String] {
-    record.deals.flatMap { deal -> [String] in
-      var lines = ["— Deal \(deal.number) —"]
-      lines.append(contentsOf: openHands(deal))
-      lines.append(contentsOf: deal.steps)
-      return lines
-    }
+    record.deals.flatMap { lines(for: $0, masked: $0.cardsLeft == nil) }
   }
 
-  /// Current game, then earlier games that had a step. Score lines follow the preference.
+  /// Current game, then earlier games. Only the deal on the table hides its hands.
   public var historyText: String {
-    let games = [record] + library.saved.filter(\.hasSteps)
-    return games.filter { !$0.deals.isEmpty }.map { render($0) }.joined(separator: "\n\n")
+    let current = render(record, hideOpenDeal: true)
+    let saved = library.saved.filter(\.hasSteps).map { render($0, hideOpenDeal: false) }
+    return ([current] + saved).filter { !$0.isEmpty }.joined(separator: "\n\n")
   }
 
   private func log(_ line: String) {
@@ -376,18 +372,25 @@ public final class BigTwoGame: ObservableObject {
     recordStore?.save(library)
   }
 
-  private func openHands(_ deal: GameRecord.Deal) -> [String] {
+  private func lines(for deal: GameRecord.Deal, masked: Bool) -> [String] {
+    var lines = ["— Deal \(deal.number) —"]
+    lines.append(contentsOf: openHands(deal, masked: masked))
+    lines.append(contentsOf: deal.steps)
+    return lines
+  }
+
+  /// `***` while the deal is unfinished — those cards are still in hand.
+  private func openHands(_ deal: GameRecord.Deal, masked: Bool) -> [String] {
     deal.hands.indices.map { i in
       let name = i < deal.names.count ? deal.names[i] : ""
-      return "\(name): \(deal.hands[i].map(\.label).joined(separator: " "))"
+      let cards = masked ? "***" : deal.hands[i].map(\.label).joined(separator: " ")
+      return "\(name): \(cards)"
     }
   }
 
-  private func render(_ game: GameRecord) -> String {
+  private func render(_ game: GameRecord, hideOpenDeal: Bool) -> String {
     game.deals.map { deal -> String in
-      var lines = ["— Deal \(deal.number) —"]
-      lines.append(contentsOf: openHands(deal))
-      lines.append(contentsOf: deal.steps)
+      var lines = lines(for: deal, masked: hideOpenDeal && deal.cardsLeft == nil)
       if preferences.showCardsLeft,
          let left = deal.cardsLeft, let points = deal.points,
          left.count == deal.names.count, points.count == deal.names.count {
