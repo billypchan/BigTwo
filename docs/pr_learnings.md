@@ -49,6 +49,20 @@ and the evidence.
 
 ---
 
+## stronger-ai — Strong 重新計畫手牌，不再先丟 2
+
+**先出 2 會輸給 greedy。** 2♠ 永遠壓過單張，若把它當成「安全牌」先打，出牌權就沒了，剩下的牌出不去。2、A 單張、炸彈是控制牌，用來搶回出牌權，不拿來起手。
+
+**最後一張打出去就贏，沒有「下一手再擋」。** `submit` 在手牌變空時立刻結算。某人 `left: 1` 時要在他出牌前處理，不是等他打出那張再算能不能壓。
+
+**算過的牌要另外記，不能從別人的手牌反推。** `BotContext.hands` 仍給 Classic 偷看。Strong 只讀 `discarded`（每手打出就追加）和張數。測試若改了別人的底牌還選同一手，就是沒偷看。
+
+**對 greedy 的分數要看 1 Strong 對 3 greedy。** 3 Strong 對 1 greedy 時 greedy 會撿他們互讓的牌。8 個 seed 這次是 +344；門檻寫 > 200，避免又退回只會 pass 的版本。
+
+**整局 kit 測試變慢是正常的。** 每一手都做 13 張的子集規劃，`swift test` 大約 70 秒，不是 hang。
+
+---
+
 ## edit-player-names — 可改名、空白仍跟系統語言走
 
 **`playerNames` 空陣列 = 從未改過。** 寫入 `["","","",""]` 也算「改過」只是每格空白；`hasCustomNames` 看 trim 後有沒有字。語言一換，未改過的座位才套新的 localized default。

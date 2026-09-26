@@ -20,9 +20,12 @@ public struct BotContext: Sendable {
   public let rules: RuleSet
   /// Re-rolled every deal: guard every five-card hand (true) or only straights and pairs.
   public let prefersFiveCards: Bool
+  /// Cards already played this deal. Public — the tracker shows them. Not hole cards.
+  public let discarded: [Card]
 
   public init(seat: Int, hands: [[Card]], isHuman: [Bool], table: Play?, tableOwner: Int?,
-              mustInclude: Card?, rules: RuleSet, prefersFiveCards: Bool) {
+              mustInclude: Card?, rules: RuleSet, prefersFiveCards: Bool,
+              discarded: [Card] = []) {
     self.seat = seat
     self.hands = hands
     self.isHuman = isHuman
@@ -31,6 +34,7 @@ public struct BotContext: Sendable {
     self.mustInclude = mustInclude
     self.rules = rules
     self.prefersFiveCards = prefersFiveCards
+    self.discarded = discarded
   }
 
   var hand: [Card] { hands[seat] }
