@@ -44,7 +44,7 @@ Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
 | Press DOWN — select same rank | Long press a card |
 | Hold DOWN — select same suit | Double tap a card (pair if fewer than 5 of that suit) |
 | Sort icons `2` / `♠` | Same two buttons, bottom left |
-| Export history to Memo Pad | Menu → Copy history |
+| Export history to Memo Pad | Menu → Copy history. The record is each deal's open hands, then every step, and earlier games stay on the device |
 
 ## The bots
 

@@ -13,6 +13,13 @@ and the evidence.
 
 ---
 
+## game-record — 牌譜含開局手牌，沒出過牌的不存
+
+**`applyDisplayNames` 在發牌之後。** 開局四家牌如果在 `newDeal` 就把名字寫死，畫面上已經換成譯名，紀錄仍是 Adam/Bill。沒有人出牌之前，改名要回寫那一舖的名字。
+
+**沒有步數的牌局不要存。** 每次開 app 都會先發一舖。若連「只發牌、沒人出」也歸檔，Game History 會堆滿空白局。
+
+**UI 測試要清紀錄檔。** 不然上一輪 autoplay 的牌譜會接在這次的 History 下面。`-keepPreferences YES` 才留著，跟偏好同一規則。
 ## source-in-about — Source 按鈕搬家，順便發現模擬器沒了
 
 **Source 從 Preferences 搬到 About。** 偏好設定那排按鈕只剩 OK；About 的列表變成五列

@@ -1,7 +1,6 @@
 //
 //  HistoryDialogView.swift
-//  Big Two — "Game History": every move of the deal, and Copy (the Palm exported it to
-//  the Memo Pad).
+//  Big Two — "Game History": open hands and every step, and Copy.
 //
 
 import SwiftUI

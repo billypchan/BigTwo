@@ -51,9 +51,10 @@ struct GameTests {
     let lead = game.turn
     let hand = game.seats[(lead + 1) % 4].hand
     #expect(game.submit([hand[0]], from: (lead + 1) % 4) == "Not your turn")
+    let recorded = game.history
     game.pass(from: lead)  // cannot pass a lead
     #expect(game.turn == lead)
-    #expect(game.history.count == 1)
+    #expect(game.history == recorded, "passing a lead is not a step")
   }
 
   @Test func lastActionsFollowEveryMoveAndClearOnANewDeal() {
