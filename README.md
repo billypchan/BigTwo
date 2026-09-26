@@ -76,15 +76,56 @@ only straights (and they will not break a pair to make a high straight). Triples
 include a two while they still have more than four cards; pairs drop the twos until the
 end is near.
 
-**Strong** does **not** peek — only its own hand and the public `left: N` counts — and
-it fights every seat, including the other bots. It goes out when the whole hand is a
-play, leads a combo (or its highest single) when someone is on one card, will not lead
-a pair when someone has two, and will beat a fellow bot's king instead of letting it
-stand. Bombs and twos stay back until someone is short.
+**Strong** does **not** peek, and it fights every seat, including the other bots. It
+sees its own hand, each seat's `left: N`, and the cards already played — the same ones
+the tracker shows. It does not know who holds a card that is still out, so it assumes
+the seat with the most cards might hold the best answer.
+
+It first splits the hand into as few legal plays as possible. A pair of fives, a nine
+and a king is three plays; breaking that pair into singles is four, and it treats the
+broken hand as worse. If the whole hand is already one play, it plays it. The last
+card wins the moment it is played — there is no chance to beat it afterwards.
+
+Twos, a single ace, four of a kind and a straight flush are control cards. It keeps
+them to take the lead back. Leading a two first spends the card that would have won
+the lead later.
+
+When it **leads**:
+
+- If every play left in the hand is unbeatable, it sheds the bigger, lower ones and
+  runs them out.
+- If someone has three cards or fewer, it plays a size they cannot answer: a five
+  when they have three, and not a single when they have one. A lone two does not
+  count as that safe play.
+- Otherwise it leads a combo that does not break the plan — five cards before a pair,
+  a pair before a single — and the low one.
+- If someone has one card and it only has singles left, it leads the highest, two
+  included. That card wins the deal as soon as they play it.
+- If someone has one or two cards and a single is the only lead, it leads a higher
+  single rather than a low one.
+
+When it **follows**:
+
+- If winning the trick lets it empty the rest of the hand, it takes the trick, even
+  with a two.
+- If someone's count equals the size of the trick, they would go out by playing. It
+  answers with its strongest play, or the cheapest one that nothing left can beat.
+- If someone has one card, it tries to take the trick so that seat does not get the
+  lead.
+- Otherwise it follows with the smallest card that does not break a combo and is not
+  a control card.
+- If it has no such card, it will break one pair to follow a low card rather than
+  pass the lead away.
+- It spends a two or an ace when the table is a king, ace or two, or a full house or
+  better, or someone has one or two cards, or it is itself down to two cards.
+- A spare two — another control card still in hand — can be spent to buy the lead.
+  The last two is not spent on a low card.
+- Otherwise it passes.
 
 The test `palmBotsOutscoreTheGreedyBot` keeps a greedy bot in the test target as a
 yardstick: over 8 seeded games the greedy seat finished at −719 against Classic.
-`oneStrongBotOutscoresThreeGreedyBots` keeps one Strong seat ahead of greedy.
+`oneStrongBotOutscoresThreeGreedyBots` is one Strong seat against three greedy; on
+2026-09-26 that seat finished at +344 (the test requires more than 200).
 
 ## License
 
