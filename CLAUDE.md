@@ -162,6 +162,17 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   keeps one Strong seat ahead of greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
 
+## Game record
+
+Menu → Game History is the whole game, not only the deal on the table: the four hands
+as dealt, then every play and pass. A game that has had a step is kept on device
+(`Application Support/BigTwo/game-record.json`, 20 games) and shown under the current
+one. A launch that deals and quits before anyone plays is not kept — every cold start
+would otherwise archive an empty deal. Open-hand names update until the first step,
+because `applyDisplayNames` runs on appear after the deal. UI tests wipe that file
+unless `-keepPreferences YES`. This is the transcript. Killing the app still starts a
+new deal; it does not put the cards back on the table.
+
 ## Tests
 
 ### Logic — `swift test` in BigTwoKit (no simulator)
@@ -189,7 +200,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 | Launch argument | Effect (`LaunchOptions`) |
 | --- | --- |
-| `UITestMode` | 150ms bots; preferences in a throwaway suite, wiped each launch |
+| `UITestMode` | 150ms bots; preferences in a throwaway suite, wiped each launch. The game-record file is wiped too, unless `-keepPreferences YES` |
 | `-AppleLanguages (en)` | Set by `XCUIApplication.bigTwo` so prompt/button labels stay English |
 | `-seed 2` | Fixed deal: your seat leads with `3d 4c 6h 8h 8s 9c 9s Tc Jd Jc Qc Ad 2c` |
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
@@ -318,7 +329,8 @@ Single-player against three bots is complete and runs on the simulator; 47 kit t
    in App Store Connect by hand first. ⚠️ No App Store Connect API key exists on this
    Mac (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing
    builds, uploading screenshots, submitting — is web-only until one is made.
-2. Save the game in progress — killing the app loses a 10-deal game.
+2. Save the game in progress — the transcript (open hands and each step) now survives
+   on device, but killing the app still deals a new hand. The table itself is not restored.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
    score balance (as in v2.2).
 4. Pass-and-play multiplayer: `Seat.isHuman` already drives the loop; it needs the

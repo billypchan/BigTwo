@@ -61,7 +61,6 @@ public final class BigTwoGame: ObservableObject {
   /// Each seat's last move this deal; nil until it has moved.
   @Published public private(set) var lastActions: [SeatAction?] = [nil, nil, nil, nil]
   @Published public private(set) var deal = 1
-  @Published public private(set) var history: [String] = []
   @Published public private(set) var result: DealResult?  // non-nil while the score sheet is up
   @Published public private(set) var gameOver = false
 
@@ -78,17 +77,25 @@ public final class BigTwoGame: ObservableObject {
   private var botTask: Task<Void, Never>?
   private var rng: SeededGenerator?
   private var prefersFiveCards = [true, false, true, false]
+  private var library = GameRecordLibrary()
+  private var record = GameRecord()
+  private let recordStore: GameRecordStore?
   private let botsMoveThemselves: Bool
 
   /// `humanSeats` empty lets the bots play every seat (UI-test autoplay).
   /// `botsMoveThemselves: false` leaves every move to the caller — tests step the bots
   /// with `botChoice(for:)` instead of waiting on timers.
+  /// `recordStore` keeps the transcript on device. Tests omit it.
   public init(preferences: Preferences = Preferences(), seed: UInt64? = nil,
-              humanSeats: Set<Int> = [1], botsMoveThemselves: Bool = true) {
+              humanSeats: Set<Int> = [1], botsMoveThemselves: Bool = true,
+              recordStore: GameRecordStore? = nil) {
     self.preferences = preferences
     self.rules = RuleSet(hongKong: preferences.hongKong)
     self.rng = seed.map(SeededGenerator.init(seed:))
     self.botsMoveThemselves = botsMoveThemselves
+    self.recordStore = recordStore
+    self.library = recordStore?.load() ?? GameRecordLibrary()
+    self.record = library.current
     self.seats = Self.resolvedNames(preferences.playerNames).enumerated().map {
       Seat(id: $0.offset, name: $0.element, isHuman: humanSeats.contains($0.offset))
     }
@@ -120,6 +127,12 @@ public final class BigTwoGame: ObservableObject {
     let source = hasCustomNames ? preferences.playerNames : localizedDefaults
     let resolved = Self.resolvedNames(source, defaults: localizedDefaults)
     for i in seats.indices { seats[i].name = resolved[i] }
+    // The deal is logged before onAppear renames the seats. Until someone plays,
+    // the open-hand lines follow the names on the table.
+    guard var deal = record.deals.last, deal.steps.isEmpty else { return }
+    deal.names = seats.map(\.name)
+    record.deals[record.deals.count - 1] = deal
+    persist()
   }
 
   /// Persist what the player typed (blank = default) and refresh the table.
@@ -133,6 +146,13 @@ public final class BigTwoGame: ObservableObject {
   // MARK: - Setup
 
   public func startGame() {
+    if record.hasSteps {
+      library.saved.insert(record, at: 0)
+      if library.saved.count > GameRecordLibrary.maxSaved {
+        library.saved.removeSubrange(GameRecordLibrary.maxSaved...)
+      }
+    }
+    record = GameRecord()
     deal = 1
     lastWinner = nil
     gameOver = false
@@ -158,7 +178,9 @@ public final class BigTwoGame: ObservableObject {
     lastActions = [nil, nil, nil, nil]
     passes = 0
     result = nil
-    history = ["— Deal \(deal) —"]
+    record.deals.append(GameRecord.Deal(number: deal, names: seats.map(\.name),
+                                        hands: seats.map(\.hand)))
+    persist()
 
     // HK rules: the winner of the last deal leads. Otherwise 3♦ leads and must be played.
     if rules.hongKong, let winner = lastWinner {
@@ -297,6 +319,11 @@ public final class BigTwoGame: ObservableObject {
     }
     for i in seats.indices { seats[i].score += points[i] }
 
+    if var deal = record.deals.last {
+      deal.cardsLeft = left
+      deal.points = points
+      record.deals[record.deals.count - 1] = deal
+    }
     lastWinner = winner
     result = DealResult(deal: deal, winner: winner, cardsLeft: left, points: points)
     log("*** \(seats[winner].name) WINS! ***")
@@ -317,16 +344,54 @@ public final class BigTwoGame: ObservableObject {
 
   // MARK: - History ("export the history to Memo pad")
 
-  private func log(_ line: String) { history.append(line) }
-
-  public var historyText: String {
-    var text = history.joined(separator: "\n")
-    if preferences.showCardsLeft, let result {
-      text += "\n" + seats.indices.map {
-        "\(seats[$0].name): \(result.cardsLeft[$0]) left, \(Self.signed(result.points[$0]))"
-      }.joined(separator: "\n")
+  /// The current game: deal header, the four hands as dealt, then each step.
+  public var history: [String] {
+    record.deals.flatMap { deal -> [String] in
+      var lines = ["— Deal \(deal.number) —"]
+      lines.append(contentsOf: openHands(deal))
+      lines.append(contentsOf: deal.steps)
+      return lines
     }
-    return text
+  }
+
+  /// Current game, then earlier games that had a step. Score lines follow the preference.
+  public var historyText: String {
+    let games = [record] + library.saved.filter(\.hasSteps)
+    return games.filter { !$0.deals.isEmpty }.map { render($0) }.joined(separator: "\n\n")
+  }
+
+  private func log(_ line: String) {
+    guard !record.deals.isEmpty else { return }
+    record.deals[record.deals.count - 1].steps.append(line)
+    persist()
+  }
+
+  private func persist() {
+    library.current = record
+    recordStore?.save(library)
+  }
+
+  private func openHands(_ deal: GameRecord.Deal) -> [String] {
+    deal.hands.indices.map { i in
+      let name = i < deal.names.count ? deal.names[i] : ""
+      return "\(name): \(deal.hands[i].map(\.label).joined(separator: " "))"
+    }
+  }
+
+  private func render(_ game: GameRecord) -> String {
+    game.deals.map { deal -> String in
+      var lines = ["— Deal \(deal.number) —"]
+      lines.append(contentsOf: openHands(deal))
+      lines.append(contentsOf: deal.steps)
+      if preferences.showCardsLeft,
+         let left = deal.cardsLeft, let points = deal.points,
+         left.count == deal.names.count, points.count == deal.names.count {
+        lines.append(contentsOf: deal.names.indices.map {
+          "\(deal.names[$0]): \(left[$0]) left, \(Self.signed(points[$0]))"
+        })
+      }
+      return lines.joined(separator: "\n")
+    }.joined(separator: "\n")
   }
 
   public static func signed(_ n: Int) -> String { n > 0 ? "+\(n)" : "\(n)" }

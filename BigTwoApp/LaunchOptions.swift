@@ -29,6 +29,18 @@ enum LaunchOptions {
 
   private static let uiTestSuite = "UITestPreferences"
 
+  /// UI tests wipe this unless `-keepPreferences YES`, so one run can't fill Game History.
+  static func recordStore() -> GameRecordStore {
+    let url: URL
+    if uiTestMode {
+      url = FileManager.default.temporaryDirectory.appendingPathComponent("BigTwoUITestRecord.json")
+      if !keepPreferences { try? FileManager.default.removeItem(at: url) }
+    } else {
+      url = GameRecordStore.defaultURL
+    }
+    return GameRecordStore(url: url)
+  }
+
   static func preferencesStore() -> PreferencesStore {
     guard uiTestMode, let defaults = UserDefaults(suiteName: uiTestSuite) else {
       return PreferencesStore()

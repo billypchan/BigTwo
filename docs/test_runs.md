@@ -54,3 +54,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-20 14:20 — iOS ✓ 3×1 testScreenTour (`-testLanguage fil|ms|id`) after the leftover English strings were localized (fil PASA/Klasiko/Malakas/Palo/Kodigo, ms+id PAS/ratu/raja)
 - 2026-09-20 14:28 — iOS ✓ 1/1 testScreenTour (`-testLanguage fil`, Slow/Fast → Mabagal/Mabilis: "Bilis:" was both the label and the Fast option)
 - 2026-09-20 14:45 — App Store (no test run) — six locales uploaded to the 1.1 listing with `fastlane deliver` on the stored spaceauth session; read back with `download_metadata` / `download_screenshots`: all six byte-identical, 5 screenshots each, copyright "2026 Bill Chan"
+- 2026-09-26 19:55 — BigTwoKit ✓ 67/67 · iOS (iPhone 17 Pro Max) ✓ 1/1 testLead_showsInYourRowAndTheTracker (history now includes open hands; no new screenshots)
