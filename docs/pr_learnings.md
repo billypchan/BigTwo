@@ -13,6 +13,16 @@ and the evidence.
 
 ---
 
+## game-record — 牌譜含開局手牌，沒出過牌的不存
+
+**`applyDisplayNames` 在發牌之後。** 開局四家牌如果在 `newDeal` 就把名字寫死，畫面上已經換成譯名，紀錄仍是 Adam/Bill。沒有人出牌之前，改名要回寫那一舖的名字。
+
+**沒有步數的牌局不要存。** 每次開 app 都會先發一舖。若連「只發牌、沒人出」也歸檔，Game History 會堆滿空白局。
+
+**UI 測試要清紀錄檔。** 不然上一輪 autoplay 的牌譜會接在這次的 History 下面。`-keepPreferences YES` 才留著，跟偏好同一規則。
+
+---
+
 ## store-localized-metadata（續）— 用 fastlane 真的把六個語系推上去了
 
 **`deliver` 會自己建立商店上還沒有的語系。** 實測：商店原本只有 en-US 與 zh-Hant（zh-Hant 是手動加的），metadata 目錄放一個 `zh-Hans/` 跑一次，回讀就變三個語系；vi／id／ms 一次上完。所以「語系一定要先在網頁建立」只對 `asc.swift` 成立（它列舉商店既有語系），對 deliver 不成立。
