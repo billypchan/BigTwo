@@ -157,9 +157,17 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   hand** (`BotContext.hands`) and a bot **lets a fellow bot's K/A/2 single stand**. Both
   are in `BotPlayerTests`; turning either off changes the game's difficulty.
 - **Strong bots** (`StrongBot`, default on, Preferences → Bots: Classic | Strong) do
-  **not** peek (own hand + `left: N` only) and **do** fight fellow bots. Classic still
-  peeks and lets a fellow bot's K/A/2 stand. `oneStrongBotOutscoresThreeGreedyBots`
-  keeps one Strong seat ahead of greedy. `Game.botChoice` picks Strong or Classic from
+  **not** peek. They see their own hand, `left: N`, and cards already played
+  (`BotContext.discarded` — `BigTwoGame` appends each play). Reading another seat's
+  cards is the Classic peek; `ignoresOtherPlayersHoleCards` fails if Strong starts.
+  Classic still peeks and lets a fellow bot's K/A/2 stand. Strong fights every seat.
+- Strong plans the fewest plays that empty the hand and holds twos, ace singles and
+  bombs as control. **Leading a two first, even when nothing beats it, made an earlier
+  Strong weaker than greedy** — keep that test. It will break one pair to answer a low
+  card rather than pass the lead away. Playing your last card wins immediately, so a
+  seat on one card must be stopped before their turn, not after. `oneStrongBotOutscoresThreeGreedyBots`
+  is one Strong seat vs three greedy (8 seeds, floor > 200; +344 on 2026-09-26).
+  Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
 
 ## Tests
@@ -167,7 +175,7 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit                  # 46 tests, ~30s
+swift test --package-path BigTwoKit                  # 67 tests, ~70s (Strong plans every turn)
 swift test --package-path BigTwoKit --filter PlayTests
 ```
 
