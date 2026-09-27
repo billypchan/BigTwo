@@ -275,6 +275,14 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - `PrivacyInfo.xcprivacy` declares UserDefaults (CA92.1) — update it if the app starts
   using another required-reason API. `ITSAppUsesNonExemptEncryption` is `false`.
 - Screenshots come from `testScreenTour` (6.9" iPhone 17 Pro Max, 1320×2868).
+  ⚠️ **The listing also needs a 4.7" set (750×1334)** — the app ships iOS 15+, and an
+  iPhone SE / 6s showed *no* screenshots at all with only the 6.9" set on the page: the
+  old App Store client does not fall back to it. Apple's chain is 4" ← 4.7" ← 5.5", so
+  4.7" covers every remaining iOS 15 screen. No simulator here can capture one (iOS 27
+  refuses every 4.7"/5.5" device), so `scripts/make_47_screenshots.py` re-cuts the 6.9"
+  shots — it drops bands of the flat bezel until the frame is 16:9, then scales — and
+  writes `iphone47_*.png` beside them. `deliver` files them by pixel size, `asc.swift`
+  by the prefix (`screenshots.displayTypes`).
 - Privacy policy: `PRIVACY.md` (no data collected). Support URL: the repo's Issues page.
 - ⚠️ **The App Store Connect API cannot create an app record** — the first version needs
   App Store Connect → Apps → **+** (name, primary language, bundle id `com.billchan.BigTwo`,

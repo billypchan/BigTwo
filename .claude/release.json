@@ -28,6 +28,7 @@
     "dir": "docs/store/screenshots",
     "source": "screenshots/ios",
     "displayTypes": {
+      "iphone47_": "APP_IPHONE_47",
       "default": "APP_IPHONE_67"
     }
   },
@@ -49,6 +50,7 @@
     "Export with the *other* key in ~/.appstoreconnect/private_keys/, not $ASC_KEY_ID: that one is App Manager and the export fails with 'Cloud signing permission error'. Same issuer id for both.",
     "Every territory except mainland China (a game there needs a license number).",
     "Xcode Cloud archives every push to main (GitHub check run \"BigTwo | Default | Archive - iOS\"). Metadata and screenshots are still web-only — there is no fastlane here, and the release notes are kept in docs/release_notes/<version>-<locale>.txt to be pasted in.",
+    "An iPhone SE / 6s on iOS 15 showed no screenshots at all: the old App Store client does not fall back to the 6.9\" set, so the listing needs its own 4.7\" (750x1334) images \u2014 they cover 4.7\" and, through Apple's fallback chain, 4\". No runtime here can capture them any more (iOS 27 refuses every 4.7\" simulator), so `python3 scripts/make_47_screenshots.py` re-cuts the 6.9\" shots: it drops bands of the flat bezel until the frame is 16:9, then scales. Files are `iphone47_*` \u2014 fastlane deliver files them by pixel size, asc.swift by that prefix.",
     "Store text and per-locale screenshots live in docs/store/ (see its README). Metadata is typed into App Store Connect by hand; the screenshots can go through asc.swift once an API key exists on the machine. Each locale must be created in App Store Connect before either can be uploaded, Filipino is not an App Store metadata language at all (no fil/tl in fastlane's ALL_LANGUAGES), so docs/store/fil is reference only."
   ]
 }

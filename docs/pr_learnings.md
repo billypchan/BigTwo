@@ -13,6 +13,37 @@ and the evidence.
 
 ---
 
+## store-screenshots-47 — iOS 15 機（SE／6s）商店頁一張截圖都沒有
+
+**舊版 App Store client 不會 fallback 到 6.9" 那一組。** Apple 文件寫的縮放鏈是
+4" ← 4.7" ← 5.5" ← 6.1" ← 6.5"，6.9" 只往下接到 6.5"；iPhone SE／6s（4.7"，iOS 15 封頂）
+找不到自己那一格，就整頁留白。App 支援到 iOS 15，上架頁卻只有 1320×2868 一組——這就是
+病灶。補一組 4.7"（750×1334）就同時蓋住 4.7" 與 4"（SE 一代）。
+
+**⚠️ 這台 Mac 已經拍不出 4.7" 了。** Xcode 27.1 只剩 iOS 27.1 runtime，
+`simctl create … iPhone-SE-3rd-generation … iOS-27-1` 直接回 *Incompatible device*
+（8 Plus 同理）。裝舊 runtime 要 7–10 GB，而 Data volume 只剩 20 GB，所以改成從既有的
+6.9" 截圖重切：`scripts/make_47_screenshots.py`。
+
+**切法比縮放重要。** 兩者長寬比不同（19.5:9 vs 16:9），直接 resize 會變形、fit 會加黑邊。
+但這個 App 的畫面本來就是「一個綠色方塊 + 上下純色 bezel」：bezel 是平的 #212121，
+量到的連續 bezel 區段是 0–73（狀態列上方）、119–600、2351–2867。從中間那兩段各砍掉一塊
+湊成 16:9，砍掉的整列都是同一個顏色，接起來看不出接縫，狀態列與遊戲畫面一個像素都沒動，
+最後才 Lanczos 縮到 750×1334。成品和當年在 iOS 26.3 SE 上真拍的 `screenshots/ios-se/`
+幾乎重疊，而且多了凍結的 9:41（真拍那組是 13:03）。
+
+**兩個工具用不同方式分辨機型：**`fastlane deliver` 看**像素尺寸**
+（`deliver/app_screenshot.rb` 的 `DEVICE_RESOLUTIONS`，750×1334 → `APP_IPHONE_47`），
+`asc.swift` 看**檔名前綴**（`screenshots.displayTypes`）。所以兩組可以放同一個語系資料夾，
+檔名取 `iphone47_NN_*.png` 就兩邊都對，順序也還是檔名順序。
+
+**⚠️ 截圖綁在版本上**：已上架的 1.0 不能回頭補圖，這組要跟著 **1.1** 的 listing 上去，
+1.1 上架那天才會出現在那些機器上。另外每個語系現在有兩組共 10 張＝Apple 每機型 10 張上限
+的一半，deliver 一定要加 `--overwrite_screenshots true`，否則是「加上去」而不是「換掉」。
+
+**沒有實機／模擬器驗證**：這次沒有跑任何測試（沒有 4.7" 模擬器可跑），只有人工看圖與尺寸
+檢查（35 張全部 750×1334）。
+
 ## store-localized-metadata（續）— 用 fastlane 真的把六個語系推上去了
 
 **`deliver` 會自己建立商店上還沒有的語系。** 實測：商店原本只有 en-US 與 zh-Hant（zh-Hant 是手動加的），metadata 目錄放一個 `zh-Hans/` 跑一次，回讀就變三個語系；vi／id／ms 一次上完。所以「語系一定要先在網頁建立」只對 `asc.swift` 成立（它列舉商店既有語系），對 deliver 不成立。
