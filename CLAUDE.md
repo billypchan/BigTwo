@@ -37,7 +37,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | Path | Contents |
 | --- | --- |
 | `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
-| `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
+| `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `AdUnits.swift` + `AdConsent.swift` (AdMob), `Views/` |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
@@ -171,6 +171,32 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
 
+## Ads
+
+A 320×50 AdMob banner sits in the **bezel below the card tracker** (`BannerAdView`).
+The square never moves for it: `GameView` subtracts `BannerAd.height` before it sizes
+the square, so the game is laid out against what is left.
+
+- ⚠️ **Ads are off in every UI test** (`LaunchOptions.showAds` is false under
+  `UITestMode`) — a banner would move the square and a tap near the bottom edge would
+  land on someone else's ad. `-showAds YES` puts it back for a one-off check.
+- **A fixed `AdSizeBanner`, never an anchored adaptive one.** Adaptive returns a height
+  that follows the screen (up to 15% of it); the 50pt strip would clip it.
+  `updateUIView` must not reload — every load is an impression.
+- `AdUnits.swift` holds Google's **public test ids**, and `GADApplicationIdentifier`
+  in `project.yml` is the test app id. ⚠️ Both must be swapped before ads ship, and the
+  plist one lives in `project.yml` — editing `BigTwo-Info.plist` by hand is lost on the
+  next generate. **Never tap a real ad in a debug build**; the account gets suspended.
+- UMP consent runs first (`AdConsent`): nothing is requested until it answers. In DEBUG
+  the geography is forced to `.EEA` so the form can be seen. ⚠️ `.disabled` does **not**
+  hide the form on a Mac that is physically in the EEA, and UMP stores its answer in the
+  app's UserDefaults — to see the form again, uninstall the app from the simulator.
+- ⚠️ **The App Store "App Privacy" answers are now wrong.** The listing says *Data Not
+  Collected*; with AdMob it must declare what Google collects. That questionnaire is
+  web-only. `PRIVACY.md` has been updated already.
+- `SKAdNetworkItems` is **not** in the plist. Ads serve without it; ad attribution (and
+  so revenue) is weaker. Google publishes the list if it is wanted.
+
 ## Game record
 
 Menu → Game History is the whole game, not only the deal on the table: the four hands
@@ -230,6 +256,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
 | `-dealsPerGame 1` | One-deal game, so autoplay opens **Final Score** / New Game |
 | `-keepPreferences YES` | Keep the UI-test preference suite across a relaunch |
+| `-showAds YES` | Put the banner back in a UI test — it is off in `UITestMode` by default |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.

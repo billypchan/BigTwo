@@ -9,6 +9,14 @@ options:
 packages:
   BigTwoKit:
     path: BigTwoKit
+  # The banner SDK. GoogleMobileAds pulls GoogleUserMessagingPlatform in itself, but the
+  # app links UMP directly for the consent form, so it is declared here as well.
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads
+    from: 13.10.0
+  GoogleUserMessagingPlatform:
+    url: https://github.com/googleads/swift-package-manager-google-user-messaging-platform
+    from: 3.1.0
 
 # SDK, team, Swift version: Configurations/Shared.xcconfig (included by Version.xcconfig).
 # Do not set IPHONEOS_DEPLOYMENT_TARGET here — pbxproj would override the xcconfig.
@@ -31,6 +39,10 @@ targets:
         type: syncedFolder
     dependencies:
       - package: BigTwoKit
+      - package: GoogleMobileAds
+        product: GoogleMobileAds
+      - package: GoogleUserMessagingPlatform
+        product: GoogleUserMessagingPlatform
     info:
       path: Configurations/BigTwo-Info.plist
       properties:
@@ -39,6 +51,9 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
         ITSAppUsesNonExemptEncryption: false
+        # Google's public test app id. Swap for the real one before the ads ship —
+        # AdUnits.swift holds the matching unit id and says the same thing.
+        GADApplicationIdentifier: ca-app-pub-3940256099942544~1458002511
         CFBundleLocalizations:
           - en
           - zh-Hant
