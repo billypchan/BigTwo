@@ -78,6 +78,8 @@ public final class BigTwoGame: ObservableObject {
   private var botTask: Task<Void, Never>?
   private var rng: SeededGenerator?
   private var prefersFiveCards = [true, false, true, false]
+  /// Played this deal. StrongBot may read this; it still must not read other hands.
+  private var discarded: [Card] = []
   private let botsMoveThemselves: Bool
 
   /// `humanSeats` empty lets the bots play every seat (UI-test autoplay).
@@ -157,6 +159,7 @@ public final class BigTwoGame: ObservableObject {
     tableOwner = nil
     lastActions = [nil, nil, nil, nil]
     passes = 0
+    discarded = []
     result = nil
     history = ["— Deal \(deal) —"]
 
@@ -202,6 +205,7 @@ public final class BigTwoGame: ObservableObject {
     if let table, !play.beats(table) { return "That does not beat \(table.label)" }
 
     seats[seat].hand.removeAll { cards.contains($0) }
+    discarded.append(contentsOf: cards)
     table = play
     tableOwner = seat
     lastActions[seat] = .played(play)
@@ -273,7 +277,8 @@ public final class BigTwoGame: ObservableObject {
                tableOwner: tableOwner,
                mustInclude: openingPlay ? .threeOfDiamonds : nil,
                rules: rules,
-               prefersFiveCards: prefersFiveCards[seat])
+               prefersFiveCards: prefersFiveCards[seat],
+               discarded: discarded)
   }
 
   /// What the bot would play from `seat` right now; nil is a pass.

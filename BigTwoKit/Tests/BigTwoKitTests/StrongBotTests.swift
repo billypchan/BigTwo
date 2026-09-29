@@ -6,7 +6,8 @@ struct StrongBotTests {
 
   func context(_ hand: String, table: String? = nil, owner: Int? = nil,
                others: [Int] = [13, 13, 13],
-               humanCards: String? = nil) throws -> BotContext {
+               humanCards: String? = nil,
+               discarded: [Card] = []) throws -> BotContext {
     let mine = try cards(hand)
     var spare = Card.deck.filter { !mine.contains($0) }
     var hands = [mine]
@@ -26,7 +27,8 @@ struct StrongBotTests {
     }
     return BotContext(seat: 0, hands: hands, isHuman: [false, true, false, false],
                       table: try table.map { try play($0) }, tableOwner: owner,
-                      mustInclude: nil, rules: .standard, prefersFiveCards: false)
+                      mustInclude: nil, rules: .standard, prefersFiveCards: false,
+                      discarded: discarded)
   }
 
   func choice(_ c: BotContext) -> String? {
@@ -57,8 +59,30 @@ struct StrongBotTests {
     #expect(choice(try context("4c 9h 2s", others: [1, 8, 8])) == "2s")
   }
 
-  @Test func doesNotLeadAPairWhenAnOpponentHasTwo() throws {
-    #expect(choice(try context("5c 5d 9h Kd", others: [2, 13, 13])) == "5d")
+  @Test func leadsThePairWhenAnOpponentHasTwoSingletons() throws {
+    // Two cards are rarely a pair. A single is easy for them to top, and then they lead the last one.
+    #expect(choice(try context("5c 5d 9h Kd", others: [2, 13, 13])) == "5d 5c")
+  }
+
+  @Test func leadsTheStraightAndKeepsTheTwo() throws {
+    #expect(choice(try context("3c 4d 5h 6s 7d 9c 2s")) == "3c 4d 5h 6s 7d")
+  }
+
+  @Test func leadsAComboWhenSomeoneHasOneCard() throws {
+    #expect(choice(try context("3c 4d 5h 6s 7d 2s", others: [1, 8, 8])) == "3c 4d 5h 6s 7d")
+  }
+
+  @Test func breaksTheLowPairRatherThanSpendTheTwo() throws {
+    #expect(choice(try context("4c 4d 2s", table: "3h")) == "4d")
+  }
+
+  @Test func cardCountingLetsALowSingleStand() throws {
+    let scared = try context("3c 9h", others: [1, 8, 8])
+    #expect(choice(scared) == "9h")
+    let mine = try cards("3c 9h")
+    let gone = Card.deck.filter { !mine.contains($0) }
+    let calm = try context("3c 9h", others: [1, 8, 8], discarded: gone)
+    #expect(choice(calm) == "3c")
   }
 
   @Test func doesNotBreakAPairToFollowWhileTheTableIsSafe() throws {
@@ -82,6 +106,7 @@ struct StrongBotTests {
       strongTotal += game.seats[0].score
     }
     print("one Strong vs three greedy over 8 games: \(strongTotal)")
-    #expect(strongTotal > 0, "a single StrongBot should beat greedy seats")
+    // 2026-09-26: +344. Floor stays under that so a reshuffle of the heuristic can move.
+    #expect(strongTotal > 200, "a single StrongBot should beat greedy seats")
   }
 }
