@@ -24,6 +24,12 @@ enum LaunchOptions {
       ?? UserDefaults.standard.string(forKey: "dealsPerGame").flatMap(Int.init)
   }
 
+  /// Ads are off in every UI test: a banner moves the square, and a tap near the
+  /// bottom edge would land on someone else's ad. `-showAds YES` puts it back.
+  static var showAds: Bool {
+    uiTestMode ? UserDefaults.standard.bool(forKey: "showAds") : true
+  }
+
   /// `-keepPreferences YES` keeps the UI-test preference suite across a relaunch.
   static var keepPreferences: Bool { UserDefaults.standard.bool(forKey: "keepPreferences") }
 

@@ -13,6 +13,40 @@ and the evidence.
 
 ---
 
+## admob-banner — 廣告條進 bezel，不動那個正方形
+
+**版面靠「先扣高度」而不是「疊上去」。** `GameView` 先把 `BannerAd.height` 從
+`geo.size.height` 扣掉，再拿剩下的高度去算 `side`，所以廣告一出現整盤棋只是整體縮
+一點點，正方形和牌記錄條的相對關係完全不變；廣告沒載到也一樣，因為那 50pt 是無條件
+預留的。
+
+**別用 anchored adaptive banner。** 第一版寫 `currentOrientationAnchoredAdaptiveBanner`，
+編譯器只說它 deprecated，但真正的問題是它回傳的高度跟著螢幕走（最多螢幕的 15%），
+塞進固定 50pt 的帶子裡會被裁掉。改成固定 `AdSizeBanner`（320×50）之後尺寸與預留值
+對齊，deprecation 警告也一併消失。`updateUIView` 不能再 `load()` — 每次 load 就是一次
+曝光。
+
+**UMP 的除錯地理設定救不了你，如果你人就在歐盟。** 想看廣告本體、把
+`debugSettings.geography` 從 `.EEA` 改成 `.disabled`，表單照樣跳出來——`.disabled` 只是
+不「強制」，實際位置仍是 EEA。而且 UMP 把答案寫進 app 的 UserDefaults，重裝前一直記得。
+最後是寫一支臨時 XCUITest 點掉 Consent 再截圖：`app.buttons["Consent"]` 會撞到
+*Multiple matching elements*（表單是 WebView，同一串字出現不只一次），要用
+`matching(NSPredicate…).firstMatch`。
+
+**UI 測試預設關廣告。** `LaunchOptions.showAds` 在 `UITestMode` 下是 false，`-showAds YES`
+才打開。理由有兩個：廣告會把正方形往上推、九張導覽截圖全部漂移；還有靠近底邊的點擊會
+落到別人的廣告上。這次全套 15 個測試通過、九張截圖只有 About 那張變了（版本號 1.3，
+跟廣告無關）。
+
+**Swift 6 下 SDK 的 callback 都在別的 actor。** UMP 與 `MobileAds.start` 的 completion
+不是 main actor，直接碰 `@Published` 會被警告；每個回呼裡都要 `Task { @MainActor in … }`。
+
+⚠️ **還沒做的**：真實 ad unit id（目前是 Google 公開測試 id）、App Store Connect 的
+App Privacy 問卷（現在寫「Data Not Collected」，有廣告就是錯的，只能在網頁改）、
+`SKAdNetworkItems`（不影響出廣告，影響歸因）。
+
+---
+
 ## game-record（續）— 一次看一盤，◄ ► 往回翻
 
 **把所有牌局接成一大段是錯的。** 原本 `historyText` 把本盤和最多 20 盤舊紀錄串成一份丟進捲動區，愈玩愈長、也分不出哪一段是哪一盤。改成 `historyRounds`：本盤（`id` 0，標題「本局／This game」）在前，舊的依序往後，對話框一次只顯示一盤，`history_prev`（◄，往回）／`history_next`（►）翻頁。`historyText` 留著，只是變成把每盤接起來——kit 測試讀的是它。

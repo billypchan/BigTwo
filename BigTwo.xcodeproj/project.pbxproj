@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27CD21131E80B53019135646 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = FADC921B7FE2D0F7E89E4087 /* GoogleMobileAds */; };
 		A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 986DEBFCCDA0844CFA741BF5 /* BigTwoKit */; };
+		E2572E164590372F0894CC83 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = 06206BC369383315183ACC01 /* GoogleUserMessagingPlatform */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +66,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */,
+				27CD21131E80B53019135646 /* GoogleMobileAds in Frameworks */,
+				E2572E164590372F0894CC83 /* GoogleUserMessagingPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +156,8 @@
 			name = BigTwo;
 			packageProductDependencies = (
 				986DEBFCCDA0844CFA741BF5 /* BigTwoKit */,
+				FADC921B7FE2D0F7E89E4087 /* GoogleMobileAds */,
+				06206BC369383315183ACC01 /* GoogleUserMessagingPlatform */,
 			);
 			productName = BigTwo;
 			productReference = D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */;
@@ -187,6 +193,8 @@
 			mainGroup = 5E67529F69D4DCCF9405F8B3;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				03919DA10DC06817C072B67F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				7D5FD29849A8A43DDDF4B6C5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
 				611E27EB4DF749BA5655C5CD /* XCLocalSwiftPackageReference "BigTwoKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -461,10 +469,39 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		03919DA10DC06817C072B67F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.10.0;
+			};
+		};
+		7D5FD29849A8A43DDDF4B6C5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-user-messaging-platform";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		06206BC369383315183ACC01 /* GoogleUserMessagingPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D5FD29849A8A43DDDF4B6C5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
+			productName = GoogleUserMessagingPlatform;
+		};
 		986DEBFCCDA0844CFA741BF5 /* BigTwoKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BigTwoKit;
+		};
+		FADC921B7FE2D0F7E89E4087 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03919DA10DC06817C072B67F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
