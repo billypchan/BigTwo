@@ -175,15 +175,27 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 
 Menu → Game History is the whole game, not only the deal on the table: the four hands
 as dealt, then every play and pass. The deal still in play shows `***` instead of
-those hands — the steps stay, because those cards are already on the table. Export
-writes that same text to `BigTwo.txt` and opens the share sheet; do not tap
-`history_export` in a UI test. A game that has had a step is kept on device
-(`Application Support/BigTwo/game-record.json`, 20 games) and shown under the current
-one. A launch that deals and quits before anyone plays is not kept — every cold start
-would otherwise archive an empty deal. Open-hand names update until the first step,
-because `applyDisplayNames` runs on appear after the deal. UI tests wipe that file
-unless `-keepPreferences YES`. This is the transcript. Killing the app still starts a
-new deal; it does not put the cards back on the table.
+those hands — the steps stay, because those cards are already on the table. A game
+that has had a step is kept on device (`Application Support/BigTwo/game-record.json`,
+20 games). A launch that deals and quits before anyone plays is not kept — every cold
+start would otherwise archive an empty deal. Open-hand names update until the first
+step, because `applyDisplayNames` runs on appear after the deal. UI tests wipe that
+file unless `-keepPreferences YES`. This is the transcript. Killing the app still
+starts a new deal; it does not put the cards back on the table.
+
+- **One game per screen.** `BigTwoGame.historyRounds` is the game on the table
+  (`id` 0, labelled "This game") followed by the saved ones, newest first; the dialog
+  pages with `history_prev` (◄, back in time) and `history_next` (►), and only that
+  round is on screen. `historyText` still joins them all, which is what the kit tests
+  read.
+- **Copy and Export take the round on screen**, not the library: Export writes it to
+  `BigTwo-<yyyy-MM-dd-HHmm>.txt` (from `GameRecord.startedAt`) and opens the share
+  sheet. ⚠️ **Do not tap `history_export` in a UI test** — the share sheet is another
+  process.
+- ⚠️ **This dialog draws a date** — the first thing in the app that does. The game on
+  the table reads "This game", so the tour is still date-free, but a screenshot that
+  pages back would churn daily; pin it as the **`screenshot-determinism`** skill
+  describes before adding one.
 
 ## Tests
 

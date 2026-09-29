@@ -13,6 +13,20 @@ and the evidence.
 
 ---
 
+## game-record（續）— 一次看一盤，◄ ► 往回翻
+
+**把所有牌局接成一大段是錯的。** 原本 `historyText` 把本盤和最多 20 盤舊紀錄串成一份丟進捲動區，愈玩愈長、也分不出哪一段是哪一盤。改成 `historyRounds`：本盤（`id` 0，標題「本局／This game」）在前，舊的依序往後，對話框一次只顯示一盤，`history_prev`（◄，往回）／`history_next`（►）翻頁。`historyText` 留著，只是變成把每盤接起來——kit 測試讀的是它。
+
+**舊紀錄要有時間才認得出來。** `GameRecord.startedAt` 是新欄位，發第一舖時寫入，宣告成 `Date?`：先前存下來的 JSON 沒有這個欄位，`decodeIfPresent` 才不會整份解不開（PR 還沒併，但規則照 `Preferences` 那條走）。畫面上的標籤用 `DateFormatter`（隨語系），檔名另外用 `en_US_POSIX` 的 `yyyy-MM-dd-HHmm`——本地化日期裡有斜線，不能當檔名。
+
+**⚠️ 這是 app 裡第一個會畫日期的畫面。** 目前 tour 不會拍到（本盤顯示「This game」），但哪天要拍翻頁後的畫面，日期每天都不一樣，得照 `screenshot-determinism` 那套先釘住。
+
+**翻頁的 UI 測試怎麼造出第二盤**：玩一步 → `app.terminate()` → 用 `-keepPreferences YES` 重開。重開時 `BigTwoGame.init` 會把有步數的舊紀錄歸檔，Game History 就有兩盤。證明會失敗：把 `historyRounds` 改成只回本盤，`history_prev` 變灰，測試在 `older.isEnabled` 掛掉（exit 65）。
+
+**⚠️ 自找的麻煩**：用 `git checkout <file>` 想還原「故意改壞」那一行，結果把整個檔案退回 HEAD，那一輪所有未 commit 的修改一起沒了。要還原故意的破壞，就照著改回來，或先 commit 再壞。
+
+---
+
 ## game-record — 進行中的手牌用 ***，匯出跟畫面同一份
 
 **遮的是「這一舖還沒結束」。** `cardsLeft == nil` 才遮。上一舖和已存的牌局照樣開牌，不然紀錄沒有用。匯出寫的是畫面上那份文字，進行中按匯出也不會把底牌寫進檔。

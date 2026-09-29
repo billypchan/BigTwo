@@ -21,6 +21,7 @@
 "New Game" = "Game baru";
 "Preferences" = "Pengaturan";
 "Game History" = "Riwayat";
+"This game" = "Permainan ini";
 "About" = "Tentang";
 
 /* Player names */
@@ -57,7 +58,6 @@
 "%d left" = "sisa %d";
 "DOUBLE!" = "DOBEL!";
 
-"Game History of deal %d" = "Riwayat ronde %d";
 "Copy" = "Salin";
 "Export" = "Ekspor";
 "About Big Two" = "Tentang Capsa";

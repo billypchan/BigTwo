@@ -21,6 +21,7 @@
 "New Game" = "Ván mới";
 "Preferences" = "Cài đặt";
 "Game History" = "Lịch sử";
+"This game" = "Trận này";
 "About" = "Giới thiệu";
 
 /* Player names */
@@ -57,7 +58,6 @@
 "%d left" = "còn %d";
 "DOUBLE!" = "GẤP ĐÔI!";
 
-"Game History of deal %d" = "Lịch sử ván %d";
 "Copy" = "Sao chép";
 "Export" = "Xuất";
 "About Big Two" = "Giới thiệu Big Two";

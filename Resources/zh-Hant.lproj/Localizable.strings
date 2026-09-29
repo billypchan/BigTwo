@@ -21,6 +21,7 @@
 "New Game" = "新局";
 "Preferences" = "設定";
 "Game History" = "牌局紀錄";
+"This game" = "本局";
 "About" = "關於";
 
 /* Player names */
@@ -58,7 +59,6 @@
 "%d left" = "剩 %d";
 "DOUBLE!" = "加倍！";
 
-"Game History of deal %d" = "第 %d 舖紀錄";
 "Copy" = "複製";
 "Export" = "匯出";
 "About Big Two" = "關於鋤大弟";

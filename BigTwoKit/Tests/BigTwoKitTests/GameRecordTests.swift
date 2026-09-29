@@ -53,6 +53,33 @@ struct GameRecordTests {
     #expect(game.history.contains { $0.hasPrefix("比爾:") })
   }
 
+  @Test func eachGameIsItsOwnRound() throws {
+    let url = FileManager.default.temporaryDirectory
+      .appendingPathComponent("bigtwo-record-\(UUID().uuidString).json")
+    defer { try? FileManager.default.removeItem(at: url) }
+    let store = GameRecordStore(url: url)
+
+    let game = BigTwoGame(seed: 2, humanSeats: [0, 1, 2, 3], botsMoveThemselves: false,
+                          recordStore: store)
+    #expect(game.historyRounds.count == 1)
+    #expect(game.historyRounds[0].isCurrent)
+    let seat = game.turn
+    let play = try #require(game.legalPlays(for: seat).first)
+    game.submit(play.cards, from: seat)
+    let step = "\(game.seats[seat].name): \(play.label)"
+
+    let again = BigTwoGame(seed: 3, botsMoveThemselves: false, recordStore: store)
+    #expect(again.historyRounds.count == 2)
+    #expect(again.historyRounds[0].isCurrent)
+    // The dialog pages back in time, so the game just finished is the second round.
+    #expect(!again.historyRounds[0].text.contains(step))
+    #expect(again.historyRounds[1].text.contains(step))
+    #expect(again.historyRounds[1].isCurrent == false)
+    #expect(again.historyRounds[1].startedAt != nil)
+    #expect(again.historyRounds[1].deals == 1)
+    #expect(again.historyText == again.historyRounds.map(\.text).joined(separator: "\n\n"))
+  }
+
   @Test func aPlayedGameIsKeptAndAnUnplayedDealIsNot() throws {
     let url = FileManager.default.temporaryDirectory
       .appendingPathComponent("bigtwo-record-\(UUID().uuidString).json")

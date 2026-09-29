@@ -21,6 +21,7 @@
 "New Game" = "Permainan baharu";
 "Preferences" = "Tetapan";
 "Game History" = "Sejarah";
+"This game" = "Permainan ini";
 "About" = "Perihal";
 
 /* Player names */
@@ -57,7 +58,6 @@
 "%d left" = "baki %d";
 "DOUBLE!" = "GANDA!";
 
-"Game History of deal %d" = "Sejarah pusingan %d";
 "Copy" = "Salin";
 "Export" = "Eksport";
 "About Big Two" = "Perihal Big Two";

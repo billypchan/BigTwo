@@ -158,7 +158,7 @@ struct GameView: View {
         }
       case .history:
         modal(u) {
-          HistoryDialogView(deal: game.deal, text: game.historyText) { self.dialog = nil }
+          HistoryDialogView(rounds: game.historyRounds) { self.dialog = nil }
         }
       case .about:
         modal(u) { AboutDialogView { self.dialog = nil } }

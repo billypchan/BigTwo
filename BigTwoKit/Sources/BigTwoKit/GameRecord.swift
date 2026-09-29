@@ -27,9 +27,13 @@ public struct GameRecord: Codable, Equatable, Sendable {
   }
 
   public var deals: [Deal]
+  /// When the first deal of this game was dealt. Optional: records written before
+  /// the history could be paged through carry no date.
+  public var startedAt: Date?
 
-  public init(deals: [Deal] = []) {
+  public init(deals: [Deal] = [], startedAt: Date? = nil) {
     self.deals = deals
+    self.startedAt = startedAt
   }
 
   public var hasSteps: Bool { deals.contains { !$0.steps.isEmpty } }

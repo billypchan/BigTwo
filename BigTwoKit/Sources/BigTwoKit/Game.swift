@@ -29,6 +29,23 @@ public enum SeatAction: Equatable, Sendable {
   case passed
 }
 
+/// One game's transcript, ready to show. `id` 0 is the game on the table.
+public struct HistoryRound: Identifiable, Sendable {
+  public let id: Int
+  public let startedAt: Date?
+  public let deals: Int
+  public let text: String
+
+  public var isCurrent: Bool { id == 0 }
+
+  public init(id: Int, startedAt: Date?, deals: Int, text: String) {
+    self.id = id
+    self.startedAt = startedAt
+    self.deals = deals
+    self.text = text
+  }
+}
+
 public struct DealResult: Identifiable, Sendable {
   public let deal: Int
   public let winner: Int
@@ -183,6 +200,7 @@ public final class BigTwoGame: ObservableObject {
     result = nil
     record.deals.append(GameRecord.Deal(number: deal, names: seats.map(\.name),
                                         hands: seats.map(\.hand)))
+    if record.startedAt == nil { record.startedAt = Date() }
     persist()
 
     // HK rules: the winner of the last deal leads. Otherwise 3♦ leads and must be played.
@@ -354,11 +372,21 @@ public final class BigTwoGame: ObservableObject {
     record.deals.flatMap { lines(for: $0, masked: $0.cardsLeft == nil) }
   }
 
-  /// Current game, then earlier games. Only the deal on the table hides its hands.
+  /// One game each — the game on the table first, then earlier games, newest first.
+  /// The dialog pages through these; nothing concatenates them on screen any more.
+  public var historyRounds: [HistoryRound] {
+    let current = HistoryRound(id: 0, startedAt: record.startedAt, deals: record.deals.count,
+                               text: render(record, hideOpenDeal: true))
+    let saved = library.saved.filter(\.hasSteps).enumerated().map { i, game in
+      HistoryRound(id: i + 1, startedAt: game.startedAt, deals: game.deals.count,
+                   text: render(game, hideOpenDeal: false))
+    }
+    return ([current] + saved).filter { !$0.text.isEmpty }
+  }
+
+  /// Every game in one string — what Copy on the Palm put in the Memo Pad.
   public var historyText: String {
-    let current = render(record, hideOpenDeal: true)
-    let saved = library.saved.filter(\.hasSteps).map { render($0, hideOpenDeal: false) }
-    return ([current] + saved).filter { !$0.isEmpty }.joined(separator: "\n\n")
+    historyRounds.map(\.text).joined(separator: "\n\n")
   }
 
   private func log(_ line: String) {

@@ -39,6 +39,42 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.element("history_text").label.contains("Bill: 3♦"))
     XCTAssertTrue(app.element("history_text").label.contains("***"), "hands stay hidden during the deal")
     XCTAssertTrue(app.buttons["history_export"].exists)
+    XCTAssertEqual(app.element("history_round").label, "This game")
+    XCTAssertFalse(app.buttons["history_prev"].isEnabled, "a first run has nothing earlier")
+    XCTAssertFalse(app.buttons["history_next"].isEnabled)
+  }
+
+  func testHistory_pagesBackToTheGameBeforeTheRelaunch() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    app.element("hand_3d").tap()
+    waitForCount(app.selectedHandCards, 1)
+    app.buttons["button_play"].tap()
+    waitForCount(app.handCards, 12)
+
+    // The record survives the relaunch; starting a game files the played one away.
+    app.terminate()
+    app = .bigTwo(["-keepPreferences", "YES"])
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    app.buttons["menu_button"].tap()
+    app.buttons["menu_history"].tap()
+    XCTAssertTrue(app.element("history_text").waitForExistence(timeout: 5))
+    XCTAssertEqual(app.element("history_round").label, "This game")
+    XCTAssertFalse(app.element("history_text").label.contains("Bill: 3♦"),
+                   "the new game has no steps yet")
+
+    let older = app.buttons["history_prev"]
+    XCTAssertTrue(older.isEnabled, "the game before the relaunch is a round of its own")
+    older.tap()
+    let round = app.element("history_round")
+    let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label != 'This game'"),
+                                            object: round)
+    XCTAssertEqual(XCTWaiter().wait(for: [changed], timeout: 5), .completed,
+                   "the earlier round is labelled with its date")
+    XCTAssertTrue(app.element("history_text").label.contains("Bill: 3♦"))
+    XCTAssertFalse(app.buttons["history_prev"].isEnabled, "only two rounds")
+    XCTAssertTrue(app.buttons["history_next"].isEnabled)
   }
 
   func testPass_showsPassInYourRow() {
