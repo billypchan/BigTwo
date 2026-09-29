@@ -21,6 +21,7 @@
 "New Game" = "新局";
 "Preferences" = "设置";
 "Game History" = "牌局记录";
+"This game" = "本盘";
 "About" = "关于";
 
 /* Player names */
@@ -58,8 +59,8 @@
 "%d left" = "剩 %d";
 "DOUBLE!" = "加倍！";
 
-"Game History of deal %d" = "第 %d 局记录";
 "Copy" = "复制";
+"Export" = "导出";
 "About Big Two" = "关于大老二";
 "Big Two %@" = "大老二 %@";
 "Remade for iPhone by Bill Chan, 2026." = "2026 年由Bill Chan改编为 iPhone 版。";

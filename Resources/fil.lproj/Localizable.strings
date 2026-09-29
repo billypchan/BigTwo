@@ -21,6 +21,7 @@
 "New Game" = "Bagong laro";
 "Preferences" = "Mga setting";
 "Game History" = "Kasaysayan";
+"This game" = "Larong ito";
 "About" = "Tungkol";
 
 /* Player names */
@@ -57,8 +58,8 @@
 "%d left" = "tira %d";
 "DOUBLE!" = "DOBLE!";
 
-"Game History of deal %d" = "Kasaysayan ng ronda %d";
 "Copy" = "Kopyahin";
+"Export" = "I-export";
 "About Big Two" = "Tungkol sa Pusoy Dos";
 "Big Two %@" = "Pusoy Dos %@";
 "Remade for iPhone by Bill Chan, 2026." = "Muling ginawa para sa iPhone ni Bill Chan, 2026.";
