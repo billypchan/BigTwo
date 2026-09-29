@@ -194,10 +194,27 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   `com.billchan.BigTwo.watch`) decides whether the game or the paywall is shown.
   Entitlements follow the Apple ID, so the watch asks the App Store itself rather than
   syncing a flag from the phone.
-- ⚠️ **There is no XCUITest on watchOS.** Nothing here can be covered by a UI test: the
-  watch screens are verified by `simctl io screenshot`, and the game logic underneath is
-  covered by `BigTwoKitTests`. `-unlocked YES` skips the paywall so the game can be
-  photographed — it is `#if DEBUG` only and a Release build does not compile it.
+- ⚠️ **The paywall is off**: `BigTwoWatchApp.paywallEnabled` is `false` until the product
+  exists in App Store Connect — until it does there is nothing to buy, so a paywall would
+  lock the game with no way past it. `WatchUnlock` and `WatchStoreView` are complete and
+  unused; flip that one constant to gate again.
+- **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
+  and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
+  (`-seed 2` gives it the same fixed deal the phone suite uses):
+
+  ```bash
+  xcodebuild test -project BigTwo.xcodeproj -scheme BigTwoWatch \
+    -destination 'platform=watchOS Simulator,id=<udid>' > run.log 2>&1; echo $?
+  ```
+
+  ⚠️ **A watch card must be one accessibility element.** `WatchCardView` is an `HStack` of
+  a rank and a suit, so the identifier on the row matched three elements and *every* tap
+  failed with *Multiple matching elements found*. `.accessibilityElement(children: .combine)`
+  is what makes `hand_3d` tappable.
+  ⚠️ `simctl status_bar override` answers *Operation not supported* on watchOS, so the
+  clock cannot be frozen and watch screenshots are **not** committed.
+- `-unlocked YES` skips the paywall in a debug build; it is `#if DEBUG` only and a Release
+  build does not compile it.
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.

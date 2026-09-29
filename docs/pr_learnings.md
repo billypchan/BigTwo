@@ -29,16 +29,27 @@ and the evidence.
 所以購買只能 gate 畫面。`WatchUnlock` 用 StoreKit 2 的 `Transaction.currentEntitlements`
 自己問 App Store——權利跟著 Apple ID 走，不必從手機同步旗標過來，手錶離線開也還是對的。
 
-**watchOS 沒有 XCUITest。** Apple 從來沒支援過，所以手錶畫面一行測試都寫不了。驗證只能靠
-`xcrun simctl io … screenshot`，底下的遊戲邏輯則靠既有的 72 個 kit 測試。為了在沒有自動化的
-情況下拍到遊戲畫面，加了 `-unlocked YES`——**`#if DEBUG` 包起來，Release 根本不編譯**。
+**watchOS 有 XCUITest——我一開始說沒有，是錯的。** Xcode 27 的 WatchOS 平台目錄裡就放著
+`XCUIAutomation.framework`，`xcodebuild test -scheme BigTwoWatch -destination 'platform=watchOS Simulator,…'`
+一跑就過。教訓：**先去 `/Applications/Xcode.app/…/Platforms/WatchOS.platform` 看一眼，
+不要憑印象斷言平台能力。**
+
+⚠️ **手錶上的卡片必須是單一無障礙元素。** `WatchCardView` 是 `HStack(rank, suit)`，識別碼套在
+外層時 `hand_3d` 會同時比中容器與兩個 Text，每一次 tap 都是
+*Multiple matching elements found*，三個測試裡有兩個直接掛掉。
+`.accessibilityElement(children: .combine)` 才讓它可點。iPhone 端沒踩到這個，因為那邊的
+`CardRowView` 用單一 row 手勢再按 x 座標挑牌。
 
 ⚠️ **`simctl launch` 不會套用 scheme 的 StoreKit 設定檔。** 只有從 Xcode 跑才會，所以指令列
 啟動時 paywall 上沒有價格（`Product.products` 回空陣列，`.locked(price: nil)`）。這代表**購買
 流程本身沒有端到端跑過**——只驗到 paywall 畫面與 `.unavailable` 的文案分支。
 
+**paywall 先關掉。** `BigTwoWatchApp.paywallEnabled = false`——商品在 App Store Connect
+還不存在，掛著 paywall 等於把遊戲鎖死而且沒有任何解法。`WatchUnlock` 與 `WatchStoreView`
+寫完了、留在樹上不動，商品建好後翻一個常數就恢復。
+
 ⚠️ **還沒做的**：App Store Connect 的 IAP 商品（只能在網頁建）、商店文案、iPhone 端的購買
-入口（目前只有手錶上那個 paywall，手機上完全看不到這個商品）。
+入口（手機上完全看不到這個商品）。
 
 ---
 

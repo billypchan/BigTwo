@@ -27,6 +27,9 @@ struct WatchCardView: View {
     .background(isSelected ? Color.ink : Color.cardFace)
     .overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.ink, lineWidth: 1))
     .clipShape(RoundedRectangle(cornerRadius: 3))
+    // One element, not a rank and a suit: without this the rows the identifier is put on
+    // match three times over and a UI test cannot tap a card at all.
+    .accessibilityElement(children: .combine)
     .accessibilityLabel(L10n.spokenCard(rankName: card.rank.name, suitName: card.suit.name))
     .accessibilityAddTraits(isSelected ? [.isSelected] : [])
   }

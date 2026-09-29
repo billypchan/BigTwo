@@ -10,6 +10,7 @@
 		2A1D9E518801EC86590EF4BC /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1E9AED8F0018997AF033D4F /* BigTwoKit */; };
 		4AFAC60F773A48A92D16FF96 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A852571B0C89898A92734F29 /* InfoPlist.strings */; };
 		7F0ED94B42DF2A63BCA961D9 /* BigTwoWatch.app in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = EB7E40368D51FB10F526D6BD /* BigTwoWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		84FD5984F9A60BEE521FEE1F /* WatchGameUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6340CA4513DE607CF337FE3F /* WatchGameUITests.swift */; };
 		89D534DEB3B883290D7C921C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55C6A95A29B45DFFA1118209 /* Localizable.strings */; };
 		A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 986DEBFCCDA0844CFA741BF5 /* BigTwoKit */; };
 		B7352E8AEB3975AD94BD06E9 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3CD85A8542B9E2E7A1D7657 /* L10n.swift */; };
@@ -30,6 +31,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F4CC6A192A7F30B280F045B5;
 			remoteInfo = BigTwo;
+		};
+		CD852367FF9C3226B077496D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF7EC009CAC5253B5543FB36 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CBD747A008B938F77DD955EF;
+			remoteInfo = BigTwoWatch;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -55,6 +63,7 @@
 		52290F1B718108730F0DB92A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5FA18003C81E57C532F3A2D0 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6102E8695E47D09E80D618A3 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		6340CA4513DE607CF337FE3F /* WatchGameUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchGameUITests.swift; sourceTree = "<group>"; };
 		6ACEA6881094DF846CEE1D59 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		76F01F782858F59497188D67 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		7B1F004D834D6695E3EAC88B /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -69,6 +78,7 @@
 		E32176153D68A88E857C858C /* BigTwoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BigTwoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3CD85A8542B9E2E7A1D7657 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		EB7E40368D51FB10F526D6BD /* BigTwoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigTwoWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEA726D847F93BA8E0C5A029 /* BigTwoWatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BigTwoWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD7FDCEE87FF6599AB8616CC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -155,8 +165,17 @@
 				D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */,
 				E32176153D68A88E857C858C /* BigTwoUITests.xctest */,
 				EB7E40368D51FB10F526D6BD /* BigTwoWatch.app */,
+				EEA726D847F93BA8E0C5A029 /* BigTwoWatchUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3E0E463A87B31F5C80D2B2D3 /* BigTwoWatchUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6340CA4513DE607CF337FE3F /* WatchGameUITests.swift */,
+			);
+			path = BigTwoWatchUITests;
 			sourceTree = "<group>";
 		};
 		5E67529F69D4DCCF9405F8B3 = {
@@ -166,6 +185,7 @@
 				AA983B1762A3843D4645D170 /* BigTwoApp */,
 				69E23FA008BEDC520EB4EF13 /* BigTwoUITests */,
 				2D466A22397134DD34D037F3 /* BigTwoWatch */,
+				3E0E463A87B31F5C80D2B2D3 /* BigTwoWatchUITests */,
 				C47E98700BE8F6BBA6FCA177 /* Configurations */,
 				635832212CE93223D4D8B082 /* Packages */,
 				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
@@ -204,6 +224,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		AEE8A6820507EFB446EB39DF /* BigTwoWatchUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FBD0B1667788CD730C2BD7D5 /* Build configuration list for PBXNativeTarget "BigTwoWatchUITests" */;
+			buildPhases = (
+				026FEAE7E467016C92F095CA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				447E2B12BD90ADE10C105030 /* PBXTargetDependency */,
+			);
+			name = BigTwoWatchUITests;
+			packageProductDependencies = (
+			);
+			productName = BigTwoWatchUITests;
+			productReference = EEA726D847F93BA8E0C5A029 /* BigTwoWatchUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		BFF8ED8CD8EE7A8C7594DE21 /* BigTwoUITests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58C4C699D81CAACF9D4C4AD3 /* Build configuration list for PBXNativeTarget "BigTwoUITests" */;
@@ -286,6 +324,11 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					AEE8A6820507EFB446EB39DF = {
+						DevelopmentTeam = G5GZ5MPEHS;
+						ProvisioningStyle = Automatic;
+						TestTargetID = CBD747A008B938F77DD955EF;
+					};
 					BFF8ED8CD8EE7A8C7594DE21 = {
 						DevelopmentTeam = G5GZ5MPEHS;
 						ProvisioningStyle = Automatic;
@@ -327,6 +370,7 @@
 				F4CC6A192A7F30B280F045B5 /* BigTwo */,
 				BFF8ED8CD8EE7A8C7594DE21 /* BigTwoUITests */,
 				CBD747A008B938F77DD955EF /* BigTwoWatch */,
+				AEE8A6820507EFB446EB39DF /* BigTwoWatchUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -358,6 +402,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		026FEAE7E467016C92F095CA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84FD5984F9A60BEE521FEE1F /* WatchGameUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AB392E60879C3839F85058F7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -384,6 +436,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		447E2B12BD90ADE10C105030 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CBD747A008B938F77DD955EF /* BigTwoWatch */;
+			targetProxy = CD852367FF9C3226B077496D /* PBXContainerItemProxy */;
+		};
 		581D9F6305C2B576D5CB1CA2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CBD747A008B938F77DD955EF /* BigTwoWatch */;
@@ -489,6 +546,27 @@
 			};
 			name = Debug;
 		};
+		42FCB47608ED7E41B141AD44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billchan.BigTwoWatchUITests;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = BigTwoWatch;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
 		459C42CE1E5BBD6E3BF4C368 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -568,6 +646,27 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "watchos watchsimulator";
 				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		64935C00C56DB8F8B956CCC8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.billchan.BigTwoWatchUITests;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = BigTwoWatch;
 				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
@@ -670,6 +769,15 @@
 			buildConfigurations = (
 				06DE4E599659CA2FA532438B /* Debug */,
 				4A25E09A438645FA192ADBE9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FBD0B1667788CD730C2BD7D5 /* Build configuration list for PBXNativeTarget "BigTwoWatchUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				42FCB47608ED7E41B141AD44 /* Debug */,
+				64935C00C56DB8F8B956CCC8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

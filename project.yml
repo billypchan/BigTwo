@@ -112,6 +112,25 @@ targets:
         SDKROOT: watchos
         SUPPORTED_PLATFORMS: watchos watchsimulator
 
+  BigTwoWatchUITests:
+    type: bundle.ui-testing
+    platform: watchOS
+    sources:
+      - path: BigTwoWatchUITests
+    dependencies:
+      - target: BigTwoWatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.billchan.BigTwoWatchUITests
+        TEST_TARGET_NAME: BigTwoWatch
+        GENERATE_INFOPLIST_FILE: YES
+        WATCHOS_DEPLOYMENT_TARGET: 10.0
+        TARGETED_DEVICE_FAMILY: 4
+        SDKROOT: watchos
+        SUPPORTED_PLATFORMS: watchos watchsimulator
+        # XCUIApplication is @MainActor; Swift 6 would need isolation on every test.
+        SWIFT_VERSION: "5.0"
+
   BigTwoUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -133,6 +152,11 @@ schemes:
     build:
       targets:
         BigTwoWatch: all
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - BigTwoWatchUITests
     run:
       # So a purchase can be made against the local product rather than the real store.
       storeKitConfiguration: Configurations/BigTwo.storekit
