@@ -84,3 +84,11 @@
 "queen" = "Q";
 "king" = "K";
 "ace" = "A";
+
+/* Apple Watch purchase */
+"Big Two on Apple Watch" = "Big Two trên Apple Watch";
+"Play the full game on your wrist. One purchase, no subscription." = "Chơi trọn ván ngay trên cổ tay. Mua một lần, không thuê bao.";
+"Buy %@" = "Mua %@";
+"Buy" = "Mua";
+"The App Store could not be reached." = "Không kết nối được App Store.";
+"Restore Purchase" = "Khôi phục";

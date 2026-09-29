@@ -13,6 +13,35 @@ and the evidence.
 
 ---
 
+## watch-app — Apple Watch 版，用一個 IAP 解鎖
+
+**手錶版幾乎是免費的，因為 kit 早就乾淨。** `BigTwoKit` 只 import Foundation，
+`Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
+真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
+
+**不要把 320×320 搬上手錶。** 46mm 螢幕塞不下正方形。改成：四欄 `LazyVGrid` 手牌
+（Digital Crown 捲動）、要壓的牌型一排小卡、Play/Pass 用 `safeAreaInset(edge: .bottom)`
+釘在底部。⚠️ 那條 bar **一定要有不透明底色**——第一版拿掉 `Color.felt` 之後手牌直接從
+按鈕底下捲過去，按鈕變成幽靈（截圖才看得出來，編譯完全不報）。按鈕預設的 watchOS 膠囊
+很高，`controlSize(.mini)` + 固定 34pt 才不會吃掉三分之一螢幕。
+
+**IAP 管的是能不能玩，不是能不能裝。** 手錶 app 是包在 iPhone app 裡出貨的，一定會裝上去，
+所以購買只能 gate 畫面。`WatchUnlock` 用 StoreKit 2 的 `Transaction.currentEntitlements`
+自己問 App Store——權利跟著 Apple ID 走，不必從手機同步旗標過來，手錶離線開也還是對的。
+
+**watchOS 沒有 XCUITest。** Apple 從來沒支援過，所以手錶畫面一行測試都寫不了。驗證只能靠
+`xcrun simctl io … screenshot`，底下的遊戲邏輯則靠既有的 72 個 kit 測試。為了在沒有自動化的
+情況下拍到遊戲畫面，加了 `-unlocked YES`——**`#if DEBUG` 包起來，Release 根本不編譯**。
+
+⚠️ **`simctl launch` 不會套用 scheme 的 StoreKit 設定檔。** 只有從 Xcode 跑才會，所以指令列
+啟動時 paywall 上沒有價格（`Product.products` 回空陣列，`.locked(price: nil)`）。這代表**購買
+流程本身沒有端到端跑過**——只驗到 paywall 畫面與 `.unavailable` 的文案分支。
+
+⚠️ **還沒做的**：App Store Connect 的 IAP 商品（只能在網頁建）、商店文案、iPhone 端的購買
+入口（目前只有手錶上那個 paywall，手機上完全看不到這個商品）。
+
+---
+
 ## game-record（續）— 一次看一盤，◄ ► 往回翻
 
 **把所有牌局接成一大段是錯的。** 原本 `historyText` 把本盤和最多 20 盤舊紀錄串成一份丟進捲動區，愈玩愈長、也分不出哪一段是哪一盤。改成 `historyRounds`：本盤（`id` 0，標題「本局／This game」）在前，舊的依序往後，對話框一次只顯示一盤，`history_prev`（◄，往回）／`history_next`（►）翻頁。`historyText` 留著，只是變成把每盤接起來——kit 測試讀的是它。

@@ -38,6 +38,8 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | --- | --- |
 | `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
+| `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
+| `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase) |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
@@ -170,6 +172,37 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   is one Strong seat vs three greedy (8 seeds, floor > 200; +344 on 2026-09-26).
   Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
+
+## Apple Watch, and the one in-app purchase
+
+`BigTwoWatch` is a watchOS 10 app embedded in the phone app
+(`BigTwo.app/Watch/BigTwoWatch.app`, bundle id `com.billchan.BigTwo.watchkitapp`). It
+runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit declares
+`.watchOS(.v10)` and imports only Foundation, which is why this cost nothing.
+
+- **The watch is not the square.** 320×320 does not fit a wrist. The hand is a
+  four-column `LazyVGrid` that scrolls under the Digital Crown, the play to beat is one
+  compact row, and **Play/Pass are pinned with `safeAreaInset(edge: .bottom)`** — 13
+  cards push them off the screen otherwise and a turn gets missed scrolling back.
+  ⚠️ That pinned bar needs an opaque `Color.felt` background: without one the hand
+  scrolls through it and the buttons read as ghosts.
+- The watch app shares `Palette.swift` and `L10n.swift` with the phone (both are
+  platform-neutral) and the same `Resources/*.lproj`, **minus** the iOS asset catalog and
+  `PrivacyInfo.xcprivacy` — a watch target must not carry those.
+- **The purchase gates play, not installation.** The watch app ships inside the phone
+  app, so it always installs; `WatchUnlock` (StoreKit 2, non-consumable
+  `com.billchan.BigTwo.watch`) decides whether the game or the paywall is shown.
+  Entitlements follow the Apple ID, so the watch asks the App Store itself rather than
+  syncing a flag from the phone.
+- ⚠️ **There is no XCUITest on watchOS.** Nothing here can be covered by a UI test: the
+  watch screens are verified by `simctl io screenshot`, and the game logic underneath is
+  covered by `BigTwoKitTests`. `-unlocked YES` skips the paywall so the game can be
+  photographed — it is `#if DEBUG` only and a Release build does not compile it.
+- `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
+  scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
+  from Xcode does, so a command-line launch shows the paywall with no price.
+- ⚠️ The IAP product must be created in **App Store Connect by hand** (no API key on this
+  machine), and the store listing needs its own copy for it.
 
 ## Game record
 
