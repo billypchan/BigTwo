@@ -54,3 +54,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-09-20 14:20 — iOS ✓ 3×1 testScreenTour (`-testLanguage fil|ms|id`) after the leftover English strings were localized (fil PASA/Klasiko/Malakas/Palo/Kodigo, ms+id PAS/ratu/raja)
 - 2026-09-20 14:28 — iOS ✓ 1/1 testScreenTour (`-testLanguage fil`, Slow/Fast → Mabagal/Mabilis: "Bilis:" was both the label and the Fast option)
 - 2026-09-20 14:45 — App Store (no test run) — six locales uploaded to the 1.1 listing with `fastlane deliver` on the stored spaceauth session; read back with `download_metadata` / `download_screenshots`: all six byte-identical, 5 screenshots each, copyright "2026 Bill Chan"
+- 2026-09-29 — App Store (no test run) — **v1.1 released**; tagged `v1.1` at `26c69b6` (the last successful Xcode Cloud archive on main), `main` bumped to 1.2. The 4.7" set was not on the 1.1 listing — it waits for 1.2.

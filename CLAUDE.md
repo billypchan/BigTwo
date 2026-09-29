@@ -316,7 +316,9 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
   version can be in Beta App Review** (`ANOTHER_BUILD_IN_REVIEW`): add the next build to
   the group, submit it once the previous review finishes.
 - Build numbers so far: 1.0 (1) old layout, 1.0 (2) square layout (submitted, then pulled),
-  1.0 (3) = (2) without "Palm" + white status bar — **released 2026-09-19**. Marketing URL left
+  1.0 (3) = (2) without "Palm" + white status bar — **released 2026-09-19**; **1.1 —
+  released 2026-09-29**, archived by Xcode Cloud from `26c69b6` (iOS 15+, seven UI
+  languages, six-locale listing), tagged `v1.1`. Marketing URL left
   empty on purpose: it pointed at the GitHub README, which tells the Palm story. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
   expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
 - ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
@@ -326,17 +328,19 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 47 kit tests and
-10 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
+Single-player against three bots is complete and runs on the simulator; 63 kit tests and
+14 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. App Store: **1.0 is live (released 2026-09-19)** — still untagged, tag `v1.0` at the
-   commit it was built from. `main` is **1.1** (iOS 15+, seven UI languages); Xcode Cloud
-   archives each push. ⚠️ The store listing is **en-US only** and the live 1.0 binary
-   declares English only (`languageCodesISO2A: ['EN']`); the localized listing text and
-   per-locale screenshots are ready in `docs/store/`, but each locale has to be created
-   in App Store Connect by hand first. ⚠️ No App Store Connect API key exists on this
-   Mac (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing
-   builds, uploading screenshots, submitting — is web-only until one is made.
+1. App Store: **1.1 is live (released 2026-09-29)**, tagged `v1.1` at `26c69b6`; 1.0 is
+   tagged `v1.0`. `main` is **1.2**; Xcode Cloud archives each push. The listing now
+   carries six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App
+   Store metadata language); `docs/store/` holds the copy of record. ⚠️ The **4.7"
+   (750×1334) screenshot set** (`scripts/make_47_screenshots.py`, PR #17) was **not**
+   uploaded before 1.1 shipped, so an iPhone SE / 6s on iOS 15 still sees no screenshots
+   — it goes on the **1.2** listing. ⚠️ No App Store Connect API key exists on this Mac
+   (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing builds,
+   uploading screenshots, submitting — is fastlane-on-a-session or web-only until one
+   is made.
 2. Save the game in progress — killing the app loses a 10-deal game.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,
    score balance (as in v2.2).
