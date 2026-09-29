@@ -37,7 +37,8 @@ struct AboutDialogView: View {
         VStack(alignment: .leading, spacing: 0) {
           row("Share this App", id: "about_share", action: shareApp)
           row("Rate this App", id: "about_rate", action: rateApp)
-          row("Report an Issue", id: "about_report") { open(Self.github) }
+          row("Report an Issue", id: "about_report") { open(Self.issues) }
+          row("Source", id: "about_source") { open(Self.github) }
           row("Follow on X", id: "about_x") { open(Self.twitter) }
         }
       }
@@ -57,7 +58,7 @@ struct AboutDialogView: View {
         .foregroundColor(.ink)
         .multilineTextAlignment(.leading)
         .frame(maxWidth: .infinity, alignment: .leading)
-        // 20u, not 44pt: four rows plus credits have to fit the 320 square.
+        // 20u, not 44pt: five rows plus credits have to fit the 320 square.
         .frame(minHeight: 20 * u, alignment: .leading)
         .contentShape(Rectangle())
     }
@@ -84,6 +85,7 @@ struct AboutDialogView: View {
 
   private static let appStore = URL(string: "https://apps.apple.com/app/id6811548119")
   private static let github = URL(string: "https://github.com/billypchan/BigTwo")
+  private static let issues = URL(string: "https://github.com/billypchan/BigTwo/issues")
   private static let twitter = URL(string: "https://x.com/billchanios")
 }
 

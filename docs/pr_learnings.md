@@ -13,6 +13,29 @@ and the evidence.
 
 ---
 
+## source-in-about — Source 按鈕搬家，順便發現模擬器沒了
+
+**Source 從 Preferences 搬到 About。** 偏好設定那排按鈕只剩 OK；About 的列表變成五列
+（Share / Rate / Report an Issue / Source / Follow on X）。既然兩個入口分開了，
+`about_report` 改指 `/issues`（以前和 Source 一樣指 repo 根目錄），`about_source` 指 repo。
+`"Source"` 這個 key 七個語系本來就有，不必新增字串；vi 的 "Nguồn" 是當初為了塞進 56 單位
+藥丸才縮的，現在是整列文字，寬度限制已經不在，但字串沒動。
+
+**五列還是塞得下 320 方框**——`row()` 的註解說「四列加 credits 要塞進去」，實測第五列加上去
+之後對話框底部仍在方框內（見 `screenshots/ios/ios_screen_07_about.png`）。再多一列就要量了。
+
+**⚠️ 這台 Mac 已經沒有 iPhone 17 Pro Max。** Xcode 升到 27.1，而 iOS 27.1 runtime 的
+`supportedDeviceTypes` 只有一個 **iPhone Duo**；`simctl create` 對 iPhone 17/18 全系列一律
+回 *Incompatible device*（code 403）。改用 **iPhone 16 Pro Max + iOS 18.6**，像素同樣是
+1320×2868（6.9"），所以截圖尺寸與商店那套一致；App 最低支援 iOS 15，18.6 在範圍內。
+代價是 `screenshots/ios/` 九張全部重拍（狀態列與字形由新 runtime 畫，加上版號變 1.2），
+不是只有改到的兩張。規則已寫進 CLAUDE.md § Simulator。
+
+**證明測試會失敗**：把 `about_source` 那一列拿掉重跑 `testAbout_showsSharedKit` →
+`Checking existence of "about_source" Any` 失敗（exit 65），裝回去再跑 → 綠。
+
+---
+
 ## store-screenshots-47 — iOS 15 機（SE／6s）商店頁一張截圖都沒有
 
 **舊版 App Store client 不會 fallback 到 6.9" 那一組。** Apple 文件寫的縮放鏈是
@@ -43,6 +66,8 @@ and the evidence.
 
 **沒有實機／模擬器驗證**：這次沒有跑任何測試（沒有 4.7" 模擬器可跑），只有人工看圖與尺寸
 檢查（35 張全部 750×1334）。
+
+---
 
 ## store-localized-metadata（續）— 用 fastlane 真的把六個語系推上去了
 
