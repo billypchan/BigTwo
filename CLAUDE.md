@@ -192,8 +192,12 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   `PalmPressStyle` exists on the phone: every built-in style fades a *disabled* button, so
   a white pill over the felt comes back translucent green. The style must not read
   `isEnabled` — the pill's own `enabled` greys the text instead.
-  ⚠️ **The hand starts below the fold**, so a UI test must scroll before it taps: a tap on
-  an element that is not `isHittable` lands somewhere else and fails silently.
+  ⚠️ **A watchOS UI test cannot scroll.** `swipeUp()` on the app *and* on the scroll view
+  both leave the screen byte-identical (proved by hashing the extracted PNGs), and the
+  Digital Crown has no XCUITest API. `isHittable` is no help either — it is `true` for
+  cards below the fold. So anything a test must tap, and anything a screenshot must show,
+  has to be on screen **without scrolling**; that is what caps how much chrome the watch
+  layout can afford above the hand.
 - The watch app shares `Palette.swift` and `L10n.swift` with the phone (both are
   platform-neutral) and the same `Resources/*.lproj`, **minus** the iOS asset catalog and
   `PrivacyInfo.xcprivacy` — a watch target must not carry those.

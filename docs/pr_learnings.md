@@ -32,9 +32,17 @@ SwiftUI 所有內建樣式都會把 **disabled** 的按鈕沖淡，白色藥丸�
 樣式本身不能去讀 `isEnabled`，改由 `enabled` 參數把文字塗成灰的。第一版用
 `.buttonStyle(.plain)` 就中了這個。
 
-⚠️ **手牌一開始在摺線下，UI 測試要先捲再點。** 對一個 `isHittable == false` 的元素 tap，
-XCUITest 不會報錯，它就是點到別的地方去——三個測試裡有兩個因此失敗，而且訊息是「never
-became selected」，完全看不出真正原因。測試裡加一個「捲到可點為止」的 helper 才穩。
+⚠️ **watchOS 的 UI 測試根本不能捲動。** 改版後手牌掉到摺線下，三個測試有兩個開始失敗，
+訊息是「never became selected」。我第一反應是加一個「捲到 `isHittable` 為止」的 helper，
+測試也確實轉綠——**但那個 helper 一次都沒執行過**。兩件事同時為真：
+
+- `isHittable` 對摺線下的牌也回 `true`，所以 `while !x.isHittable` 迴圈直接跳過；
+- `swipeUp()` 不管對 app 還是對 scroll view，畫面都**位元完全相同**（把抽出來的 PNG 做
+  雜湊才發現的），Digital Crown 也沒有 XCUITest API。
+
+真正修好 tap 的是**把玩家列壓扁、讓手牌第一排露出來**。教訓有兩層：一是別把「改了兩件事
+之後測試轉綠」當成「後改的那件事有效」；二是**手錶上凡是要點得到、要拍得到的東西，都必須
+不用捲就在畫面上**——這直接限制了手牌上方能擺多少 chrome。
 
 **IAP 管的是能不能玩，不是能不能裝。** 手錶 app 是包在 iPhone app 裡出貨的，一定會裝上去，
 所以購買只能 gate 畫面。`WatchUnlock` 用 StoreKit 2 的 `Transaction.currentEntitlements`

@@ -117,6 +117,7 @@ targets:
     platform: watchOS
     sources:
       - path: BigTwoWatchUITests
+        type: syncedFolder
     dependencies:
       - target: BigTwoWatch
     settings:

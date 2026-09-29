@@ -12,16 +12,14 @@ final class WatchGameUITests: XCTestCase {
     app.launch()
   }
 
-  /// A hand of 13 sits below the fold on a watch; a tap on an element that is not
-  /// hittable silently lands somewhere else, so scroll to it first.
-  private func scrolledTo(_ element: XCUIElement) -> XCUIElement {
+  /// ⚠️ There is deliberately no "scroll until hittable" dance here. `isHittable` is
+  /// true for every card in the hand, including the ones below the fold, so such a loop
+  /// never runs — it looks like a safeguard and is not one. What makes a tap land is the
+  /// layout: the first row of the hand has to be on screen. If that stops being true,
+  /// this test fails with "never became selected" and the layout is the thing to look at.
+  private func card(_ id: String) -> XCUIElement {
+    let element = app.descendants(matching: .any)[id]
     XCTAssertTrue(element.waitForExistence(timeout: 20))
-    var swipes = 0
-    while !element.isHittable && swipes < 8 {
-      app.swipeUp()
-      swipes += 1
-    }
-    XCTAssertTrue(element.isHittable, "\(element) never scrolled into reach")
     return element
   }
 
@@ -33,7 +31,7 @@ final class WatchGameUITests: XCTestCase {
   }
 
   func testTappingACardSelectsIt() {
-    let three = scrolledTo(app.descendants(matching: .any)["hand_3d"])
+    let three = card("hand_3d")
     XCTAssertFalse(three.isSelected)
 
     three.tap()
@@ -46,7 +44,7 @@ final class WatchGameUITests: XCTestCase {
 
   /// Leading the 3 of diamonds must empty the selection and shorten the hand.
   func testLeadingThreeOfDiamondsPlaysIt() {
-    let three = scrolledTo(app.descendants(matching: .any)["hand_3d"])
+    let three = card("hand_3d")
     three.tap()
 
     let lead = app.buttons["button_play"]

@@ -10,7 +10,6 @@
 		2A1D9E518801EC86590EF4BC /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1E9AED8F0018997AF033D4F /* BigTwoKit */; };
 		4AFAC60F773A48A92D16FF96 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A852571B0C89898A92734F29 /* InfoPlist.strings */; };
 		7F0ED94B42DF2A63BCA961D9 /* BigTwoWatch.app in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = EB7E40368D51FB10F526D6BD /* BigTwoWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		84FD5984F9A60BEE521FEE1F /* WatchGameUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6340CA4513DE607CF337FE3F /* WatchGameUITests.swift */; };
 		89D534DEB3B883290D7C921C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55C6A95A29B45DFFA1118209 /* Localizable.strings */; };
 		A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 986DEBFCCDA0844CFA741BF5 /* BigTwoKit */; };
 		B7352E8AEB3975AD94BD06E9 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3CD85A8542B9E2E7A1D7657 /* L10n.swift */; };
@@ -63,7 +62,6 @@
 		52290F1B718108730F0DB92A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5FA18003C81E57C532F3A2D0 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6102E8695E47D09E80D618A3 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		6340CA4513DE607CF337FE3F /* WatchGameUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchGameUITests.swift; sourceTree = "<group>"; };
 		6ACEA6881094DF846CEE1D59 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		76F01F782858F59497188D67 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		7B1F004D834D6695E3EAC88B /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -119,6 +117,15 @@
 			path = BigTwoUITests;
 			sourceTree = "<group>";
 		};
+		CFC1E73611E04177154931CC /* BigTwoWatchUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = BigTwoWatchUITests;
+			sourceTree = "<group>";
+		};
 		E3D485B5205684A1870C81B4 /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			explicitFileTypes = {
@@ -170,14 +177,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3E0E463A87B31F5C80D2B2D3 /* BigTwoWatchUITests */ = {
-			isa = PBXGroup;
-			children = (
-				6340CA4513DE607CF337FE3F /* WatchGameUITests.swift */,
-			);
-			path = BigTwoWatchUITests;
-			sourceTree = "<group>";
-		};
 		5E67529F69D4DCCF9405F8B3 = {
 			isa = PBXGroup;
 			children = (
@@ -185,7 +184,7 @@
 				AA983B1762A3843D4645D170 /* BigTwoApp */,
 				69E23FA008BEDC520EB4EF13 /* BigTwoUITests */,
 				2D466A22397134DD34D037F3 /* BigTwoWatch */,
-				3E0E463A87B31F5C80D2B2D3 /* BigTwoWatchUITests */,
+				CFC1E73611E04177154931CC /* BigTwoWatchUITests */,
 				C47E98700BE8F6BBA6FCA177 /* Configurations */,
 				635832212CE93223D4D8B082 /* Packages */,
 				17C9AF0B3B21FDAF0362F687 /* Resources */,
@@ -229,11 +228,15 @@
 			buildConfigurationList = FBD0B1667788CD730C2BD7D5 /* Build configuration list for PBXNativeTarget "BigTwoWatchUITests" */;
 			buildPhases = (
 				026FEAE7E467016C92F095CA /* Sources */,
+				1359738145EEC4CF3A6901FD /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				447E2B12BD90ADE10C105030 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CFC1E73611E04177154931CC /* BigTwoWatchUITests */,
 			);
 			name = BigTwoWatchUITests;
 			packageProductDependencies = (
@@ -383,6 +386,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1359738145EEC4CF3A6901FD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		853AD1134166564A3F246553 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -406,7 +416,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84FD5984F9A60BEE521FEE1F /* WatchGameUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
