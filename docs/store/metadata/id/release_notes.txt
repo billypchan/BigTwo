@@ -1,9 +1,8 @@
-Versi 1.1
+Versi 1.2
 
-• Kini dalam bahasa Mandarin tradisional, Mandarin sederhana, Indonesia, Filipina, Melayu, dan Vietnam
-• Nama pemain: pilih Nama di menu untuk mengganti nama tiap kursi; kursi Anda ditandai
-• Bot Kuat — hanya melihat kartunya sendiri dan melawan semua orang. Pengaturan, Bot: Klasik atau Kuat
-• Ketuk dua kali untuk mengambil pasangan bila jenis itu tinggal dua kartu
-• Sumber di Pengaturan membuka kode permainan di GitHub
-• Perbaikan tata letak kartu di layar iPhone terkecil
-• Jalan di iOS 15 ke atas
+• Riwayat menyimpan seluruh permainan: kartu keempat pemain saat dibagi, lalu tiap langkah dan PASS
+• 20 permainan terakhir tersimpan di perangkat — yang sedang berjalan tertulis "Permainan ini"
+• Buka satu per satu, maju atau mundur, untuk melihat permainan sebelumnya
+• Salin permainan di layar, atau Ekspor sebagai berkas teks untuk dibagikan
+• Sumber dipindahkan dari Pengaturan ke Tentang
+• Bot Kuat kini menyusun langkah paling sedikit untuk menghabiskan kartu dan menahan kartu penentu

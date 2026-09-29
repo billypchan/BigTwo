@@ -1,9 +1,8 @@
-Versi 1.1
+Versi 1.2
 
-• Kini dalam bahasa Cina tradisional, Cina ringkas, Indonesia, Filipina, Melayu dan Vietnam
-• Nama pemain: pilih Nama dalam menu untuk menukar nama mana-mana tempat duduk; tempat anda ditanda
-• Bot Kuat — hanya melihat kadnya sendiri dan melawan semua orang. Tetapan, Bot: Klasik atau Kuat
-• Ketik dua kali untuk mengambil pasangan apabila jenis itu tinggal dua kad
-• Sumber dalam Tetapan membuka kod permainan di GitHub
-• Pembetulan susun atur kad pada skrin iPhone terkecil
-• Berjalan pada iOS 15 ke atas
+• Sejarah menyimpan seluruh permainan: kad keempat-empat pemain semasa diagih, kemudian setiap langkah dan PASS
+• 20 permainan terakhir kekal pada peranti — yang di atas meja tertulis "Permainan ini"
+• Selak satu permainan pada satu masa, ke hadapan atau ke belakang
+• Salin permainan di skrin, atau Eksport sebagai fail teks untuk dikongsi
+• Sumber dipindahkan dari Tetapan ke Perihal
+• Bot Kuat kini merancang langkah paling sedikit untuk menghabiskan kad dan menyimpan kad kawalan
