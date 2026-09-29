@@ -1,8 +1,8 @@
 //
 //  WatchTitleBarView.swift
-//  Big Two — the phone's form title on a watch: a navy "Big Two" tab over a navy rule,
-//  with the deal counter where the phone puts it. It lives in the top safe-area inset,
-//  under the system clock, so it stays put while the table scrolls.
+//  Big Two — the phone's form title, shrunk into the watch's top bar so it shares the
+//  row with the system clock: the navy "Big Two" tab and the deal counter. The clock
+//  owns the right of that row, so both sit leading.
 //
 
 import SwiftUI
@@ -12,36 +12,27 @@ struct WatchTitleBarView: View {
   let dealsPerGame: Int
 
   var body: some View {
-    ZStack(alignment: .bottom) {
-      Rectangle().fill(Color.titleNavy).frame(height: 2)
-      HStack(alignment: .bottom, spacing: 0) {
-        Text(L10n.string("Big Two"))
-          .font(.palm(13, .heavy))
-          .foregroundColor(.felt)
-          .padding(.leading, 5)
-          .padding(.trailing, 8)
-          .frame(height: 20)
-          .background(
-            UnevenRoundedRectangle(topLeadingRadius: 6, topTrailingRadius: 6)
-              .fill(Color.titleNavy)
-          )
-        Spacer(minLength: 2)
-        Text(L10n.string("Deal %d/%d", deal, dealsPerGame))
-          .font(.palm(11))
-          .foregroundColor(.ink)
-          .lineLimit(1)
-          .minimumScaleFactor(0.7)
-          .padding(.trailing, 3)
-          .padding(.bottom, 3)
-          .accessibilityIdentifier("deal_label")
-      }
+    HStack(spacing: 4) {
+      Text(L10n.string("Big Two"))
+        .font(.palm(12, .heavy))
+        .foregroundColor(.felt)
+        .lineLimit(1)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 1)
+        .background(RoundedRectangle(cornerRadius: 4).fill(Color.titleNavy))
+      Text(L10n.string("Deal %d/%d", deal, dealsPerGame))
+        .font(.palm(11))
+        .foregroundColor(.ink)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .accessibilityIdentifier("deal_label")
     }
-    .frame(height: 22)
-    .background(Color.felt)
+    .fixedSize()
   }
 }
 
 #Preview {
   WatchTitleBarView(deal: 1, dealsPerGame: 10)
+    .padding()
     .background(Color.felt)
 }

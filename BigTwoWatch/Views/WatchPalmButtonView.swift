@@ -33,7 +33,7 @@ struct WatchPalmButtonView: View {
 /// SwiftUI's own styles fade a disabled button — a white pill over the felt comes back
 /// as translucent green. Palm greys the text and keeps the pill, so the style must not
 /// read `isEnabled` at all; `enabled` above colours the text instead.
-private struct WatchPalmPressStyle: ButtonStyle {
+struct WatchPalmPressStyle: ButtonStyle {
   func makeBody(configuration: Configuration) -> some View {
     configuration.label.opacity(configuration.isPressed ? 0.6 : 1)
   }

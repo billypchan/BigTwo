@@ -1,9 +1,10 @@
 //
 //  WatchGameView.swift
-//  Big Two on the watch, in the phone's shape: the navy title in the top safe area, the
-//  four player rows and your hand in the middle, Lead/Play and Pass in the bottom safe
-//  area. The square itself cannot come along — a wrist has no room for 320×320 — so the
-//  hand is a grid under the Digital Crown rather than a strip along the bottom edge.
+//  Big Two on the watch, in the phone's shape: the navy title and the deal counter share
+//  the top bar with the system clock, the four player rows and your hand fill the middle,
+//  and Lead/Play and Pass sit in the bottom safe area. The square itself cannot come
+//  along — a wrist has no room for 320×320 — so the hand is a grid under the Digital
+//  Crown rather than a strip along the bottom edge.
 //
 
 import BigTwoKit
@@ -29,6 +30,12 @@ struct WatchGameView: View {
   ]
 
   var body: some View {
+    // The top bar only exists inside a navigation stack; it is what puts the title on
+    // the clock's own row instead of costing a strip of the screen below it.
+    NavigationStack { table }
+  }
+
+  private var table: some View {
     ScrollView {
       VStack(spacing: 1) {
         ForEach(rowOrder, id: \.self) { s in
@@ -53,11 +60,12 @@ struct WatchGameView: View {
       }
       .padding(.horizontal, 2)
     }
-    // Chrome in the safe areas, table in the middle: the title and the buttons stay put
-    // while 13 cards scroll, so a turn is never missed scrolling back up.
-    .safeAreaInset(edge: .top, spacing: 0) {
-      WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
+    .toolbar {
+      ToolbarItem(placement: .topBarLeading) {
+        WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
+      }
     }
+    // The buttons stay put while 13 cards scroll, so a turn is never missed scrolling back.
     .safeAreaInset(edge: .bottom, spacing: 0) { controls }
     .background(Color.felt.ignoresSafeArea())
     .onChange(of: game.seats[seat].hand) { _ in
@@ -71,8 +79,9 @@ struct WatchGameView: View {
     }
   }
 
-  /// Hidden when it is not your turn, as on the phone — but the bar keeps its height so
-  /// the hand does not jump every time a bot moves.
+  /// Lead/Play and Pass are hidden when it is not your turn, as on the phone; the sort
+  /// toggle is not, because re-ordering your hand is something you do while you wait.
+  /// The bar keeps its height either way, so the hand does not jump when a bot moves.
   private var controls: some View {
     HStack(spacing: 4) {
       if isYourTurn {
@@ -84,7 +93,15 @@ struct WatchGameView: View {
           game.pass(from: seat)
         }
         .accessibilityIdentifier("button_pass")
+      } else {
+        Spacer(minLength: 0)
       }
+      // The glyph is the order a tap switches *to*, as on the phone.
+      WatchPalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
+        game.preferences.sortBySuit.toggle()
+      }
+      .accessibilityLabel(L10n.string(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit"))
+      .accessibilityIdentifier("button_sort")
     }
     .padding(.horizontal, 4)
     .padding(.bottom, 2)

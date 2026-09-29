@@ -8,7 +8,7 @@ final class WatchGameUITests: XCTestCase {
   override func setUp() {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["-AppleLanguages", "(en)", "-seed", "2"]
+    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", "2"]
     app.launch()
   }
 
@@ -40,6 +40,21 @@ final class WatchGameUITests: XCTestCase {
     let outcome = XCTWaiter().wait(
       for: [XCTNSPredicateExpectation(predicate: selected, object: three)], timeout: 10)
     XCTAssertEqual(outcome, .completed, "the 3 of diamonds never became selected")
+  }
+
+  /// The sort icon shows the order a tap switches *to*, so tapping it flips the label.
+  func testSortButtonFlipsTheOrder() {
+    let sort = app.buttons["button_sort"]
+    XCTAssertTrue(sort.waitForExistence(timeout: 20))
+    XCTAssertEqual(sort.label, "Sort by suit")
+
+    sort.tap()
+    let flipped = XCTWaiter().wait(
+      for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "Sort by rank"),
+                                      object: sort)], timeout: 10)
+    XCTAssertEqual(flipped, .completed, "the sort icon never offered the other order")
+    // The hand is re-ordered, not re-dealt.
+    XCTAssertTrue(card("hand_3d").exists)
   }
 
   /// Leading the 3 of diamonds must empty the selection and shorten the hand.

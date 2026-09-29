@@ -181,12 +181,17 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit declares
 `.watchOS(.v10)` and imports only Foundation, which is why this cost nothing.
 
-- **Same shape as the phone, chrome in the safe areas.** The navy "Big Two" tab over its
-  navy rule with `Deal n/10` is `safeAreaInset(edge: .top)`; Lead/Play and Pass are
-  `safeAreaInset(edge: .bottom)`. Between them: one row per player in play order from you
-  (name chip inverted on that player's turn, their last move, cards left), the prompt, and
-  your hand. Only the 320×320 square itself is dropped — a wrist has no room — so the hand
-  is an adaptive `LazyVGrid` that scrolls under the Digital Crown.
+- **Same shape as the phone, chrome in the safe areas.** The navy "Big Two" tab and
+  `Deal n/10` share the **top bar with the system clock** — a `ToolbarItem(placement:
+  .topBarLeading)` inside a `NavigationStack`, not a strip of screen below the clock;
+  Lead/Play, Pass and the sort icon are `safeAreaInset(edge: .bottom)`. Between them: one
+  row per player in play order from you (name chip inverted on that player's turn, their
+  last move, cards left), the prompt, and your hand. Only the 320×320 square itself is
+  dropped — a wrist has no room — so the hand is an adaptive `LazyVGrid` that scrolls
+  under the Digital Crown. Putting the title on the clock's row is what buys the space
+  for a **full first row of cards** to be visible without scrolling.
+  Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
+  not, and shows the order a tap switches *to* (`♠` / `2`).
   ⚠️ The pinned bars need an opaque `Color.felt` background: without one the hand scrolls
   through them and the buttons read as ghosts.
   ⚠️ **`WatchPalmButtonView` needs its own `ButtonStyle`**, for the same reason
@@ -207,6 +212,10 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   `com.billchan.BigTwo.watch`) decides whether the game or the paywall is shown.
   Entitlements follow the Apple ID, so the watch asks the App Store itself rather than
   syncing a flag from the phone.
+- ⚠️ **The watch keeps its own `PreferencesStore`**, and under `UITestMode` it is a
+  throwaway suite wiped each launch — exactly as on the phone. Without that a test that
+  toggles the sort order saves it and the *next* run starts in the other order and fails
+  on its first assertion. That is not hypothetical; it happened.
 - ⚠️ **The paywall is off**: `BigTwoWatchApp.paywallEnabled` is `false` until the product
   exists in App Store Connect — until it does there is nothing to buy, so a paywall would
   lock the game with no way past it. `WatchUnlock` and `WatchStoreView` are complete and

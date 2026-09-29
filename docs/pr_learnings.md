@@ -19,6 +19,18 @@ and the evidence.
 `Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
 真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
 
+**標題放進系統時鐘那一列，是整個版面的關鍵。** 一開始把 navy 標題列做成
+`safeAreaInset(edge: .top)`，它自己吃掉一條螢幕，手牌第一排只露得出點數那一截。改成
+`NavigationStack` + `ToolbarItem(placement: .topBarLeading)`，標題與 `Deal n/10` 與系統
+時鐘同列，省下的那條剛好讓**第一排牌完整顯示**——而這在手錶上是硬需求，因為 UI 測試根本
+不能捲動（見下）。
+
+⚠️ **手錶自己的偏好設定也要有測試隔離。** 加上 `PreferencesStore` 讓排序順序存得住之後，
+一個切換排序的測試會把結果存起來，**下一次執行**就從相反的順序開始、第一個斷言直接掛。
+這不是假設——故意弄壞排序那一輪跑完，還原後整套就紅了，錯誤訊息還完全指向別的地方。
+解法跟手機端一樣：`UITestMode` 下用丟棄式 suite，每次啟動清掉。驗證方式是同一個測試連跑
+兩次。
+
 **手錶版照 iPhone 版的形狀做，chrome 放上下 safe area。** navy「Big Two」頁籤＋navy 橫線
 ＋`Deal n/10` 放 `safeAreaInset(edge: .top)`，Lead/Play 與 Pass 放
 `safeAreaInset(edge: .bottom)`，中間才是四列玩家、提示、手牌。只有 320×320 正方形本身沒搬

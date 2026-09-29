@@ -15,14 +15,38 @@ struct BigTwoWatchApp: App {
   /// `WatchUnlock` and `WatchStoreView` are complete and unused — flip this to gate again.
   private static let paywallEnabled = false
 
+  private static let uiTestSuite = "WatchUITestPreferences"
+
   /// `-seed 2` deals the same hands every launch, so a UI test can assert on cards.
   private static var seed: UInt64? {
     UserDefaults.standard.string(forKey: "seed").flatMap(UInt64.init)
   }
 
+  /// The watch keeps its own preferences, so the sort order survives a relaunch the way
+  /// it does on the phone. Nothing is shared with the phone's copy — they are separate
+  /// devices running separate games.
+  ///
+  /// ⚠️ Under `UITestMode` this is a throwaway suite, wiped each launch. Without that a
+  /// test that toggles the sort order saves it, and the *next* run starts in the other
+  /// order and fails on its first assertion — which is exactly what happened once.
+  private static func makeStore() -> PreferencesStore {
+    guard ProcessInfo.processInfo.arguments.contains("UITestMode"),
+          let defaults = UserDefaults(suiteName: uiTestSuite)
+    else { return PreferencesStore() }
+    defaults.removePersistentDomain(forName: uiTestSuite)
+    return PreferencesStore(defaults: defaults)
+  }
+
+  private let store: PreferencesStore
   @StateObject private var unlock = WatchUnlock()
-  @StateObject private var game = BigTwoGame(preferences: Preferences(), seed: seed,
-                                             humanSeats: [1])
+  @StateObject private var game: BigTwoGame
+
+  init() {
+    let store = Self.makeStore()
+    self.store = store
+    _game = StateObject(wrappedValue: BigTwoGame(preferences: store.load(), seed: Self.seed,
+                                                 humanSeats: [1]))
+  }
 
   var body: some Scene {
     WindowGroup {
@@ -40,6 +64,7 @@ struct BigTwoWatchApp: App {
           }
         }
       }
+      .onChange(of: game.preferences) { store.save($0) }
       .task {
         guard Self.paywallEnabled else { return }
         await unlock.refresh()
