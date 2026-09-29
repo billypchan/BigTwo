@@ -11,7 +11,6 @@ struct PreferencesDialogView: View {
   let onOK: () -> Void
 
   @Environment(\.palmUnit) private var u
-  @Environment(\.openURL) private var openURL
 
   var body: some View {
     PalmDialogView(title: L10n.string("Preferences")) {
@@ -45,14 +44,7 @@ struct PreferencesDialogView: View {
     } buttons: {
       PalmButtonView(title: L10n.string("OK"), width: 40, action: onOK)
         .accessibilityIdentifier("pref_ok")
-      PalmButtonView(title: L10n.string("Source"), width: 56, action: openSource)
-        .accessibilityIdentifier("pref_source")
     }
-  }
-
-  private func openSource() {
-    guard let url = URL(string: "https://github.com/billypchan/BigTwo") else { return }
-    openURL(url)
   }
 }
 

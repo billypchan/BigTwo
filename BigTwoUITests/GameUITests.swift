@@ -117,6 +117,8 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.element("about_share").waitForExistence(timeout: 5))
     XCTAssertTrue(app.element("about_rate").exists)
     XCTAssertTrue(app.element("about_report").exists)
+    // Moved here from Preferences: the repo link belongs with the other credits rows.
+    XCTAssertTrue(app.element("about_source").exists)
     XCTAssertTrue(app.element("about_x").exists)
     XCTAssertFalse(app.buttons["about_sharedkit"].exists)
     XCTAssertEqual(app.state, .runningForeground)
@@ -161,7 +163,7 @@ final class GameUITests: XCTestCase {
     openPreferences()
     let hk = app.buttons["pref_hongKong"]
     XCTAssertTrue(hk.waitForExistence(timeout: 5))
-    XCTAssertTrue(app.buttons["pref_source"].exists)
+    XCTAssertFalse(app.buttons["pref_source"].exists, "Source lives in About now")
     XCTAssertTrue(app.buttons["pref_bots_Strong"].isSelected)
     XCTAssertEqual(hk.value as? String, "0")
     hk.tap()
@@ -178,7 +180,6 @@ final class GameUITests: XCTestCase {
     XCTAssertEqual(app.buttons["pref_hongKong"].value as? String, "1")
     XCTAssertTrue(app.buttons["pref_speed_Fast"].isSelected)
     XCTAssertTrue(app.buttons["pref_bots_Classic"].isSelected)
-    XCTAssertTrue(app.buttons["pref_source"].exists)
   }
 
   func testNames_customNameShowsOnTheTableAndSurvivesARelaunch() {

@@ -107,7 +107,8 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   languages and no test fails (`"I will not play with real money."` with a trailing
   period did exactly that in the About dialog; the four About rows had no entry at all).
   ⚠️ A fixed-width pill (`PalmButtonView.width`) does not grow: check a long
-  translation in the screenshot, or shorten it (vi "Source" is "Nguồn", not "Mã nguồn").
+  translation in the screenshot, or shorten it (vi "Source" is "Nguồn", not "Mã nguồn" —
+  it was a pill in Preferences; it is an About row now, but the lesson stands).
   **Screenshot another language**: `xcodebuild test … -only-testing:BigTwoUITests/ScreenTourUITests/testScreenTour -testLanguage vi`
   and extract into a scratch dir. `XCUIApplication.uiTestLanguage` reads the runner's
   own `-AppleLanguages` argument, so the label assertions stand aside; the run stays
@@ -206,7 +207,8 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
-- ⚠️ **Do not tap `pref_source`.** It opens Safari; the test cannot come back.
+- ⚠️ **Do not tap `about_source`** (nor `about_report`). They open Safari; the test
+  cannot come back.
 - ⚠️ **Never pipe `xcodebuild` into `tail`/`head`** — `$?` becomes the pipe's. Redirect,
   then grep `Executed [0-9]+ test` (it says "1 test", singular — a `tests` pattern misses
   it). A mistyped `-only-testing:` runs zero tests and still prints `** TEST SUCCEEDED **`.
@@ -248,9 +250,17 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - ⚠️ **Checked 2026-09-13: the Data volume is 99 % full (≈3 GB free).** Time Machine and
   cache deletion push the load average to 50–75 and every UI test slows down (launch
   took 18 s). Free space before trusting a timing failure.
-- This Mac (checked 2026-09-13): **Xcode 26.3**, iOS 26.3 runtime. Use **iPhone 17 Pro Max**
-  (`xcrun simctl list devices available` for the UDID — pin by `id=`, never by a `name=`
-  that two devices share).
+- ⚠️ **Checked 2026-09-29: this Mac is on Xcode 27.1, and its iOS 27.1 runtime supports
+  exactly one device — "iPhone Duo".** `simctl create` answers *Incompatible device* for
+  every iPhone 17/18 type, so there is no iPhone 17 Pro Max any more. The screen tour is
+  captured on an **iPhone 16 Pro Max on the iOS 18.6 runtime**, which is the same
+  **1320×2868** the 6.9" store set needs, and the app ships iOS 15+ so 18.6 is in range.
+  Make your own device (`xcrun simctl create "BigTwo 16 Pro Max"
+  com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max
+  com.apple.CoreSimulator.SimRuntime.iOS-18-6`) rather than borrowing a booted one — pin
+  by `id=`, never by a `name=` that two devices share.
+- Earlier (2026-09-13): Xcode 26.3, iOS 26.3, iPhone 17 Pro Max — what every screenshot
+  before 2026-09-29 was shot on.
 - **Never pass `-derivedDataPath`**, and test in this checkout (not a worktree or `/tmp`
   clone) — both force a full rebuild in a fresh DerivedData tree.
 
@@ -328,16 +338,16 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 63 kit tests and
+Single-player against three bots is complete and runs on the simulator; 67 kit tests and
 14 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.1 is live (released 2026-09-29)**, tagged `v1.1` at `26c69b6`; 1.0 is
    tagged `v1.0`. `main` is **1.2**; Xcode Cloud archives each push. The listing now
    carries six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App
    Store metadata language); `docs/store/` holds the copy of record. ⚠️ The **4.7"
-   (750×1334) screenshot set** (`scripts/make_47_screenshots.py`, PR #17) was **not**
-   uploaded before 1.1 shipped, so an iPhone SE / 6s on iOS 15 still sees no screenshots
-   — it goes on the **1.2** listing. ⚠️ No App Store Connect API key exists on this Mac
+   (750×1334) screenshot set** is in the repo (`scripts/make_47_screenshots.py`) but was
+   **not** uploaded before 1.1 shipped, so an iPhone SE / 6s on iOS 15 still sees no
+   screenshots — it goes on the **1.2** listing. ⚠️ No App Store Connect API key exists on this Mac
    (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing builds,
    uploading screenshots, submitting — is fastlane-on-a-session or web-only until one
    is made.
