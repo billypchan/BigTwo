@@ -21,10 +21,10 @@ struct WatchStoreView: View {
 
         switch unlock.state {
         case .locked(let price):
-          Button(price.map { L10n.string("Buy %@", $0) } ?? L10n.string("Buy")) {
+          WatchPalmButtonView(title: price.map { L10n.string("Buy %@", $0) } ?? L10n.string("Buy"),
+                              enabled: !unlock.isWorking) {
             Task { await unlock.buy() }
           }
-          .disabled(unlock.isWorking)
           .accessibilityIdentifier("store_buy")
         case .unavailable:
           // Not the same as "not bought" — say so, or a flat network looks like a refusal.
@@ -36,10 +36,9 @@ struct WatchStoreView: View {
           ProgressView()
         }
 
-        Button(L10n.string("Restore Purchase")) {
+        WatchPalmButtonView(title: L10n.string("Restore Purchase"), enabled: !unlock.isWorking) {
           Task { await unlock.restore() }
         }
-        .disabled(unlock.isWorking)
         .accessibilityIdentifier("store_restore")
       }
       .padding(.horizontal, 4)

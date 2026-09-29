@@ -29,7 +29,7 @@ struct WatchScoreView: View {
           }
           .font(.system(size: 13))
         }
-        Button(L10n.string(gameOver ? "New Game" : "OK"), action: onContinue)
+        WatchPalmButtonView(title: L10n.string(gameOver ? "New Game" : "OK"), action: onContinue)
           .accessibilityIdentifier("score_ok")
       }
       .padding(.horizontal, 4)

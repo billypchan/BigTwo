@@ -1,8 +1,9 @@
 //
 //  WatchGameView.swift
-//  Big Two on the watch: deal counter, the play to beat, your hand as a grid, and the
-//  two buttons. Everything scrolls under the Digital Crown — 13 cards never fit a watch
-//  screen, and a hand that has to be swiped is worse than one that is scrolled.
+//  Big Two on the watch, in the phone's shape: the navy title in the top safe area, the
+//  four player rows and your hand in the middle, Lead/Play and Pass in the bottom safe
+//  area. The square itself cannot come along — a wrist has no room for 320×320 — so the
+//  hand is a grid under the Digital Crown rather than a strip along the bottom edge.
 //
 
 import BigTwoKit
@@ -13,22 +14,38 @@ struct WatchGameView: View {
   @State private var selection: Set<Card> = []
   @State private var message: String?
 
+  private static let handCardHeight: CGFloat = 34
+
   private var seat: Int { game.humanSeat ?? 1 }
   private var hand: [Card] {
     (game.preferences.sortBySuit ? HandSort.bySuit : .byRank).sorted(game.seats[seat].hand)
   }
   private var isYourTurn: Bool { game.turn == seat && game.isHumanTurn && game.result == nil }
+  /// Play order starting from you, as on the phone.
+  private var rowOrder: [Int] { (0..<4).map { (seat + $0) % 4 } }
 
-  private let columns = Array(repeating: GridItem(.flexible(), spacing: 3), count: 4)
+  private let columns = [
+    GridItem(.adaptive(minimum: WatchGameView.handCardHeight * WatchCardView.aspect), spacing: 2)
+  ]
 
   var body: some View {
     ScrollView {
-      VStack(spacing: 6) {
-        header
-        table
-        LazyVGrid(columns: columns, spacing: 3) {
+      VStack(spacing: 1) {
+        ForEach(rowOrder, id: \.self) { s in
+          WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
+                             isTurn: game.turn == s && game.result == nil)
+        }
+        Text(verbatim: message ?? prompt)
+          .font(.palm(12, .heavy))
+          .foregroundColor(.ink)
+          .lineLimit(2)
+          .minimumScaleFactor(0.7)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .accessibilityIdentifier("prompt")
+        LazyVGrid(columns: columns, spacing: 2) {
           ForEach(hand) { card in
-            WatchCardView(card: card, isSelected: selection.contains(card))
+            WatchCardView(card: card, selected: selection.contains(card),
+                          height: Self.handCardHeight)
               .onTapGesture { toggle(card) }
               .accessibilityIdentifier("hand_\(card.code)")
           }
@@ -36,9 +53,12 @@ struct WatchGameView: View {
       }
       .padding(.horizontal, 2)
     }
-    // Pinned, not scrolled with the hand: 13 cards push the buttons off a watch screen,
-    // and having to scroll back up to play is how a turn gets missed.
-    .safeAreaInset(edge: .bottom) { buttons }
+    // Chrome in the safe areas, table in the middle: the title and the buttons stay put
+    // while 13 cards scroll, so a turn is never missed scrolling back up.
+    .safeAreaInset(edge: .top, spacing: 0) {
+      WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
+    }
+    .safeAreaInset(edge: .bottom, spacing: 0) { controls }
     .background(Color.felt.ignoresSafeArea())
     .onChange(of: game.seats[seat].hand) { _ in
       selection = []
@@ -51,60 +71,28 @@ struct WatchGameView: View {
     }
   }
 
-  private var header: some View {
-    HStack {
-      Text(verbatim: L10n.string("Deal %d/%d", game.deal, game.rules.dealsPerGame))
-      Spacer()
-      Text(verbatim: L10n.string("left: %d", game.seats[seat].hand.count))
-    }
-    .font(.system(size: 12, weight: .bold))
-    .foregroundColor(.ink)
-  }
-
-  /// The play to beat, or whose turn it is — the watch has room for one line, so it
-  /// carries whichever the player needs right now.
-  private var table: some View {
-    VStack(spacing: 2) {
-      Text(verbatim: message ?? prompt)
-        .font(.system(size: 13, weight: .heavy))
-        .foregroundColor(.ink)
-        .lineLimit(2)
-        .minimumScaleFactor(0.7)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityIdentifier("prompt")
-      if let play = game.table {
-        HStack(spacing: 2) {
-          ForEach(play.cards) { WatchCardView(card: $0, isCompact: true) }
-        }
-      }
-    }
-  }
-
-  @ViewBuilder private var buttons: some View {
-    if isYourTurn {
-      HStack(spacing: 4) {
-        Button(L10n.string(game.table == nil ? "Lead" : "Play")) { play() }
-          .disabled(selection.isEmpty)
+  /// Hidden when it is not your turn, as on the phone — but the bar keeps its height so
+  /// the hand does not jump every time a bot moves.
+  private var controls: some View {
+    HStack(spacing: 4) {
+      if isYourTurn {
+        WatchPalmButtonView(title: L10n.string(game.table == nil ? "Lead" : "Play"),
+                            enabled: !selection.isEmpty) { play() }
           .accessibilityIdentifier("button_play")
-        Button(L10n.string("Pass")) {
+        WatchPalmButtonView(title: L10n.string("Pass"), enabled: game.table != nil) {
           message = nil
           game.pass(from: seat)
         }
-        .disabled(game.table == nil)
         .accessibilityIdentifier("button_pass")
       }
-      .font(.system(size: 13, weight: .bold))
-      // The default watch button is a tall capsule; two of them would take a third of
-      // the screen away from the hand.
-      .controlSize(.mini)
-      .frame(maxWidth: .infinity)
-      .frame(height: 34)
-      .padding(.horizontal, 2)
-      .padding(.bottom, 2)
-      // The bar is pinned over the scroll view — without an opaque background the hand
-      // scrolls through it and the buttons read as ghosts.
-      .background(Color.felt)
     }
+    .padding(.horizontal, 4)
+    .padding(.bottom, 2)
+    .frame(maxWidth: .infinity)
+    .frame(height: 32)
+    // The bar sits over the scroll view; without an opaque fill the hand scrolls through
+    // it and the buttons read as ghosts.
+    .background(Color.felt)
   }
 
   private var prompt: String {
@@ -112,7 +100,7 @@ struct WatchGameView: View {
     if isYourTurn {
       return L10n.string(game.table == nil ? "Your Lead" : "Your Play")
     }
-    return game.seats[game.turn].name
+    return L10n.string("%@, to play", game.seats[game.turn].name)
   }
 
   private func toggle(_ card: Card) {

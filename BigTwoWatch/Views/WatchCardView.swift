@@ -1,8 +1,7 @@
 //
 //  WatchCardView.swift
-//  Big Two — one card on the watch. The phone draws rank over suit in a tall strip;
-//  a watch has no room for that, so both sit on one line and the whole chip inverts
-//  when it is selected, which is the Palm's own way of showing a picked card.
+//  Big Two — the phone's card, shrunk: white face, 1px black border, rank with the suit
+//  under it so a card still reads when only its left strip shows. Selected cards invert.
 //
 
 import BigTwoKit
@@ -10,40 +9,50 @@ import SwiftUI
 
 struct WatchCardView: View {
   let card: Card
-  var isSelected = false
-  /// Table cards are shown, never picked, so they don't take a tap target.
-  var isCompact = false
+  var selected = false
+  var height: CGFloat = 40
 
   var body: some View {
-    HStack(spacing: 1) {
-      Text(card.rank.label)
-      Text(card.suit.symbol)
+    ZStack(alignment: .topLeading) {
+      RoundedRectangle(cornerRadius: height * 0.08).fill(selected ? Color.ink : Color.cardFace)
+      RoundedRectangle(cornerRadius: height * 0.08).strokeBorder(Color.ink, lineWidth: 1)
+      VStack(alignment: .leading, spacing: -height * 0.06) {
+        Text(card.rank.label)
+          .font(.palm(height * 0.36, .heavy))
+          .minimumScaleFactor(0.5)
+          .lineLimit(1)
+        Text(card.suit.symbol)
+          .font(.palm(height * 0.36, .regular))
+      }
+      .foregroundColor(glyphColor)
+      .padding(.leading, height * 0.07)
+      .padding(.top, height * 0.04)
     }
-    .font(.system(size: isCompact ? 13 : 15, weight: .bold))
-    .foregroundColor(faceColor)
-    .lineLimit(1)
-    .minimumScaleFactor(0.6)
-    .frame(maxWidth: .infinity, minHeight: isCompact ? 20 : 30)
-    .background(isSelected ? Color.ink : Color.cardFace)
-    .overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.ink, lineWidth: 1))
-    .clipShape(RoundedRectangle(cornerRadius: 3))
-    // One element, not a rank and a suit: without this the rows the identifier is put on
-    // match three times over and a UI test cannot tap a card at all.
-    .accessibilityElement(children: .combine)
+    .frame(width: height * Self.aspect, height: height)
+    // One element, not a rank and a suit: without this the identifier on the card matches
+    // three times over and a UI test cannot tap it at all.
+    .accessibilityElement(children: .ignore)
     .accessibilityLabel(L10n.spokenCard(rankName: card.rank.name, suitName: card.suit.name))
-    .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+    .accessibilityAddTraits(selected ? .isSelected : [])
   }
 
-  private var faceColor: Color {
-    guard card.suit.isRed else { return isSelected ? .cardFace : .ink }
-    return isSelected ? .suitRedOnInk : .suitRed
+  private var glyphColor: Color {
+    switch (card.suit.isRed, selected) {
+    case (true, false): return .suitRed
+    case (true, true): return .suitRedOnInk
+    case (false, false): return .ink
+    case (false, true): return .cardFace
+    }
   }
+
+  static let aspect: CGFloat = 0.64
 }
 
 #Preview {
-  HStack {
+  HStack(spacing: 2) {
     WatchCardView(card: .threeOfDiamonds)
-    WatchCardView(card: Card(rank: .ace, suit: .spade), isSelected: true)
+    WatchCardView(card: Card(rank: .ten, suit: .heart), selected: true)
+    WatchCardView(card: Card(rank: .two, suit: .spade))
   }
   .padding()
   .background(Color.felt)

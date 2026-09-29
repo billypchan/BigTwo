@@ -180,12 +180,20 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit declares
 `.watchOS(.v10)` and imports only Foundation, which is why this cost nothing.
 
-- **The watch is not the square.** 320×320 does not fit a wrist. The hand is a
-  four-column `LazyVGrid` that scrolls under the Digital Crown, the play to beat is one
-  compact row, and **Play/Pass are pinned with `safeAreaInset(edge: .bottom)`** — 13
-  cards push them off the screen otherwise and a turn gets missed scrolling back.
-  ⚠️ That pinned bar needs an opaque `Color.felt` background: without one the hand
-  scrolls through it and the buttons read as ghosts.
+- **Same shape as the phone, chrome in the safe areas.** The navy "Big Two" tab over its
+  navy rule with `Deal n/10` is `safeAreaInset(edge: .top)`; Lead/Play and Pass are
+  `safeAreaInset(edge: .bottom)`. Between them: one row per player in play order from you
+  (name chip inverted on that player's turn, their last move, cards left), the prompt, and
+  your hand. Only the 320×320 square itself is dropped — a wrist has no room — so the hand
+  is an adaptive `LazyVGrid` that scrolls under the Digital Crown.
+  ⚠️ The pinned bars need an opaque `Color.felt` background: without one the hand scrolls
+  through them and the buttons read as ghosts.
+  ⚠️ **`WatchPalmButtonView` needs its own `ButtonStyle`**, for the same reason
+  `PalmPressStyle` exists on the phone: every built-in style fades a *disabled* button, so
+  a white pill over the felt comes back translucent green. The style must not read
+  `isEnabled` — the pill's own `enabled` greys the text instead.
+  ⚠️ **The hand starts below the fold**, so a UI test must scroll before it taps: a tap on
+  an element that is not `isHittable` lands somewhere else and fails silently.
 - The watch app shares `Palette.swift` and `L10n.swift` with the phone (both are
   platform-neutral) and the same `Resources/*.lproj`, **minus** the iOS asset catalog and
   `PrivacyInfo.xcprivacy` — a watch target must not carry those.

@@ -19,11 +19,22 @@ and the evidence.
 `Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
 真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
 
-**不要把 320×320 搬上手錶。** 46mm 螢幕塞不下正方形。改成：四欄 `LazyVGrid` 手牌
-（Digital Crown 捲動）、要壓的牌型一排小卡、Play/Pass 用 `safeAreaInset(edge: .bottom)`
-釘在底部。⚠️ 那條 bar **一定要有不透明底色**——第一版拿掉 `Color.felt` 之後手牌直接從
-按鈕底下捲過去，按鈕變成幽靈（截圖才看得出來，編譯完全不報）。按鈕預設的 watchOS 膠囊
-很高，`controlSize(.mini)` + 固定 34pt 才不會吃掉三分之一螢幕。
+**手錶版照 iPhone 版的形狀做，chrome 放上下 safe area。** navy「Big Two」頁籤＋navy 橫線
+＋`Deal n/10` 放 `safeAreaInset(edge: .top)`，Lead/Play 與 Pass 放
+`safeAreaInset(edge: .bottom)`，中間才是四列玩家、提示、手牌。只有 320×320 正方形本身沒搬
+上去——手腕放不下——所以手牌是 adaptive `LazyVGrid`，用 Digital Crown 捲。
+
+⚠️ **釘住的 bar 一定要有不透明底色**：拿掉 `Color.felt` 之後手牌直接從按鈕底下捲過去，
+按鈕變成幽靈。編譯完全不報，只有截圖看得出來。
+
+⚠️ **`WatchPalmButtonView` 必須自帶 `ButtonStyle`**，理由跟手機端 `PalmPressStyle` 一模一樣：
+SwiftUI 所有內建樣式都會把 **disabled** 的按鈕沖淡，白色藥丸疊在綠桌面上就變成半透明綠。
+樣式本身不能去讀 `isEnabled`，改由 `enabled` 參數把文字塗成灰的。第一版用
+`.buttonStyle(.plain)` 就中了這個。
+
+⚠️ **手牌一開始在摺線下，UI 測試要先捲再點。** 對一個 `isHittable == false` 的元素 tap，
+XCUITest 不會報錯，它就是點到別的地方去——三個測試裡有兩個因此失敗，而且訊息是「never
+became selected」，完全看不出真正原因。測試裡加一個「捲到可點為止」的 helper 才穩。
 
 **IAP 管的是能不能玩，不是能不能裝。** 手錶 app 是包在 iPhone app 裡出貨的，一定會裝上去，
 所以購買只能 gate 畫面。`WatchUnlock` 用 StoreKit 2 的 `Transaction.currentEntitlements`

@@ -12,6 +12,19 @@ final class WatchGameUITests: XCTestCase {
     app.launch()
   }
 
+  /// A hand of 13 sits below the fold on a watch; a tap on an element that is not
+  /// hittable silently lands somewhere else, so scroll to it first.
+  private func scrolledTo(_ element: XCUIElement) -> XCUIElement {
+    XCTAssertTrue(element.waitForExistence(timeout: 20))
+    var swipes = 0
+    while !element.isHittable && swipes < 8 {
+      app.swipeUp()
+      swipes += 1
+    }
+    XCTAssertTrue(element.isHittable, "\(element) never scrolled into reach")
+    return element
+  }
+
   /// The paywall is off, so the game is what opens.
   func testOpensOnTheGame() {
     let prompt = app.staticTexts["prompt"]
@@ -20,8 +33,7 @@ final class WatchGameUITests: XCTestCase {
   }
 
   func testTappingACardSelectsIt() {
-    let three = app.descendants(matching: .any)["hand_3d"]
-    XCTAssertTrue(three.waitForExistence(timeout: 20))
+    let three = scrolledTo(app.descendants(matching: .any)["hand_3d"])
     XCTAssertFalse(three.isSelected)
 
     three.tap()
@@ -34,8 +46,7 @@ final class WatchGameUITests: XCTestCase {
 
   /// Leading the 3 of diamonds must empty the selection and shorten the hand.
   func testLeadingThreeOfDiamondsPlaysIt() {
-    let three = app.descendants(matching: .any)["hand_3d"]
-    XCTAssertTrue(three.waitForExistence(timeout: 20))
+    let three = scrolledTo(app.descendants(matching: .any)["hand_3d"])
     three.tap()
 
     let lead = app.buttons["button_play"]
