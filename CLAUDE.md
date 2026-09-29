@@ -45,6 +45,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
 | `docs/` | `pr_learnings.md`, `test_runs.md` |
 | `screenshots/ios/` | Screen-tour captures — committed |
+| `screenshots/watchos/` | Watch screen-tour captures — committed |
 
 ## Shell & permissions (reduce prompts)
 
@@ -224,7 +225,11 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   failed with *Multiple matching elements found*. `.accessibilityElement(children: .combine)`
   is what makes `hand_3d` tappable.
   ⚠️ `simctl status_bar override` answers *Operation not supported* on watchOS, so the
-  clock cannot be frozen and watch screenshots are **not** committed.
+  watch clock cannot be frozen to 9:41 the way the phone's is. `screenshots/watchos/` is
+  committed all the same: `extract_screenshots.py` ignores a **15%** top band on a watch
+  shot (width ≤ 600) instead of the phone's 8%, because a 46mm clock sits at rows 39–63
+  of 496 — measured, not guessed — while the app's title bar starts at ~22%. A change one
+  row below that band is still treated as a real change.
 - `-unlocked YES` skips the paywall in a debug build; it is `#if DEBUG` only and a Release
   build does not compile it.
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
@@ -322,6 +327,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 0. **Check it ran**: `Executed N test(s)`, not the banner.
 1. **Extract**: `python3 scripts/extract_screenshots.py --latest screenshots/ios`
+   (watch runs go to `screenshots/watchos`)
    (keeps the old PNG if the new shot differs only in the status-bar clock;
    `--force` overwrites). Freeze the clock first with
    `scripts/freeze_status_bar.sh <udid>` so new shots show 9:41.
