@@ -58,7 +58,7 @@
 		1405F58214DFE607A39E33E0 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		287EF2890EF46B0F79446373 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		39888566BD541CCE8D0BC218 /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/Localizable.strings; sourceTree = "<group>"; };
-		49F90944719399D926E68D53 /* BigTwoKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BigTwoKit; path = BigTwoKit; sourceTree = SOURCE_ROOT; };
+		49F90944719399D926E68D53 /* BigTwoKit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = BigTwoKit; sourceTree = SOURCE_ROOT; };
 		52290F1B718108730F0DB92A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5FA18003C81E57C532F3A2D0 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6102E8695E47D09E80D618A3 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -70,10 +70,10 @@
 		924D892FDC322C4628399167 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		978F171427753F9427641158 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C75174FA90F43FCC185C3263 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BigTwo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigTwo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D88D343B4B0C5056BCE9F7B0 /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DE6B75F1C67B1E194CAD7244 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
-		E32176153D68A88E857C858C /* BigTwoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BigTwoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E32176153D68A88E857C858C /* BigTwoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BigTwoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3CD85A8542B9E2E7A1D7657 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		EB7E40368D51FB10F526D6BD /* BigTwoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BigTwoWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEA726D847F93BA8E0C5A029 /* BigTwoWatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BigTwoWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,55 +83,31 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		05C8A9CCC6DE5B5EA808AFBD /* Resources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
 		2D466A22397134DD34D037F3 /* BigTwoWatch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = BigTwoWatch;
 			sourceTree = "<group>";
 		};
 		5C24637EC107664296640160 /* BigTwoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = BigTwoApp;
 			sourceTree = "<group>";
 		};
 		69E23FA008BEDC520EB4EF13 /* BigTwoUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = BigTwoUITests;
 			sourceTree = "<group>";
 		};
 		CFC1E73611E04177154931CC /* BigTwoWatchUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = BigTwoWatchUITests;
 			sourceTree = "<group>";
 		};
 		E3D485B5205684A1870C81B4 /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = Shared;
 			sourceTree = "<group>";
 		};
@@ -306,8 +282,8 @@
 				581D9F6305C2B576D5CB1CA2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				5C24637EC107664296640160 /* BigTwoApp */,
 				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
+				5C24637EC107664296640160 /* BigTwoApp */,
 				E3D485B5205684A1870C81B4 /* Shared */,
 			);
 			name = BigTwo;

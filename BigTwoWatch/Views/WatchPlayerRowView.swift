@@ -1,8 +1,9 @@
 //
 //  WatchPlayerRowView.swift
 //  Big Two — one player's row, as on the phone: name chip (inverted on that player's
-//  turn), their last move this deal, and how many cards they hold. A watch is a third
-//  of the width, so the cards overlap into a strip instead of sitting side by side.
+//  turn), their last move this deal, and how many cards they hold. The played cards get
+//  most of the row: a five-card play is the whole point of the row, and shrinking it to
+//  fit a wide name chip made it unreadable.
 //
 
 import BigTwoKit
@@ -13,16 +14,16 @@ struct WatchPlayerRowView: View {
   let action: SeatAction?
   let isTurn: Bool
 
-  private static let cardHeight: CGFloat = 16
+  private static let cardHeight: CGFloat = 21
 
   var body: some View {
-    HStack(spacing: 3) {
+    HStack(spacing: 2) {
       Text(player.name)
         .font(.palm(11))
         .foregroundColor(isTurn ? .cardFace : .ink)
         .lineLimit(1)
         .minimumScaleFactor(0.6)
-        .frame(width: 38, height: 16)
+        .frame(width: 34, height: 17)
         .background(RoundedRectangle(cornerRadius: 3).fill(isTurn ? Color.ink : Color.chrome))
         .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Color.inkDim, lineWidth: 1))
         .accessibilityLabel(isTurn ? L10n.string("%@, to play", player.name) : player.name)
@@ -31,10 +32,10 @@ struct WatchPlayerRowView: View {
       Group {
         switch action {
         case .played(let play)?:
-          // Overlapped, like the phone's hand: only the left strip of each card shows,
-          // which is exactly what rank-over-suit was drawn for.
-          HStack(spacing: -Self.cardHeight * 0.3) {
-            ForEach(play.cards) { WatchCardView(card: $0, height: Self.cardHeight) }
+          // Side by side and readable, not overlapped: a watch row has the width for
+          // five of these once the name chip stops taking a fifth of it.
+          HStack(spacing: 1) {
+            ForEach(play.cards) { WatchPlayedCardView(card: $0, height: Self.cardHeight) }
           }
         case .passed?:
           Text(L10n.string("PASS"))
@@ -50,11 +51,12 @@ struct WatchPlayerRowView: View {
       Text(verbatim: "\(player.hand.count)")
         .font(.palm(11, .semibold))
         .foregroundColor(.ink)
-        .frame(minWidth: 14, alignment: .trailing)
+        .fixedSize()
+        .frame(minWidth: 16, alignment: .trailing)
         .accessibilityLabel(L10n.string("left: %d", player.hand.count))
         .accessibilityIdentifier("left_\(player.id)")
     }
-    .frame(height: 18)
+    .frame(height: 23)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("seat_\(player.id)")
   }

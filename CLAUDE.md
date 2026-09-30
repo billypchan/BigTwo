@@ -192,11 +192,18 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   for a **full first row of cards** to be visible without scrolling.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
   not, and shows the order a tap switches *to* (`♠` / `2`).
-  ⚠️ Two offsets fight the system here and both are deliberate: the toolbar drops its item
+  A card in someone else's row is `WatchPlayedCardView` — rank and suit **side by side**,
+  not the phone's rank-over-suit strip. That strip exists so an overlapped card still
+  reads from its left edge; a played card is never overlapped and never picked, and laid
+  out horizontally it fits five across a watch row at a size that can be read. The hand
+  keeps `WatchCardView`.
+  ⚠️ Three offsets fight the system here and all are deliberate: the toolbar drops its item
   below the clock's baseline, so the title carries `.offset(y: -8)` to sit on that row;
-  and the watch reserves a deep bottom safe area for the curved glass, so the button bar
+  the watch reserves a deep bottom safe area for the curved glass, so the button bar
   takes it back with `.ignoresSafeArea(.container, edges: .bottom)` and keeps clear of the
-  rounded corners with its own wider side margins. Between them the **whole 13-card hand
+  rounded corners with its own wider side margins; and the navigation bar reserves a band
+  under the clock that nothing draws in, which the scroll content takes back with a
+  negative top padding. Between them the **whole 13-card hand
   fits without scrolling** — which is the only way it can be played, since a watchOS UI
   test (and the Digital Crown) cannot scroll it.
   ⚠️ The pinned bars need an opaque `Color.felt` background: without one the hand scrolls

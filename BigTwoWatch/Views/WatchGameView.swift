@@ -59,6 +59,9 @@ struct WatchGameView: View {
         }
       }
       .padding(.horizontal, 2)
+      // The navigation bar reserves a band under the clock that nothing draws in. Taking
+      // it back is what keeps the whole hand on one screen once the played cards grew.
+      .padding(.top, -22)
     }
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
