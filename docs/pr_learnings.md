@@ -19,6 +19,15 @@ and the evidence.
 `Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
 真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
 
+**嵌在 iPhone app 裡的手錶 app 要有自己的 App ID，Xcode Cloud 不會幫你建。** CI 的 archive
+成功、`-exportArchive` 卻 exit 70：*No profiles for `com.billchan.BigTwo.watchkitapp` were
+found*。雲端簽章會產憑證與描述檔，但 **App ID 不會自動註冊**，而那個 identifier 從來沒建過。
+診斷順序值得記：先確認只有 `watch-app` 分支紅（main 與 admob-banner 都綠）→ 本機 archive
+成功、export 失敗，排除打包問題 → 比對封存裡兩個 app 的 `CFBundleShortVersionString`、
+`CFBundleVersion`、`WKApplication`、device family，全部正確 → 用 spaceship 直接查入口的
+App ID 清單，`com.billchan.BigTwo` 在、`.watchkitapp` 不在。**這種錯 repo 裡改什麼都沒用**，
+只能去帳號裡註冊。
+
 **watchOS 支援雙擊，兩種都支援——但要先驗過再說。** 被上次 `XCUIAutomation` 的錯誤教訓過，
 這次先查 SDK 再寫一支拋棄式測試打一遍：`.onTapGesture(count: 2)` 在 watchOS 上**真的會觸發**，
 XCUITest 也有 `doubleTap()` / `press(forDuration:)`，甚至有 `XCUIDeviceHandGesture` 可以模擬

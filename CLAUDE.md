@@ -230,6 +230,13 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   throwaway suite wiped each launch — exactly as on the phone. Without that a test that
   toggles the sort order saves it and the *next* run starts in the other order and fails
   on its first assertion. That is not hypothetical; it happened.
+- ⚠️ **An embedded watch app needs its own App ID.** Xcode Cloud archived fine and then
+  failed the ad-hoc export with exit 70 — *No profiles for `com.billchan.BigTwo.watchkitapp`
+  were found*. Cloud signing creates certificates and profiles, but not the **App ID**, and
+  that identifier had never been registered. Registered 2026-09-30 as "Big Two Watch";
+  nothing in the repo could have fixed it. The archive itself was never the problem — host
+  and watch agreed on `CFBundleShortVersionString` and `CFBundleVersion`, and the watch
+  carried `WKApplication`, `WKCompanionAppBundleIdentifier` and device family 4.
 - ⚠️ **The paywall is off**: `BigTwoWatchApp.paywallEnabled` is `false` until the product
   exists in App Store Connect — until it does there is nothing to buy, so a paywall would
   lock the game with no way past it. `WatchUnlock` and `WatchStoreView` are complete and
