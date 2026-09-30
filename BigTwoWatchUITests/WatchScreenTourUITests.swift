@@ -41,6 +41,18 @@ final class WatchScreenTourUITests: XCTestCase {
                                       object: three)], timeout: 15)
     XCTAssertEqual(gone, .completed, "the 3 of diamonds was still in the hand after leading")
     capture("watch_screen_03_trick")
+
+    // Paging is a different mechanism from scrolling a ScrollView, which a watchOS UI
+    // test cannot drive — a swipe between tabs does work.
+    app.swipeLeft()
+    let preferences = app.descendants(matching: .any)["pref_hongKong"]
+    XCTAssertTrue(preferences.waitForExistence(timeout: 10), "the Preferences page never came up")
+    capture("watch_screen_04_preferences")
+
+    app.swipeLeft()
+    let about = app.descendants(matching: .any)["about_version"]
+    XCTAssertTrue(about.waitForExistence(timeout: 10), "the About page never came up")
+    capture("watch_screen_05_about")
   }
 
   private func capture(_ name: String) {

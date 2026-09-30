@@ -19,6 +19,13 @@ and the evidence.
 `Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
 真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
 
+**分頁能滑，捲軸不能捲——這兩件事在 watchOS UI 測試裡不一樣。** 先前確認 `swipeUp()` 完全
+推不動 `ScrollView`，本來以為手勢模擬整體不管用；但 `swipeLeft()` **可以**翻 `TabView` 的頁。
+分頁與捲動是兩套機制，不要用其中一個的結論去推另一個。
+⚠️ 另外：Palm 勾選框的識別碼掛在 `Button` 上，`app.staticTexts["pref_hongKong"]` 抓不到，
+導覽測試第一次就是掛在這個型別錯誤上，而不是真的沒翻頁——錯誤訊息（「Preferences page
+never came up」）完全指向錯的方向。
+
 **嵌在 iPhone app 裡的手錶 app 要有自己的 App ID，Xcode Cloud 不會幫你建。** CI 的 archive
 成功、`-exportArchive` 卻 exit 70：*No profiles for `com.billchan.BigTwo.watchkitapp` were
 found*。雲端簽章會產憑證與描述檔，但 **App ID 不會自動註冊**，而那個 identifier 從來沒建過。

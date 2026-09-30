@@ -53,11 +53,11 @@ struct BigTwoWatchApp: App {
     WindowGroup {
       Group {
         if !Self.paywallEnabled {
-          WatchGameView(game: game)
+          WatchTabsView(game: game)
         } else {
           switch unlock.state {
           case .unlocked:
-            WatchGameView(game: game)
+            WatchTabsView(game: game)
           case .loading:
             ProgressView()
           case .locked, .unavailable:

@@ -287,6 +287,25 @@ change and apply whatever arrives.
   of the context on its own thread and only those cross to the main actor. The two key
   constants are `nonisolated` for the same reason.
 
+## Watch pages
+
+`WatchTabsView` is a three-page `TabView`: the table, **Preferences** and **About**. The
+phone reaches those two by tapping its title; a watch has no menu, and paging is what it
+does.
+
+- **Horizontal paging (`.page`), not vertical.** A vertically paged `TabView` takes the
+  Digital Crown, and the table needs it to scroll.
+- Preferences carries the same settings, the same wording and the **same identifiers** as
+  the phone (`pref_hongKong`, `pref_bots_Strong`, …), so a change is saved and pushed to
+  the phone like any other.
+- About drops the rows that open a browser — Share, Rate, Report and Source stay on the
+  phone. ⚠️ Its disclaimer is **not** `.inkDim`: the phone dims that line against a white
+  dialog body, and the same grey on the green felt is barely legible.
+- ⚠️ **`swipeLeft()` does page a `TabView`** in a watchOS UI test, even though `swipeUp()`
+  cannot scroll a `ScrollView`. Paging and scrolling are not the same mechanism.
+  ⚠️ A checkbox's identifier is on a `Button`, so `app.staticTexts[…]` will not find it —
+  the tour failed on exactly that before it failed on anything real.
+
 ## Watch gestures
 
 The watch has the phone's two selection shortcuts, and one of its own:
@@ -401,6 +420,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
+Watch tour names: `watch_screen_NN_<name>` (lead, selected, trick, preferences, about).
 Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, names, about, score, final_score).
 
 ## Simulator
