@@ -63,6 +63,9 @@ struct WatchGameView: View {
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
+          // The toolbar drops its item below the clock's baseline; this lifts the tab
+          // back onto the clock's own row, which is where the phone puts the title.
+          .offset(y: -8)
       }
     }
     // The buttons stay put while 13 cards scroll, so a turn is never missed scrolling back.
@@ -103,13 +106,20 @@ struct WatchGameView: View {
       .accessibilityLabel(L10n.string(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit"))
       .accessibilityIdentifier("button_sort")
     }
-    .padding(.horizontal, 4)
-    .padding(.bottom, 2)
+    // Wider side margins and a little lift than the rest of the screen uses: this bar
+    // now sits in the curved glass, where the rounded corners bite into the corners of a
+    // full-width pill.
+    .padding(.horizontal, 10)
+    .padding(.bottom, 6)
     .frame(maxWidth: .infinity)
     .frame(height: 32)
     // The bar sits over the scroll view; without an opaque fill the hand scrolls through
     // it and the buttons read as ghosts.
     .background(Color.felt)
+    // A watch reserves a deep bottom safe area for the curved glass. Keeping out of it
+    // left a thick empty band under the buttons and cost the hand a row, so the bar
+    // takes it back — the pills are still well inside the rounded corners.
+    .ignoresSafeArea(.container, edges: .bottom)
   }
 
   private var prompt: String {
