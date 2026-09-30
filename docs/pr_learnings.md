@@ -19,6 +19,21 @@ and the evidence.
 `Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
 真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
 
+**watchOS 支援雙擊，兩種都支援——但要先驗過再說。** 被上次 `XCUIAutomation` 的錯誤教訓過，
+這次先查 SDK 再寫一支拋棄式測試打一遍：`.onTapGesture(count: 2)` 在 watchOS 上**真的會觸發**，
+XCUITest 也有 `doubleTap()` / `press(forDuration:)`，甚至有 `XCUIDeviceHandGesture` 可以模擬
+Apple 自己的「輕點兩下」。⚠️ `count: 2` 的手勢一定要掛在 `count: 1` **之前**，否則單擊先吃掉事件。
+⚠️ `handGestureShortcut` 是 watchOS 11+，本 app 出到 10，所以包一層 `if #available` 而不是
+為了一個快捷把整個 deployment target 拉高。
+
+**兩台裝置之間同步設定，用 application context，不要用 message。** application context 是
+「單一最新值」的槽位，會被覆寫而不是排隊，而且背景送達。用 message queue 會把每一次中間
+狀態的切換都重播一遍；用 file transfer 又太慢。⚠️ 而且要傳**修改時間**做最後寫入判定——不是
+送達時間：在手機改了座位名字之後才打開手錶，手錶那份較舊的資料會直接把新名字蓋掉。
+⚠️ `updateApplicationContext` 在字典沒變時會 throw，那不是需要處理的錯誤。
+⚠️ Swift 6：`[String: Any]` 不是 `Sendable`，delegate 要在自己的執行緒先把 `Data` 與時間戳
+取出來，只有這兩個 Sendable 值能跨到 main actor；那兩個 key 常數也得標 `nonisolated`。
+
 **別家出的牌要橫排，不要沿用手牌的直排。** 手牌的「點數在上、花色在下」是為了**重疊**時
 只露左邊一條也讀得出來；但別家出的牌不會重疊、也不用點選，直排縮到 16pt 只剩一團糊。
 改成 `WatchPlayedCardView`（點數與花色並排）之後，同樣的寬度放得下五張還看得清楚。

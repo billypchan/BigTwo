@@ -53,7 +53,11 @@ struct WatchGameView: View {
           ForEach(hand) { card in
             WatchCardView(card: card, selected: selection.contains(card),
                           height: Self.handCardHeight)
+              // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
+              // the single tap swallows the event and the double never fires.
+              .onTapGesture(count: 2) { selectSuitOrPair(card) }
               .onTapGesture { toggle(card) }
+              .onLongPressGesture { selectAll(sameRankAs: card) }
               .accessibilityIdentifier("hand_\(card.code)")
           }
         }
@@ -93,6 +97,9 @@ struct WatchGameView: View {
       if isYourTurn {
         WatchPalmButtonView(title: L10n.string(game.table == nil ? "Lead" : "Play"),
                             enabled: !selection.isEmpty) { play() }
+          // Apple's Double Tap (pinch twice) plays the selection without touching the
+          // screen — the one action on this screen worth reaching without a free hand.
+          .primaryActionHandGesture(isYourTurn && !selection.isEmpty)
           .accessibilityIdentifier("button_play")
         WatchPalmButtonView(title: L10n.string("Pass"), enabled: game.table != nil) {
           message = nil
@@ -131,6 +138,28 @@ struct WatchGameView: View {
       return L10n.string(game.table == nil ? "Your Lead" : "Your Play")
     }
     return L10n.string("%@, to play", game.seats[game.turn].name)
+  }
+
+  /// Double tap: the whole suit when you hold five or more of it — the makings of a
+  /// flush — otherwise the pair or triple of that rank. Same rule as the phone.
+  private func selectSuitOrPair(_ card: Card) {
+    let cards = game.seats[seat].hand
+    let ofSuit = cards.filter { $0.suit == card.suit }
+    if ofSuit.count >= 5 {
+      selection = Set(ofSuit)
+      return
+    }
+    let ofRank = cards.filter { $0.rank == card.rank }
+    if ofRank.count >= 2 {
+      selection = Set(ofRank)
+    }
+    message = nil
+  }
+
+  /// Long press: every card of that rank.
+  private func selectAll(sameRankAs card: Card) {
+    selection = Set(game.seats[seat].hand.filter { $0.rank == card.rank })
+    message = nil
   }
 
   private func toggle(_ card: Card) {

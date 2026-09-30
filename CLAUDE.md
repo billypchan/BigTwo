@@ -39,7 +39,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
 | `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
-| `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase) |
+| `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase), `PreferenceSync.swift` (phone ↔ watch settings) |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
@@ -260,6 +260,40 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   from Xcode does, so a command-line launch shows the paywall with no price.
 - ⚠️ The IAP product must be created in **App Store Connect by hand** (no API key on this
   machine), and the store listing needs its own copy for it.
+
+## Settings and names across the two devices
+
+`Shared/PreferenceSync.swift` keeps `Preferences` — rule set, speed, sort order, bots and
+the **player names** — the same on the phone and the watch. Both apps write on every
+change and apply whatever arrives.
+
+- **WatchConnectivity's application context, not a message.** It is one latest-value slot,
+  replaced rather than queued and delivered in the background: a message queue would
+  replay every intermediate toggle, a file transfer would arrive late. Nothing about a
+  game in progress is synced — the two devices deal their own cards.
+- **Last *edit* wins, not last delivery.** The payload carries the time the value changed.
+  Without it, opening the watch after renaming a seat on the phone would push the watch's
+  older copy straight back over the new name.
+- ⚠️ `updateApplicationContext` **throws when the dictionary is unchanged**; that is not an
+  error worth surfacing, the other side already has the value.
+- ⚠️ `[String: Any]` is not `Sendable`, so the delegate pulls `Data` and the timestamp out
+  of the context on its own thread and only those cross to the main actor. The two key
+  constants are `nonisolated` for the same reason.
+
+## Watch gestures
+
+The watch has the phone's two selection shortcuts, and one of its own:
+
+- **Double tap a card** — the whole suit when you hold five or more of it, otherwise the
+  pair or triple of that rank. ⚠️ `.onTapGesture(count: 2)` must be attached **before**
+  `.onTapGesture`, or the single tap swallows the event and the double never fires.
+- **Long press a card** — every card of that rank.
+- **Apple's Double Tap** (pinch twice) plays the selection: `handGestureShortcut(.primaryAction)`.
+  ⚠️ That modifier is watchOS 11+, and this app ships to watchOS 10, so it goes through
+  `primaryActionHandGesture(_:)` which checks availability rather than raising the target.
+
+XCUITest drives all three on the simulator (`doubleTap()`, `press(forDuration:)`), and
+`XCUIDeviceHandGesture` can even simulate Apple's own gesture.
 
 ## Game record
 

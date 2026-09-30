@@ -42,6 +42,40 @@ final class WatchGameUITests: XCTestCase {
     XCTAssertEqual(outcome, .completed, "the 3 of diamonds never became selected")
   }
 
+  private var selectedCards: XCUIElementQuery {
+    app.descendants(matching: .any)
+      .matching(NSPredicate(format: "identifier BEGINSWITH 'hand_' AND selected == true"))
+  }
+
+  private func waitForSelected(_ count: Int, _ what: String,
+                               file: StaticString = #filePath, line: UInt = #line) {
+    let outcome = XCTWaiter().wait(
+      for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "count == %d", count),
+                                      object: selectedCards)], timeout: 10)
+    XCTAssertEqual(outcome, .completed,
+                   "\(what): expected \(count) selected, got \(selectedCards.count)",
+                   file: file, line: line)
+  }
+
+  /// Double tap takes the whole suit when you hold five or more of it. Seed 2 leaves the
+  /// human six clubs — 4c 9c Tc Jc Qc 2c — so a double tap on one takes all six.
+  func testDoubleTapTakesTheSuitWhenItIsLong() {
+    card("hand_9c").doubleTap()
+    waitForSelected(6, "double tap on a long suit")
+  }
+
+  /// With fewer than five of the suit it takes the pair instead: two eights here.
+  func testDoubleTapTakesThePairWhenTheSuitIsShort() {
+    card("hand_8h").doubleTap()
+    waitForSelected(2, "double tap on a short suit")
+  }
+
+  /// Long press takes every card of that rank.
+  func testLongPressTakesTheRank() {
+    card("hand_9c").press(forDuration: 1.0)
+    waitForSelected(2, "long press")
+  }
+
   /// The sort icon shows the order a tap switches *to*, so tapping it flips the label.
   func testSortButtonFlipsTheOrder() {
     let sort = app.buttons["button_sort"]

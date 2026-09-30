@@ -30,6 +30,19 @@ struct WatchPalmButtonView: View {
   }
 }
 
+extension View {
+  /// Apple's Double Tap (pinch twice) on the watches that have it. The app ships to
+  /// watchOS 10, where the modifier does not exist, so it is applied behind a check
+  /// rather than by raising the deployment target for one shortcut.
+  @ViewBuilder func primaryActionHandGesture(_ enabled: Bool) -> some View {
+    if #available(watchOS 11.0, *) {
+      handGestureShortcut(.primaryAction, isEnabled: enabled)
+    } else {
+      self
+    }
+  }
+}
+
 /// SwiftUI's own styles fade a disabled button — a white pill over the felt comes back
 /// as translucent green. Palm greys the text and keeps the pill, so the style must not
 /// read `isEnabled` at all; `enabled` above colours the text instead.
