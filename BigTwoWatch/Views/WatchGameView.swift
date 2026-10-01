@@ -132,7 +132,7 @@ struct WatchGameView: View {
     // hand's last row came up behind them without this. It is a property of the bar and
     // the buttons rather than of the screen, so it is the same number on every watch —
     // but it has to be re-checked on a 40mm whenever the buttons change size.
-    .padding(.bottom, 16)
+    .padding(.bottom, 6)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
 

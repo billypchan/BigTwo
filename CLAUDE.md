@@ -212,9 +212,12 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   0, outside it reads the whole bar. Three builds tried: a flat `-22`, the difference of
   two insets, and a probe on the title's own frame. Every one was right on every simulator
   here and raised the first player rows off the top of the screen on a real watch. The one
-  constant that is still needed is `.padding(.bottom, 16)`: the bottom bar **draws taller
+  constant that is still needed is `.padding(.bottom, 6)`: the bottom bar **draws taller
   than it reserves** — 53pt of a 248pt screen at the bottom, with the discs drawn over the
-  top of that — and the hand's last row came up behind them on a 40mm without it. It is a property of
+  top of that — and the hand's last row came up behind them on a 40mm without it. ⚠️ 6 is
+  the floor, found by walking it down and photographing each value: at 0 the discs cover
+  the last row's cards on a 40mm. It is what puts the hand on the bottom edge where the
+  phone has it. It is a property of
   the bar and the buttons, not of the screen, so it is the same on every watch — but it
   has to be re-checked on a 40mm whenever the buttons change size.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
