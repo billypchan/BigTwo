@@ -13,6 +13,28 @@ and the evidence.
 
 ---
 
+## watch-app — 底部按鈕列貼齊螢幕邊
+
+**`.ignoresSafeArea(.container, edges: .bottom)` 在 watchOS 11 完全無效。** 在 SE 40mm /
+watchOS 11 上，按鈕列下面留了一條 26pt 的空白；同一份 code 在 watchOS 27 上卻貼齊底邊。
+四個層級都試過、都量過——按鈕列本身、`ScrollView`、`NavigationStack`、`TabView`——
+`GeometryReader` 回報的 `safeAreaInsets.bottom` 一直是 26，版面一點都沒動。
+真正會動的是**負的 `padding(.bottom:)`**，而且不會被裁掉；兩個版本都一樣。所以深度用
+`GeometryReader` 量出來存進 `@State`，再用 `-(inset - lift)` 把整列推進去。
+40mm 是 26pt，46mm 是 36pt——寫死一個數字兩邊都不對。
+
+**`safeAreaInset` 也要一起拿掉。** 它保留的是 inset view **被給定**的高度，不是它最後
+露在那條帶子上面的部分；把按鈕列往下推之後，46mm 上手牌最後一排的下緣就被蓋住了。
+改成 `VStack { ScrollView; controls }`，再把整個 `VStack` 往下推，分配就自己對了。
+中間試過 `ZStack(alignment: .bottom)` 加一個算好的 content padding——沒用，`ScrollView`
+的內容本來就會鋪到帶子裡，加 padding 只是把可捲動的長度拉長而已。
+
+**在真機上回報的 bug，要在 simulator 上重現先要挑對 runtime。** 這次四台都試了
+(40mm/watchOS 11、40mm/watchOS 27、42mm、46mm)，只有 watchOS 11 那台看得到。
+`xcrun simctl create` 自己開一台舊 runtime 的手錶，比猜版本快得多。
+
+---
+
 ## watch-app — Apple Watch 版，用一個 IAP 解鎖
 
 **手錶版幾乎是免費的，因為 kit 早就乾淨。** `BigTwoKit` 只 import Foundation，

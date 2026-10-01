@@ -14,8 +14,14 @@ struct WatchGameView: View {
   @ObservedObject var game: BigTwoGame
   @State private var selection: Set<Card> = []
   @State private var message: String?
+  /// How deep the band the system keeps at the bottom is on this watch — measured,
+  /// because it differs by watch size and by watchOS version. See `controls`.
+  @State private var bottomInset: CGFloat = 0
 
   private static let handCardHeight: CGFloat = 34
+  /// The pinned button bar: how tall it is, and how far its pills stay off the glass.
+  private static let barHeight: CGFloat = 32
+  private static let barLift: CGFloat = 2
 
   private var seat: Int { game.humanSeat ?? 1 }
   private var hand: [Card] {
@@ -33,40 +39,65 @@ struct WatchGameView: View {
     // The top bar only exists inside a navigation stack; it is what puts the title on
     // the clock's own row instead of costing a strip of the screen below it.
     NavigationStack { table }
+      // The one way to learn how deep that band is: an overlay is not laid out into it,
+      // but it does report it.
+      .overlay {
+        GeometryReader { geo in
+          Color.clear.onAppear { bottomInset = geo.safeAreaInsets.bottom }
+        }
+        .allowsHitTesting(false)
+      }
   }
 
   private var table: some View {
-    ScrollView {
-      VStack(spacing: 1) {
-        ForEach(rowOrder, id: \.self) { s in
-          WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
-                             isTurn: game.turn == s && game.result == nil)
-        }
-        Text(verbatim: message ?? prompt)
-          .font(.palm(12, .heavy))
-          .foregroundColor(.ink)
-          .lineLimit(2)
-          .minimumScaleFactor(0.7)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .accessibilityIdentifier("prompt")
-        LazyVGrid(columns: columns, spacing: 2) {
-          ForEach(hand) { card in
-            WatchCardView(card: card, selected: selection.contains(card),
-                          height: Self.handCardHeight)
-              // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
-              // the single tap swallows the event and the double never fires.
-              .onTapGesture(count: 2) { selectSuitOrPair(card) }
-              .onTapGesture { toggle(card) }
-              .onLongPressGesture { selectAll(sameRankAs: card) }
-              .accessibilityIdentifier("hand_\(card.code)")
+    // A plain stack, not `safeAreaInset`: the whole thing is pushed down into the system's
+    // bottom band (see `bottomInset`), and an inset bar leaves the scroll view laid out
+    // over it — the hand's last row came back clipped.
+    VStack(spacing: 0) {
+      ScrollView {
+        VStack(spacing: 1) {
+          ForEach(rowOrder, id: \.self) { s in
+            WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
+                               isTurn: game.turn == s && game.result == nil)
+          }
+          Text(verbatim: message ?? prompt)
+            .font(.palm(12, .heavy))
+            .foregroundColor(.ink)
+            .lineLimit(2)
+            .minimumScaleFactor(0.7)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityIdentifier("prompt")
+          LazyVGrid(columns: columns, spacing: 2) {
+            ForEach(hand) { card in
+              WatchCardView(card: card, selected: selection.contains(card),
+                            height: Self.handCardHeight)
+                // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
+                // the single tap swallows the event and the double never fires.
+                .onTapGesture(count: 2) { selectSuitOrPair(card) }
+                .onTapGesture { toggle(card) }
+                .onLongPressGesture { selectAll(sameRankAs: card) }
+                .accessibilityIdentifier("hand_\(card.code)")
+            }
           }
         }
+        .padding(.horizontal, 2)
+        // The navigation bar reserves a band under the clock that nothing draws in. Taking
+        // it back is what keeps the whole hand on one screen once the played cards grew.
+        .padding(.top, -22)
       }
-      .padding(.horizontal, 2)
-      // The navigation bar reserves a band under the clock that nothing draws in. Taking
-      // it back is what keeps the whole hand on one screen once the played cards grew.
-      .padding(.top, -22)
+      // Open at the top. Reported from a real watch: the table came up already scrolled,
+      // with the first player rows above the fold. Not reproducible on any simulator here
+      // (40mm/46mm, watchOS 11 and 27), so this pins what the simulators do by default.
+      .defaultScrollAnchor(.top)
+      controls
     }
+    // The system keeps a deep band at the bottom for the curved glass — 26pt on a 40mm,
+    // 36pt on a 46mm. Left alone it is an empty strip under the buttons and costs the
+    // hand a row. ⚠️ `.ignoresSafeArea` does not take it back: on watchOS 11 the modifier
+    // is a no-op there at every level (the bar, the scroll view, the navigation stack,
+    // the TabView — all four measured), and it only began working in watchOS 27. A
+    // negative padding of the measured depth reaches into it on both, unclipped.
+    .padding(.bottom, -max(bottomInset - Self.barLift, 0))
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
@@ -75,8 +106,6 @@ struct WatchGameView: View {
           .offset(y: -8)
       }
     }
-    // The buttons stay put while 13 cards scroll, so a turn is never missed scrolling back.
-    .safeAreaInset(edge: .bottom, spacing: 0) { controls }
     .background(Color.felt.ignoresSafeArea())
     .onChange(of: game.seats[seat].hand) { _ in
       selection = []
@@ -116,20 +145,14 @@ struct WatchGameView: View {
       .accessibilityLabel(L10n.string(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit"))
       .accessibilityIdentifier("button_sort")
     }
-    // Wider side margins and a little lift than the rest of the screen uses: this bar
-    // now sits in the curved glass, where the rounded corners bite into the corners of a
-    // full-width pill.
+    // Wider side margins than the rest of the screen uses: this bar sits in the curved
+    // glass, where the rounded corners bite into the corners of a full-width pill.
     .padding(.horizontal, 10)
-    .padding(.bottom, 6)
     .frame(maxWidth: .infinity)
-    .frame(height: 32)
-    // The bar sits over the scroll view; without an opaque fill the hand scrolls through
-    // it and the buttons read as ghosts.
+    .frame(height: Self.barHeight)
+    // The bar reaches below the scroll view into the band; without an opaque fill the
+    // felt behind it is a different shade and the strip reads as a seam.
     .background(Color.felt)
-    // A watch reserves a deep bottom safe area for the curved glass. Keeping out of it
-    // left a thick empty band under the buttons and cost the hand a row, so the bar
-    // takes it back — the pills are still well inside the rounded corners.
-    .ignoresSafeArea(.container, edges: .bottom)
   }
 
   private var prompt: String {
