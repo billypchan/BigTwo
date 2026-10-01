@@ -187,18 +187,20 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   Lead/Play, Pass and the sort icon are the last row of a `VStack`. Between them: one
   row per player in play order from you (name chip inverted on that player's turn, their
   last move, cards left), the prompt, and your hand. Only the 320×320 square itself is
-  dropped — a wrist has no room — so the hand is an adaptive `LazyVGrid`.
+  dropped — a wrist has no room — so the hand is a `LazyVGrid`, **seven to a row** and
+  never more, however many you hold, so a card does not change size as the deal goes on.
   **Nothing scrolls.** The grid sits in a `GeometryReader`, which in a stack takes exactly
-  the space that is left, and `fittedCardHeight(in:)` picks the largest card height from
-  34 down to 18 whose rows fit it. A 46mm keeps big cards; a 41mm gets smaller ones and
-  still shows all thirteen. Putting the title on the clock's row is what buys that space.
+  the space that is left, and `fittedCardHeight(in:)` takes the largest height that fits
+  it both ways: a column is a seventh of the width, `WatchCardView.aspect` turns that into
+  the tallest card that fills one, and the rows the hand needs have to fit the height too.
+  Putting the title on the clock's row is what buys that space.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
   not, and shows the order a tap switches *to* (`♠` / `2`).
-  A card in someone else's row is `WatchPlayedCardView` — rank and suit **side by side**,
-  not the phone's rank-over-suit strip. That strip exists so an overlapped card still
-  reads from its left edge; a played card is never overlapped and never picked, and laid
-  out horizontally it fits five across a watch row at a size that can be read. The hand
-  keeps `WatchCardView`.
+  **Every card on the watch is rank and suit side by side**, not the phone's rank-over-suit
+  strip — `WatchPlayedCardView` in someone else's row, `WatchCardView` in your hand. That
+  strip exists so an *overlapped* card still reads from its left edge; nothing overlaps on
+  a watch, and laid out horizontally a card is legible at half the height — which is what
+  lets five fit across a player's row and seven across your hand.
   ⚠️ Three offsets fight the system here and all are deliberate: the toolbar drops its item
   below the clock's baseline, so the title carries `.offset(y: -8)` to sit on that row;
   the navigation bar reserves a band under the clock that nothing draws in, which the

@@ -15,10 +15,13 @@ struct WatchGameView: View {
   @State private var selection: Set<Card> = []
   @State private var message: String?
 
-  /// The hand's cards are sized to the space that is left, between these two. A 46mm has
-  /// room for the full 34; a 41mm does not, and a card it has to shrink still reads.
-  private static let maxCardHeight: CGFloat = 34
-  private static let minCardHeight: CGFloat = 18
+  /// Seven to a row, as the phone's hand reads — and never more, however many you hold,
+  /// so a card does not change size as the deal goes on.
+  private static let columnsPerRow = 7
+  private static let cardSpacing: CGFloat = 2
+  /// The hand's cards are sized to the space that is left, between these two.
+  private static let maxCardHeight: CGFloat = 30
+  private static let minCardHeight: CGFloat = 12
   /// The pinned button bar: how tall it is, and how far its pills stay off the glass.
   private static let barHeight: CGFloat = 32
   private static let barLift: CGFloat = 2
@@ -68,11 +71,10 @@ struct WatchGameView: View {
         // real watch the table came up already scrolled, with the player rows above the
         // fold — a smaller screen than any simulator here reproduced it on. A
         // GeometryReader in a stack takes exactly what is left, so the cards are sized to
-        // it instead: the full 34 wherever there is room, less where there is not.
+        // it instead.
         GeometryReader { space in
           let height = fittedCardHeight(in: space.size)
-          LazyVGrid(columns: [GridItem(.adaptive(minimum: height * WatchCardView.aspect),
-                                       spacing: 2)], spacing: 2) {
+          LazyVGrid(columns: Self.columns, spacing: Self.cardSpacing) {
             ForEach(hand) { card in
               WatchCardView(card: card, selected: selection.contains(card), height: height)
                 // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
@@ -112,7 +114,7 @@ struct WatchGameView: View {
       }
     }
     .background(Color.felt.ignoresSafeArea())
-    .onChange(of: game.seats[seat].hand) { _ in
+    .onChange(of: game.seats[seat].hand) {
       selection = []
       message = nil
     }
@@ -160,17 +162,19 @@ struct WatchGameView: View {
     .background(Color.felt)
   }
 
-  /// The largest card height, up to `maxCardHeight`, whose rows all fit in `size`. The
-  /// grid is `.adaptive`, so the column count follows from the width the same way it does.
+  private static let columns = Array(repeating: GridItem(.flexible(), spacing: cardSpacing),
+                                     count: columnsPerRow)
+
+  /// The largest card height that fits `size` both ways: a column is a seventh of the
+  /// width, and `aspect` turns that into the tallest card that fills one; the rows the
+  /// hand needs then have to fit the height as well.
   private func fittedCardHeight(in size: CGSize) -> CGFloat {
-    var height = Self.maxCardHeight
-    while height > Self.minCardHeight {
-      let columns = max(Int((size.width + 2) / (height * WatchCardView.aspect + 2)), 1)
-      let rows = (hand.count + columns - 1) / columns
-      if CGFloat(rows) * (height + 2) - 2 <= size.height { break }
-      height -= 1
-    }
-    return height
+    let columns = CGFloat(Self.columnsPerRow)
+    let columnWidth = (size.width - (columns - 1) * Self.cardSpacing) / columns
+    let rows = CGFloat(max((hand.count + Self.columnsPerRow - 1) / Self.columnsPerRow, 1))
+    let byHeight = (size.height + Self.cardSpacing) / rows - Self.cardSpacing
+    return max(min(Self.maxCardHeight, columnWidth / WatchCardView.aspect, byHeight),
+               Self.minCardHeight)
   }
 
   private var prompt: String {

@@ -65,12 +65,12 @@ struct BigTwoWatchApp: App {
           }
         }
       }
-      .onChange(of: game.preferences) {
-        store.save($0)
-        sync.send($0)
+      .onChange(of: game.preferences) { _, preferences in
+        store.save(preferences)
+        sync.send(preferences)
       }
       // Settings and player names follow whichever device was edited last.
-      .onChange(of: sync.incoming) { incoming in
+      .onChange(of: sync.incoming) { _, incoming in
         guard let incoming, incoming != game.preferences else { return }
         game.preferences = incoming
         game.applyNames(incoming.playerNames)
