@@ -185,10 +185,12 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   [watchOS 10's UI guidance](https://developer.apple.com/documentation/watchos-apps/creating-an-intuitive-and-effective-ui-in-watchos-10):
   the navy "Big Two" tab and `Deal n/10` are a `ToolbarItem(placement: .topBarLeading)`,
   the three actions are a `ToolbarItemGroup(placement: .bottomBar)`, and `BigTwoWatch`
-  touches neither. The actions are **round 40pt discs with one mark each**, not worded
-  pills — a watch bar has room for three discs and not for three words: a check to play
-  the selection, the sort toggle **in the middle** (the one that never hides), and a
-  forward arrow to pass. ⚠️ The sort toggle keeps its literal `♠` / `2` glyph rather than
+  touches neither. The actions are **round discs with one mark each**, not worded pills —
+  a watch bar has room for three discs and not for three words: a check to play the
+  selection, the sort toggle **in the middle** (the one that never hides), and a forward
+  arrow to pass. ⚠️ A disc has **no fixed diameter** — it is its mark plus even padding,
+  which comes out at the size the system draws a bottom-bar button. A 40pt one was tried
+  and cost twice over: 30pt of empty felt to clear it, and a whole size step on a 40mm. ⚠️ The sort toggle keeps its literal `♠` / `2` glyph rather than
   a symbol: it says *which order a tap switches to*, which no SF Symbol says. ⚠️ A
   *worded* pill in a toolbar needs its own horizontal padding — the toolbar proposes no
   width, so `maxWidth: .infinity` falls back to the width of the word, and "Lead" came out
@@ -210,9 +212,9 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   0, outside it reads the whole bar. Three builds tried: a flat `-22`, the difference of
   two insets, and a probe on the title's own frame. Every one was right on every simulator
   here and raised the first player rows off the top of the screen on a real watch. The one
-  constant that is still needed is `.padding(.bottom, 30)`: the bottom bar **draws taller
-  than it reserves** — 53pt of a 248pt screen at the bottom, with the 40pt discs in it —
-  and the hand's last row came up behind them on a 40mm without it. It is a property of
+  constant that is still needed is `.padding(.bottom, 16)`: the bottom bar **draws taller
+  than it reserves** — 53pt of a 248pt screen at the bottom, with the discs drawn over the
+  top of that — and the hand's last row came up behind them on a 40mm without it. It is a property of
   the bar and the buttons, not of the screen, so it is the same on every watch — but it
   has to be re-checked on a 40mm whenever the buttons change size.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does

@@ -128,11 +128,11 @@ struct WatchGameView: View {
     // Clear of the title's rule: the navigation bar leaves nothing between them on a 40mm.
     .padding(.top, 3)
     // ⚠️ The bottom bar draws taller than it reserves — measured on a 46mm, it takes 53pt
-    // of a 248pt screen at the bottom and puts the 40pt discs in it, and the hand's last
-    // row came up behind them on a 40mm. This is the difference, and it is a property of
-    // the bar and the buttons rather than of the screen, so it is the same number on every
-    // watch — but it has to be re-checked on a 40mm whenever the buttons change size.
-    .padding(.bottom, 30)
+    // of a 248pt screen at the bottom and draws the discs over the top of that, and the
+    // hand's last row came up behind them without this. It is a property of the bar and
+    // the buttons rather than of the screen, so it is the same number on every watch —
+    // but it has to be re-checked on a 40mm whenever the buttons change size.
+    .padding(.bottom, 16)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
 
