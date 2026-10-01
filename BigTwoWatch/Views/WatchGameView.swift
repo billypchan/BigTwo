@@ -102,6 +102,7 @@ struct WatchGameView: View {
         table(.large)
         table(.medium)
         table(.small)
+        table(.tiny)
       }
       if menuShown {
         // A clear layer swallows the tap that dismisses the menu, so nothing behind it
@@ -127,10 +128,11 @@ struct WatchGameView: View {
     // Clear of the title's rule: the navigation bar leaves nothing between them on a 40mm.
     .padding(.top, 3)
     // ⚠️ The bottom bar draws taller than it reserves — measured on a 46mm, it takes 53pt
-    // of a 248pt screen at the bottom but puts 26pt pills in it, and the hand's last row
-    // came up behind them on a 40mm. This is the difference, and it is a property of the
-    // bar rather than of the screen, so it is the same number on every watch.
-    .padding(.bottom, 18)
+    // of a 248pt screen at the bottom and puts the 40pt discs in it, and the hand's last
+    // row came up behind them on a 40mm. This is the difference, and it is a property of
+    // the bar and the buttons rather than of the screen, so it is the same number on every
+    // watch — but it has to be re-checked on a 40mm whenever the buttons change size.
+    .padding(.bottom, 30)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
   }
 
@@ -176,25 +178,30 @@ struct WatchGameView: View {
   /// toggle is not, because re-ordering your hand is something you do while you wait.
   /// The bar keeps its height either way, so the hand does not jump when a bot moves.
   @ViewBuilder private var controls: some View {
-      if isYourTurn {
-        WatchPalmButtonView(title: L10n.string(game.table == nil ? "Lead" : "Play"),
-                            enabled: !selection.isEmpty) { play() }
-          // Apple's Double Tap (pinch twice) plays the selection without touching the
-          // screen — the one action on this screen worth reaching without a free hand.
-          .primaryActionHandGesture(isYourTurn && !selection.isEmpty)
-          .accessibilityIdentifier("button_play")
-        WatchPalmButtonView(title: L10n.string("Pass"), enabled: game.table != nil) {
-          message = nil
-          game.pass(from: seat)
-        }
-        .accessibilityIdentifier("button_pass")
+    if isYourTurn {
+      WatchPalmIconView(systemImage: "checkmark", enabled: !selection.isEmpty) { play() }
+        // Apple's Double Tap (pinch twice) plays the selection without touching the
+        // screen — the one action on this screen worth reaching without a free hand.
+        .primaryActionHandGesture(isYourTurn && !selection.isEmpty)
+        .accessibilityLabel(L10n.string(game.table == nil ? "Lead" : "Play"))
+        .accessibilityIdentifier("button_play")
+    }
+    // Sort sits in the middle, and is the one that never hides: re-ordering your hand is
+    // something you do while you wait. The glyph is the order a tap switches *to*, as on
+    // the phone.
+    WatchPalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
+      game.preferences.sortBySuit.toggle()
+    }
+    .accessibilityLabel(L10n.string(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit"))
+    .accessibilityIdentifier("button_sort")
+    if isYourTurn {
+      WatchPalmIconView(systemImage: "forward.fill", enabled: game.table != nil) {
+        message = nil
+        game.pass(from: seat)
       }
-      // The glyph is the order a tap switches *to*, as on the phone.
-      WatchPalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
-        game.preferences.sortBySuit.toggle()
-      }
-      .accessibilityLabel(L10n.string(game.preferences.sortBySuit ? "Sort by rank" : "Sort by suit"))
-      .accessibilityIdentifier("button_sort")
+      .accessibilityLabel(L10n.string("Pass"))
+      .accessibilityIdentifier("button_pass")
+    }
   }
 
   private var prompt: String {

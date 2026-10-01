@@ -33,4 +33,10 @@ struct WatchMetrics {
                                    promptFont: 12, handFont: 15)
   static let small = WatchMetrics(row: 20, playedCard: 17, nameFont: 11,
                                   promptFont: 11, handFont: 13)
+  /// ⚠️ The floor, and a 40mm needs it: the round buttons are 40pt and the bottom bar
+  /// takes its own band on top of that, which leaves a 162×197pt screen very little. With
+  /// nowhere smaller to fall, `ViewThatFits` keeps the step that does not fit and the
+  /// first player's row is pushed up behind the title.
+  static let tiny = WatchMetrics(row: 17, playedCard: 15, nameFont: 10,
+                                 promptFont: 10, handFont: 11)
 }
