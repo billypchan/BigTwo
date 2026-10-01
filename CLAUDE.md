@@ -304,8 +304,15 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.
-- ⚠️ The IAP product must be created in **App Store Connect by hand** (no API key on this
-  machine), and the store listing needs its own copy for it.
+- The IAP product **exists**: `com.billchan.BigTwo.watch`, id `6818312724`, non-consumable,
+  Family Sharable, **US$10.99** (base territory USA), created through the API on
+  2026-10-01 with an en-US localization ("Play on Apple Watch") and a review screenshot.
+  ⚠️ It still reads `MISSING_METADATA` with the localization, the price schedule and the
+  screenshot all attached and the screenshot's asset `COMPLETE` — the API does not say
+  what else it wants, so the remaining step is a look in the web UI (the Paid Applications
+  agreement is the usual culprit on an app that has never sold anything).
+  ⚠️ `availableInAllTerritories` is **not** an attribute on `inAppPurchases` — the create
+  call 409s if you send it.
 
 ## Settings and names across the two devices
 
@@ -564,13 +571,21 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - Build numbers so far: 1.0 (1) old layout, 1.0 (2) square layout (submitted, then pulled),
   1.0 (3) = (2) without "Palm" + white status bar — **released 2026-09-19**; **1.1 —
   released 2026-09-29**, archived by Xcode Cloud from `26c69b6` (iOS 15+, seven UI
-  languages, six-locale listing), tagged `v1.1`. Marketing URL left
+  languages, six-locale listing), tagged `v1.1`. **1.3 (95)** was archived and uploaded
+  **locally** on 2026-10-01 — Xcode Cloud's quota was spent — and is `VALID` in App Store
+  Connect; it is the first build carrying the watch app. Marketing URL left
   empty on purpose: it pointed at the GitHub README, which tells the Palm story. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
   expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
-- ⚠️ **Export with the *other* key in `~/.appstoreconnect/private_keys/`, not `$ASC_KEY_ID`.**
-  `$ASC_KEY_ID` is App Manager: export fails with *Cloud signing permission error* and
-  *No profiles for 'com.billchan.BigTwo'*. The second key has Admin and exported 1.0 (1)
-  on 2026-09-13 (that run also registered the bundle id). Same issuer id for both.
+- **The App Store Connect API key lives outside this repo**:
+  `~/Documents/lab/zonevirbrate/AuthKey_2PLR6QY775.p8`, `ASC_KEY_ID=2PLR6QY775`,
+  `ASC_ISSUER_ID=69a6de76-aec0-47e3-e053-5b8c7c11a4d1`. `asc.swift` finds it through
+  `ASC_KEY_PATH`; `altool` only searches its own folders, so copy it to
+  `~/.appstoreconnect/private_keys/` before an upload.
+  ⚠️ An earlier note here said this key is App Manager and that export fails with *Cloud
+  signing permission error*. **It does not** — on 2026-10-01 it archived, cloud-signed,
+  exported and uploaded 1.3 (95) with no distribution certificate in the keychain at all
+  (only two *Apple Development* identities). If an export ever does fail that way, the
+  role is the thing to check, not the command.
 
 ## State of play
 
