@@ -14,6 +14,10 @@ struct WatchTitleBarView: View {
   let onMenu: () -> Void
 
   var body: some View {
+    // ⚠️ The navy rule is *inside* this view, under the tab, the way the phone draws it.
+    // It was a row of the table's content for one build, and it could never be made to
+    // touch the tab: the gap between them is the band the navigation bar reserves, which
+    // is not a number the content can read. Attached here it is right by construction.
     HStack(spacing: 4) {
       Button(action: onMenu) {
         Text(L10n.string("Big Two"))
@@ -37,6 +41,13 @@ struct WatchTitleBarView: View {
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .accessibilityIdentifier("deal_label")
+    }
+    .padding(.bottom, 3)
+    // A *background*, not a row: a `Rectangle` in a stack wants every point of width it
+    // can get, and in a toolbar item that is what truncated "Big Two" to "Big T…". A
+    // background is sized to the view it is behind, so it spans the title and no more.
+    .background(alignment: .bottom) {
+      Rectangle().fill(Color.titleNavy).frame(height: 2)
     }
     .fixedSize()
   }

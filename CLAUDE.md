@@ -201,12 +201,24 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   strip exists so an *overlapped* card still reads from its left edge; nothing overlaps on
   a watch, and laid out horizontally a card is legible at half the height — which is what
   lets five fit across a player's row and seven across your hand.
-  The phone's **navy rule under the title** is here too — the first row of the content,
-  edge to edge, drawn in the band the navigation bar reserves.
+  The phone's **navy rule under the title** is here too, and it lives **inside
+  `WatchTitleBarView`**, as a `.background(alignment: .bottom)` of the title's own row.
+  ⚠️ It was a row of the table's content for one build and could never be made to touch
+  the tab: the gap between them is the band the navigation bar reserves, which the content
+  cannot read. ⚠️ And it has to be a *background*, not a `VStack` row — a `Rectangle` in a
+  stack takes every point of width it is offered, and inside a toolbar item that truncated
+  "Big Two" to "Big T…".
   ⚠️ Three offsets fight the system here and all are deliberate: the toolbar drops its item
   below the clock's baseline, so the title carries `.offset(y: -8)` to sit on that row;
   the navigation bar reserves a band under the clock that nothing draws in, which the
-  content takes back with a negative top padding; and the watch reserves a deep band at
+  content takes back with a negative top padding — **measured**, as the gap between the
+  bottom of the title tab (a `GeometryReader` behind the toolbar item, read in `.global`)
+  and the top of the content area, so the content's top lands *on* the title and can never
+  be pulled above it. ⚠️ It was a flat `-22` for two builds, which is what it measures
+  here and is not what it measures on every watch: too large, and the first player rows
+  are raised off the top of the screen, which is what "the view scrolls up" was. The probe
+  reads a little short — 12 against 22 on a 46mm — and that is the safe direction: a gap
+  under the title, never content behind it. And the watch reserves a deep band at
   the **bottom** for the curved glass (26pt on a 40mm, 36pt on a 46mm), which the whole
   stack takes back with a negative bottom padding of that measured depth. Between them the
   **whole 13-card hand fits without scrolling** — the only way it can be played, since a

@@ -15,6 +15,10 @@ struct WatchGameView: View {
   @State private var selection: Set<Card> = []
   @State private var message: String?
   @State private var menuShown = false
+  /// Where the navy title tab ends, in screen coordinates — see `table(raise:sink:)`.
+  /// It starts at infinity so that until it has been measured the content is not raised
+  /// at all: a wrong guess here is what pushes the player rows off the top of the screen.
+  @State private var titleBottom: CGFloat = .greatestFiniteMagnitude
 
   /// Seven to a row, as the phone's hand reads — and never more, however many you hold,
   /// so a card does not change size as the deal goes on.
@@ -45,18 +49,23 @@ struct WatchGameView: View {
       // one the page settles at, and a bar sunk by a depth that is too large walks off
       // the bottom of the screen.
       GeometryReader { geo in
-        table(sink: max(geo.safeAreaInsets.bottom - Self.barLift, 0))
+        // The navigation bar reserves a band under the clock that nothing draws in. How
+        // deep it is, is the gap between where the title tab ends and where this content
+        // area begins — both read in screen coordinates, so it is the same arithmetic on
+        // every watch. ⚠️ It used to be a flat `-22`, which is what it measures on the
+        // watches here and is *not* what it measures on every watch: too large, and the
+        // first player rows are pulled up off the top of the screen.
+        table(raise: max(geo.frame(in: .global).minY - titleBottom, 0),
+              sink: max(geo.safeAreaInsets.bottom - Self.barLift, 0))
       }
     }
   }
 
-  private func table(sink: CGFloat) -> some View {
+  private func table(raise: CGFloat, sink: CGFloat) -> some View {
     // A plain stack, not `safeAreaInset`: the whole thing is pushed down into the system's
     // bottom band, and an inset bar leaves the content laid out over it — the hand's last
     // row came back clipped.
     VStack(spacing: 0) {
-      // The phone's navy rule under the title tab, edge to edge.
-      Rectangle().fill(Color.titleNavy).frame(height: 2)
       VStack(spacing: 1) {
         ForEach(rowOrder, id: \.self) { s in
           WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
@@ -94,13 +103,9 @@ struct WatchGameView: View {
       .padding(.horizontal, 2)
       controls
     }
-    // The navigation bar reserves a band under the clock that nothing draws in; the navy
-    // rule is drawn at the top of it and the content takes the rest back. ⚠️ 22 is not a
-    // guess but it is not measured either: inside the navigation stack the top inset
-    // reads 0, and outside it reads the whole bar, so the band can only be had as the
-    // difference — 62 against 40 on every watch checked here. Dropping it costs a 42mm
-    // most of its second row of cards, which is why it is still here.
-    .padding(.top, -22)
+    // Taking the band back is also what puts the rule against the bottom of the tab: the
+    // raise *is* the gap between them, so closing it leaves none.
+    .padding(.top, -raise)
     // The system keeps a deep band at the bottom for the curved glass — 26pt on a 40mm,
     // 36pt on a 46mm. Left alone it is an empty strip under the buttons and costs the
     // hand a row; the screen has no room to give it away. ⚠️ `.ignoresSafeArea` does not
@@ -120,6 +125,9 @@ struct WatchGameView: View {
           // The toolbar drops its item below the clock's baseline; this lifts the tab
           // back onto the clock's own row, which is where the phone puts the title.
           .offset(y: -8)
+          // Measured *after* the offset, so it is where the tab really ends. A background
+          // is used rather than an overlay so nothing is drawn over the title.
+          .background(titleProbe)
       }
     }
     .background(Color.felt.ignoresSafeArea())
@@ -202,6 +210,17 @@ struct WatchGameView: View {
     let byHeight = (size.height + Self.cardSpacing) / rows - Self.cardSpacing
     return max(min(Self.maxCardHeight, columnWidth / WatchCardView.aspect, byHeight),
                Self.minCardHeight)
+  }
+
+  /// Reports the bottom of the title tab in screen coordinates. ⚠️ If it never reports,
+  /// `titleBottom` stays at infinity and the content is simply not raised — a gap under
+  /// the title, which is the harmless way for this to fail.
+  private var titleProbe: some View {
+    GeometryReader { title in
+      Color.clear
+        .onAppear { titleBottom = title.frame(in: .global).maxY }
+        .onChange(of: title.frame(in: .global).maxY) { _, bottom in titleBottom = bottom }
+    }
   }
 
   private var prompt: String {
