@@ -13,25 +13,58 @@ and the evidence.
 
 ---
 
-## watch-app — 底部按鈕列貼齊螢幕邊
+## watch-app — 手錶版面：不要自己算系統留下來的帶子
 
-**`.ignoresSafeArea(.container, edges: .bottom)` 在 watchOS 11 完全無效。** 在 SE 40mm /
-watchOS 11 上，按鈕列下面留了一條 26pt 的空白；同一份 code 在 watchOS 27 上卻貼齊底邊。
-四個層級都試過、都量過——按鈕列本身、`ScrollView`、`NavigationStack`、`TabView`——
-`GeometryReader` 回報的 `safeAreaInsets.bottom` 一直是 26，版面一點都沒動。
-真正會動的是**負的 `padding(.bottom:)`**，而且不會被裁掉；兩個版本都一樣。所以深度用
-`GeometryReader` 量出來存進 `@State`，再用 `-(inset - lift)` 把整列推進去。
-40mm 是 26pt，46mm 是 36pt——寫死一個數字兩邊都不對。
+**最後能動的版本，是把兩條 bar 都交還給系統的那一版。** 標題是
+`ToolbarItem(placement: .topBarLeading)`，三個動作是
+`ToolbarItemGroup(placement: .bottomBar)`（參考 watchOS 10 的 UI 指南），app 一條都不碰。
+中間繞的路全部記在這裡，免得有人再走一次。
 
-**`safeAreaInset` 也要一起拿掉。** 它保留的是 inset view **被給定**的高度，不是它最後
-露在那條帶子上面的部分；把按鈕列往下推之後，46mm 上手牌最後一排的下緣就被蓋住了。
-改成 `VStack { ScrollView; controls }`，再把整個 `VStack` 往下推，分配就自己對了。
-中間試過 `ZStack(alignment: .bottom)` 加一個算好的 content padding——沒用，`ScrollView`
-的內容本來就會鋪到帶子裡，加 padding 只是把可捲動的長度拉長而已。
+**不要用寫死的數字去討回導覽列底下那條帶子。** 那條帶子的深度**問不出來**：在
+`NavigationStack` 裡面量 top inset 是 0，外面量到的是整條 bar。前後試了三種：
+寫死 `-22`、兩個 inset 相減、在標題自己的 frame 上放探針。
+**三種在這台 Mac 的每一台 simulator 上都正確，到真機上都把第一列玩家頂出畫面。**
+回報了三次才學乖。現在沒有任何一行去碰它。
 
-**在真機上回報的 bug，要在 simulator 上重現先要挑對 runtime。** 這次四台都試了
-(40mm/watchOS 11、40mm/watchOS 27、42mm、46mm)，只有 watchOS 11 那台看得到。
-`xcrun simctl create` 自己開一台舊 runtime 的手錶，比猜版本快得多。
+**`.ignoresSafeArea(.container, edges: .bottom)` 在 watchOS 11 完全無效**——按鈕列、
+`ScrollView`、`NavigationStack`、`TabView` 四個層級都量過，回報的 inset 一直沒動；
+watchOS 27 才開始生效。`safeAreaInset(edge: .bottom)` 也不行：它保留的是 inset view
+**被給定**的高度，不是它最後露在帶子上面的那一截。
+
+**唯一還留著的常數是 `.padding(.bottom, 6)`**：bottom bar **畫得比它保留的高**
+（46mm 上 248pt 螢幕留 53pt，圓鍵畫在那之上），不留這 6pt，40mm 上最後一排牌會被蓋住。
+這個值是一階一階往下走、每階都在 46mm 和 40mm 各拍一張照片試出來的：0 太貪心。
+
+**`ViewThatFits` 取代了所有版面算術。** 整桌用四段 `WatchMetrics` 各建一次，大的在前，
+SwiftUI 挑第一個放得下的。46mm 拿大的，40mm（162×197pt，支援的最小錶）落到 `.tiny`，
+13 張牌照樣全看得見。整個 view 裡**沒有 `GeometryReader`**。
+⚠️ **沒得再往下掉的時候，`ViewThatFits` 會留著那個放不下的版本**——第一列玩家就被頂到
+標題後面。`.tiny` 就是為了這個存在的；動按鈕尺寸時先看 40mm。
+
+**三個只有拍照才看得到的 SwiftUI 行為：**
+
+- **`.background` 收到裸 `Color` 會蔓延進 safe area。** 選單的白底從標題列一路漫到螢幕
+  頂端，而選單項目本身位置是對的——是把白底換成紅色當探針才確定兇手。改成
+  `Rectangle().fill(…)` 當 background 又整個不畫，最後白底是 `ZStack` 的一層。
+- **`Rectangle` 當 `VStack` 的一列會吃掉所有能拿到的寬度**，在 toolbar item 裡把
+  「Big Two」擠成「Big T…」。標題下面那條藍線要用 `.overlay(alignment: .bottom)`。
+- **toolbar 不提供寬度**，所以 `maxWidth: .infinity` 會退回成文字本身的寬度，
+  「Lead」變成一個圓圈。圓形圖示鍵剛好繞過這件事。
+
+**⚠️ `extract_screenshots.py` 會忽略手錶截圖最上面 15%**（那是時鐘），而**選單正好在那裡**。
+連續三次回報「clock only, kept」，我每次看的都是舊 PNG，以為改動沒生效。
+要看上面那一帶，用 `--force` 丟到暫存目錄。
+
+**真機報的 bug，先確認 simulator 挑對 runtime。** 底部空白那次四台都開了
+（40mm/watchOS 11、40mm/watchOS 27、42mm、46mm），只有 watchOS 11 看得到。
+`xcrun simctl create` 自己開一台舊 runtime 的錶，比猜版本快得多。
+（⚠️ 現在這台 Mac 的 watchOS 11 runtime 已經不在了。）
+
+**還有一個不在版面上的 bug：手錶的設定存不住。** 我第一個診斷是錯的——寫了一個丟棄用的
+UI test（不帶 `UITestMode`，用真的 store）切換設定、重開、讀回來，把存檔搬回原本的
+`App` body 也照樣通過。真兇在 `PreferenceSync`：`lastLocalChange` 只存在記憶體，每次啟動
+重置成 `.distantPast`，WatchConnectivity 在 activate 時交出對方**上一次推來的舊 context**
+就贏了，再被寫回 store。⚠️ **這個任何 simulator 都重現不了**——要配對的手機＋手錶。
 
 ---
 
