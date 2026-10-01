@@ -38,11 +38,14 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | --- | --- |
 | `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `Views/` |
+| `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
+| `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase), `PreferenceSync.swift` (phone ↔ watch settings) |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
 | `docs/` | `pr_learnings.md`, `test_runs.md` |
 | `screenshots/ios/` | Screen-tour captures — committed |
+| `screenshots/watchos/` | Watch screen-tour captures — committed |
 
 ## Shell & permissions (reduce prompts)
 
@@ -171,6 +174,211 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
 
+## Apple Watch, and the one in-app purchase
+
+`BigTwoWatch` is a watchOS 10 app embedded in the phone app
+(`BigTwo.app/Watch/BigTwoWatch.app`, bundle id `com.billchan.BigTwo.watchkitapp`). It
+runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit declares
+`.watchOS(.v10)` and imports only Foundation, which is why this cost nothing.
+
+- **Both bars are the system's, and nothing else is measured.** Following
+  [watchOS 10's UI guidance](https://developer.apple.com/documentation/watchos-apps/creating-an-intuitive-and-effective-ui-in-watchos-10):
+  the navy "Big Two" tab and `Deal n/10` are a `ToolbarItem(placement: .topBarLeading)`,
+  the three actions are a `ToolbarItemGroup(placement: .bottomBar)`, and `BigTwoWatch`
+  touches neither. The actions are **round discs with one mark each**, not worded pills —
+  a watch bar has room for three discs and not for three words: a check to play the
+  selection, the sort toggle **in the middle** (the one that never hides), and a forward
+  arrow to pass. ⚠️ A disc has **no fixed diameter** — it is its mark plus even padding,
+  which comes out at the size the system draws a bottom-bar button. A 40pt one was tried
+  and cost twice over: 30pt of empty felt to clear it, and a whole size step on a 40mm. ⚠️ The sort toggle keeps its literal `♠` / `2` glyph rather than
+  a symbol: it says *which order a tap switches to*, which no SF Symbol says. ⚠️ A
+  *worded* pill in a toolbar needs its own horizontal padding — the toolbar proposes no
+  width, so `maxWidth: .infinity` falls back to the width of the word, and "Lead" came out
+  as a circle. The discs sidestep that by being circles on purpose. Between them: one row per player in play order from you
+  (name chip inverted on that player's turn, their last move, cards left), the prompt, a
+  `Spacer`, and your hand along the bottom edge as on the phone. The hand is a `LazyVGrid`,
+  **seven to a row** and never more, however many you hold, so a card does not change size
+  as the deal goes on; a card is as wide as its seventh of the row and as tall as its own
+  text asks for.
+  ⚠️ **`ViewThatFits` is the whole of the layout arithmetic — there is no `GeometryReader`
+  in `WatchGameView`.** The table is built once per `WatchMetrics` step, largest first, and
+  SwiftUI lays out the first one whose ideal height fits. A 46mm takes a big step; a 40mm
+  (162×197pt, the smallest watch this ships to) falls through to `.tiny` and still shows
+  all thirteen cards. Add a step rather than stretch one, and check a **40mm** first —
+  ⚠️ with nowhere smaller to fall, `ViewThatFits` keeps the step that does *not* fit and
+  the first player's row is pushed up behind the title. That is what `.tiny` is for.
+  ⚠️ **Never claw back a system band by hand.** The navigation bar reserves a strip under
+  the clock and nothing will tell you how deep it is — inside the stack the top inset reads
+  0, outside it reads the whole bar. Three builds tried: a flat `-22`, the difference of
+  two insets, and a probe on the title's own frame. Every one was right on every simulator
+  here and raised the first player rows off the top of the screen on a real watch. The one
+  constant that is still needed is `.padding(.bottom, 6)`: the bottom bar **draws taller
+  than it reserves** — 53pt of a 248pt screen at the bottom, with the discs drawn over the
+  top of that — and the hand's last row came up behind them on a 40mm without it. ⚠️ 6 is
+  the floor, found by walking it down and photographing each value: at 0 the discs cover
+  the last row's cards on a 40mm. It is what puts the hand on the bottom edge where the
+  phone has it. It is a property of
+  the bar and the buttons, not of the screen, so it is the same on every watch — but it
+  has to be re-checked on a 40mm whenever the buttons change size.
+  Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
+  not, and shows the order a tap switches *to* (`♠` / `2`).
+  **Every card on the watch is rank and suit side by side**, not the phone's rank-over-suit
+  strip — `WatchPlayedCardView` in someone else's row, `WatchCardView` in your hand. That
+  strip exists so an *overlapped* card still reads from its left edge; nothing overlaps on
+  a watch, and laid out horizontally a card is legible at half the height — which is what
+  lets five fit across a player's row and seven across your hand.
+  The phone's **navy rule under the title** is here too, and it lives **inside
+  `WatchTitleBarView`**, as an `.overlay(alignment: .bottom)` drawn *over* the bottom of
+  the tab so the tab's rounded corners never show. ⚠️ It has to be an overlay, not a
+  `VStack` row — a `Rectangle` in a stack takes every point of width it is offered, and
+  that truncated "Big Two" to "Big T…".
+  The **whole 13-card hand is on screen without scrolling** — the only way it can be
+  played, since a watchOS UI test (and the Digital Crown) cannot scroll it.
+  ⚠️ **`.ignoresSafeArea()` on the whole stack is what makes the top and bottom bands
+  usable at all**, and it is the one place the modifier is applied. Dead ends worth not
+  repeating, all measured rather than assumed:
+  `.ignoresSafeArea(.container, edges: .bottom)` on anything *inside* a `NavigationStack`
+  is a **no-op on watchOS 11** — tried on the button bar, the scroll view, the stack and
+  the `TabView`, and the reported inset never moved; it only began working in watchOS 27,
+  and a 40mm on watchOS 11 showed a 26pt empty strip under the buttons.
+  `safeAreaInset(edge: .bottom)` reserves the height the bar was *given*, not the part of
+  it that ends up above the band, so a bar pushed into the band left the hand's last row
+  clipped on a 46mm.
+  `ToolbarItemGroup(placement: .bottomBar)` leaves the content 204×133 of a 208×248 screen
+  on a 46mm — 53pt at the bottom, against 28 for the hand-built bar — and still draws its
+  pills taller than it reserved.
+  ⚠️ **`WatchPalmButtonView` needs its own `ButtonStyle`**, for the same reason
+  `PalmPressStyle` exists on the phone: every built-in style fades a *disabled* button, so
+  a white pill over the felt comes back translucent green. The style must not read
+  `isEnabled` — the pill's own `enabled` greys the text instead.
+  ⚠️ **A watchOS UI test cannot scroll.** `swipeUp()` on the app *and* on the scroll view
+  both leave the screen byte-identical (proved by hashing the extracted PNGs), and the
+  Digital Crown has no XCUITest API. `isHittable` is no help either — it is `true` for
+  cards below the fold. So anything a test must tap, and anything a screenshot must show,
+  has to be on screen **without scrolling**; that is what caps how much chrome the watch
+  layout can afford above the hand.
+- The watch app shares `Palette.swift` and `L10n.swift` with the phone (both are
+  platform-neutral) and the same `Resources/*.lproj`, **minus** the iOS asset catalog and
+  `PrivacyInfo.xcprivacy` — a watch target must not carry those.
+- **The purchase gates play, not installation.** The watch app ships inside the phone
+  app, so it always installs; `WatchUnlock` (StoreKit 2, non-consumable
+  `com.billchan.BigTwo.watch`) decides whether the game or the paywall is shown.
+  Entitlements follow the Apple ID, so the watch asks the App Store itself rather than
+  syncing a flag from the phone.
+- ⚠️ **The watch keeps its own `PreferencesStore`**, and under `UITestMode` it is a
+  throwaway suite wiped each launch — exactly as on the phone. Without that a test that
+  toggles the sort order saves it and the *next* run starts in the other order and fails
+  on its first assertion. That is not hypothetical; it happened.
+- ⚠️ **An embedded watch app needs its own App ID.** Xcode Cloud archived fine and then
+  failed the ad-hoc export with exit 70 — *No profiles for `com.billchan.BigTwo.watchkitapp`
+  were found*. Cloud signing creates certificates and profiles, but not the **App ID**, and
+  that identifier had never been registered. Registered 2026-09-30 as "Big Two Watch";
+  nothing in the repo could have fixed it. The archive itself was never the problem — host
+  and watch agreed on `CFBundleShortVersionString` and `CFBundleVersion`, and the watch
+  carried `WKApplication`, `WKCompanionAppBundleIdentifier` and device family 4.
+- ⚠️ **The paywall is off**: `BigTwoWatchApp.paywallEnabled` is `false` until the product
+  exists in App Store Connect — until it does there is nothing to buy, so a paywall would
+  lock the game with no way past it. `WatchUnlock` and `WatchStoreView` are complete and
+  unused; flip that one constant to gate again.
+- **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
+  and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
+  (`-seed 2` gives it the same fixed deal the phone suite uses):
+
+  ```bash
+  xcodebuild test -project BigTwo.xcodeproj -scheme BigTwoWatch \
+    -destination 'platform=watchOS Simulator,id=<udid>' > run.log 2>&1; echo $?
+  ```
+
+  ⚠️ **A watch card must be one accessibility element.** `WatchCardView` is an `HStack` of
+  a rank and a suit, so the identifier on the row matched three elements and *every* tap
+  failed with *Multiple matching elements found*. `.accessibilityElement(children: .combine)`
+  is what makes `hand_3d` tappable.
+  ⚠️ `simctl status_bar override` answers *Operation not supported* on watchOS, so the
+  watch clock cannot be frozen to 9:41 the way the phone's is. `screenshots/watchos/` is
+  committed all the same: `extract_screenshots.py` ignores a **15%** top band on a watch
+  shot (width ≤ 600) instead of the phone's 8%, because a 46mm clock sits at rows 39–63
+  of 496 — measured, not guessed — while the app's title bar starts at ~22%. A change one
+  row below that band is still treated as a real change.
+- `-unlocked YES` skips the paywall in a debug build; it is `#if DEBUG` only and a Release
+  build does not compile it.
+- `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
+  scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
+  from Xcode does, so a command-line launch shows the paywall with no price.
+- ⚠️ The IAP product must be created in **App Store Connect by hand** (no API key on this
+  machine), and the store listing needs its own copy for it.
+
+## Settings and names across the two devices
+
+`Shared/PreferenceSync.swift` keeps `Preferences` — rule set, speed, sort order, bots and
+the **player names** — the same on the phone and the watch. Both apps write on every
+change and apply whatever arrives.
+
+- **WatchConnectivity's application context, not a message.** It is one latest-value slot,
+  replaced rather than queued and delivered in the background: a message queue would
+  replay every intermediate toggle, a file transfer would arrive late. Nothing about a
+  game in progress is synced — the two devices deal their own cards.
+- **Last *edit* wins, not last delivery.** The payload carries the time the value changed.
+  Without it, opening the watch after renaming a seat on the phone would push the watch's
+  older copy straight back over the new name.
+  ⚠️ **That time has to be persisted**, and was not. It lived in memory, so every launch
+  started at `.distantPast`; on activation WatchConnectivity hands over whatever the other
+  device last pushed — an *older* copy — which then beat it and was written to the store
+  over the change just made. From the outside that is "the setting is not saved": kept
+  until the next launch, then reverted. It is in `UserDefaults` now
+  (`preferenceSync.lastLocalChange`); an absent key reads 0, so the first launch after an
+  update can still be overwritten once. ⚠️ **No simulator reproduces this** — it needs a
+  paired phone and watch, which one `xcodebuild` run cannot drive; a watch on its own
+  saves and reloads correctly either way, which is what made it look like a save bug.
+- ⚠️ `updateApplicationContext` **throws when the dictionary is unchanged**; that is not an
+  error worth surfacing, the other side already has the value.
+- ⚠️ `[String: Any]` is not `Sendable`, so the delegate pulls `Data` and the timestamp out
+  of the context on its own thread and only those cross to the main actor. The two key
+  constants are `nonisolated` for the same reason.
+
+## Watch pages
+
+`WatchTabsView` is a three-page `TabView`: the table, **Preferences** and **About**. The
+phone reaches those two by tapping its title; a watch has no menu, and paging is what it
+does.
+
+- **Horizontal paging (`.page`), not vertical.** A vertically paged `TabView` takes the
+  Digital Crown, and the table needs it to scroll.
+- Preferences carries the same settings, the same wording and the **same identifiers** as
+  the phone (`pref_hongKong`, `pref_bots_Strong`, …), so a change is saved and pushed to
+  the phone like any other. It ends in the Palm form's **OK** (`pref_ok`), which writes
+  and returns to the table. ⚠️ OK is **pinned**, not the last thing in the scroll: the
+  settings are longer than any watch screen, and a confirm button below the fold is the
+  thing it was added to fix.
+- **Tapping the title opens a menu on the watch too** (`menu_button` → `WatchMenuView`),
+  with the one item that has nowhere else to live: **New Game** (`menu_new_game`).
+  Preferences and About are pages, so they are not in it. ⚠️ A watchOS toolbar item is
+  published more than once, so a UI test needs `app.buttons["menu_button"].firstMatch` —
+  the plain query fails with *Multiple matching elements found* before it ever taps. And
+  `deal_label` cannot be asserted at all on the watch: it lives in a toolbar item and no
+  query of any element type finds it.
+- About drops the rows that open a browser — Share, Rate, Report and Source stay on the
+  phone. ⚠️ Its disclaimer is **not** `.inkDim`: the phone dims that line against a white
+  dialog body, and the same grey on the green felt is barely legible.
+- ⚠️ **`swipeLeft()` does page a `TabView`** in a watchOS UI test, even though `swipeUp()`
+  cannot scroll a `ScrollView`. Paging and scrolling are not the same mechanism.
+  ⚠️ A checkbox's identifier is on a `Button`, so `app.staticTexts[…]` will not find it —
+  the tour failed on exactly that before it failed on anything real.
+
+## Watch gestures
+
+The watch has the phone's two selection shortcuts, and one of its own:
+
+- **Double tap a card** — the whole suit when you hold five or more of it, otherwise the
+  pair or triple of that rank. ⚠️ `.onTapGesture(count: 2)` must be attached **before**
+  `.onTapGesture`, or the single tap swallows the event and the double never fires.
+- **Long press a card** — every card of that rank.
+- **Apple's Double Tap** (pinch twice) plays the selection: `handGestureShortcut(.primaryAction)`.
+  ⚠️ That modifier is watchOS 11+, and this app ships to watchOS 10, so it goes through
+  `primaryActionHandGesture(_:)` which checks availability rather than raising the target.
+
+XCUITest drives all three on the simulator (`doubleTap()`, `press(forDuration:)`), and
+`XCUIDeviceHandGesture` can even simulate Apple's own gesture.
+
 ## Game record
 
 Menu → Game History is the whole game, not only the deal on the table: the four hands
@@ -260,6 +468,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 
 0. **Check it ran**: `Executed N test(s)`, not the banner.
 1. **Extract**: `python3 scripts/extract_screenshots.py --latest screenshots/ios`
+   (watch runs go to `screenshots/watchos`)
    (keeps the old PNG if the new shot differs only in the status-bar clock;
    `--force` overwrites). Freeze the clock first with
    `scripts/freeze_status_bar.sh <udid>` so new shots show 9:41.
@@ -269,6 +478,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 2. **Log** one line to `docs/test_runs.md` — tests, pass/fail count, device.
 3. **Look at the images.** Every visual bug on this branch passed its tests first.
 
+Watch tour names: `watch_screen_NN_<name>` (lead, selected, trick, preferences, about).
 Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferences, names, about, score, final_score).
 
 ## Simulator

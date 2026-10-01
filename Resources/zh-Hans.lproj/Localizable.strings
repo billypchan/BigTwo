@@ -85,3 +85,11 @@
 "queen" = "Q";
 "king" = "K";
 "ace" = "A";
+
+/* Apple Watch purchase */
+"Big Two on Apple Watch" = "Apple Watch 版大老二";
+"Play the full game on your wrist. One purchase, no subscription." = "在手腕上打完整的一盘。一次购买，不是订阅。";
+"Buy %@" = "购买 %@";
+"Buy" = "购买";
+"The App Store could not be reached." = "无法连接 App Store。";
+"Restore Purchase" = "恢复购买";

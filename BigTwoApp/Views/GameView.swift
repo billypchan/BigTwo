@@ -58,7 +58,9 @@ struct GameView: View {
     ZStack(alignment: .topLeading) {
       VStack(spacing: 0) {
         TitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) { dialog = .menu }
-          .frame(height: max(24 * u, PalmMetrics.minTouch), alignment: .top)
+          // 24 units, not `max(…, minTouch)`: the Palm's bar is 24 and padding it to 44
+          // is what lifted the tab off its own rule.
+          .frame(height: 24 * u, alignment: .top)
         ZStack(alignment: .bottomTrailing) {
           VStack(spacing: 0) {
             ForEach(rowOrder, id: \.self) { s in

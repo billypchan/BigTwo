@@ -13,6 +13,173 @@ and the evidence.
 
 ---
 
+## watch-app — 手錶版面：不要自己算系統留下來的帶子
+
+**最後能動的版本，是把兩條 bar 都交還給系統的那一版。** 標題是
+`ToolbarItem(placement: .topBarLeading)`，三個動作是
+`ToolbarItemGroup(placement: .bottomBar)`（參考 watchOS 10 的 UI 指南），app 一條都不碰。
+中間繞的路全部記在這裡，免得有人再走一次。
+
+**不要用寫死的數字去討回導覽列底下那條帶子。** 那條帶子的深度**問不出來**：在
+`NavigationStack` 裡面量 top inset 是 0，外面量到的是整條 bar。前後試了三種：
+寫死 `-22`、兩個 inset 相減、在標題自己的 frame 上放探針。
+**三種在這台 Mac 的每一台 simulator 上都正確，到真機上都把第一列玩家頂出畫面。**
+回報了三次才學乖。現在沒有任何一行去碰它。
+
+**`.ignoresSafeArea(.container, edges: .bottom)` 在 watchOS 11 完全無效**——按鈕列、
+`ScrollView`、`NavigationStack`、`TabView` 四個層級都量過，回報的 inset 一直沒動；
+watchOS 27 才開始生效。`safeAreaInset(edge: .bottom)` 也不行：它保留的是 inset view
+**被給定**的高度，不是它最後露在帶子上面的那一截。
+
+**唯一還留著的常數是 `.padding(.bottom, 6)`**：bottom bar **畫得比它保留的高**
+（46mm 上 248pt 螢幕留 53pt，圓鍵畫在那之上），不留這 6pt，40mm 上最後一排牌會被蓋住。
+這個值是一階一階往下走、每階都在 46mm 和 40mm 各拍一張照片試出來的：0 太貪心。
+
+**`ViewThatFits` 取代了所有版面算術。** 整桌用四段 `WatchMetrics` 各建一次，大的在前，
+SwiftUI 挑第一個放得下的。46mm 拿大的，40mm（162×197pt，支援的最小錶）落到 `.tiny`，
+13 張牌照樣全看得見。整個 view 裡**沒有 `GeometryReader`**。
+⚠️ **沒得再往下掉的時候，`ViewThatFits` 會留著那個放不下的版本**——第一列玩家就被頂到
+標題後面。`.tiny` 就是為了這個存在的；動按鈕尺寸時先看 40mm。
+
+**三個只有拍照才看得到的 SwiftUI 行為：**
+
+- **`.background` 收到裸 `Color` 會蔓延進 safe area。** 選單的白底從標題列一路漫到螢幕
+  頂端，而選單項目本身位置是對的——是把白底換成紅色當探針才確定兇手。改成
+  `Rectangle().fill(…)` 當 background 又整個不畫，最後白底是 `ZStack` 的一層。
+- **`Rectangle` 當 `VStack` 的一列會吃掉所有能拿到的寬度**，在 toolbar item 裡把
+  「Big Two」擠成「Big T…」。標題下面那條藍線要用 `.overlay(alignment: .bottom)`。
+- **toolbar 不提供寬度**，所以 `maxWidth: .infinity` 會退回成文字本身的寬度，
+  「Lead」變成一個圓圈。圓形圖示鍵剛好繞過這件事。
+
+**⚠️ `extract_screenshots.py` 會忽略手錶截圖最上面 15%**（那是時鐘），而**選單正好在那裡**。
+連續三次回報「clock only, kept」，我每次看的都是舊 PNG，以為改動沒生效。
+要看上面那一帶，用 `--force` 丟到暫存目錄。
+
+**真機報的 bug，先確認 simulator 挑對 runtime。** 底部空白那次四台都開了
+（40mm/watchOS 11、40mm/watchOS 27、42mm、46mm），只有 watchOS 11 看得到。
+`xcrun simctl create` 自己開一台舊 runtime 的錶，比猜版本快得多。
+（⚠️ 現在這台 Mac 的 watchOS 11 runtime 已經不在了。）
+
+**還有一個不在版面上的 bug：手錶的設定存不住。** 我第一個診斷是錯的——寫了一個丟棄用的
+UI test（不帶 `UITestMode`，用真的 store）切換設定、重開、讀回來，把存檔搬回原本的
+`App` body 也照樣通過。真兇在 `PreferenceSync`：`lastLocalChange` 只存在記憶體，每次啟動
+重置成 `.distantPast`，WatchConnectivity 在 activate 時交出對方**上一次推來的舊 context**
+就贏了，再被寫回 store。⚠️ **這個任何 simulator 都重現不了**——要配對的手機＋手錶。
+
+---
+
+## watch-app — Apple Watch 版，用一個 IAP 解鎖
+
+**手錶版幾乎是免費的，因為 kit 早就乾淨。** `BigTwoKit` 只 import Foundation，
+`Package.swift` 加一行 `.watchOS(.v10)` 就整包能用——規則、bot、計分、牌局紀錄全部共用。
+真正要寫的只有畫面。這是「純邏輯放 kit」這條規矩第一次付清它的成本。
+
+**分頁能滑，捲軸不能捲——這兩件事在 watchOS UI 測試裡不一樣。** 先前確認 `swipeUp()` 完全
+推不動 `ScrollView`，本來以為手勢模擬整體不管用；但 `swipeLeft()` **可以**翻 `TabView` 的頁。
+分頁與捲動是兩套機制，不要用其中一個的結論去推另一個。
+⚠️ 另外：Palm 勾選框的識別碼掛在 `Button` 上，`app.staticTexts["pref_hongKong"]` 抓不到，
+導覽測試第一次就是掛在這個型別錯誤上，而不是真的沒翻頁——錯誤訊息（「Preferences page
+never came up」）完全指向錯的方向。
+
+**嵌在 iPhone app 裡的手錶 app 要有自己的 App ID，Xcode Cloud 不會幫你建。** CI 的 archive
+成功、`-exportArchive` 卻 exit 70：*No profiles for `com.billchan.BigTwo.watchkitapp` were
+found*。雲端簽章會產憑證與描述檔，但 **App ID 不會自動註冊**，而那個 identifier 從來沒建過。
+診斷順序值得記：先確認只有 `watch-app` 分支紅（main 與 admob-banner 都綠）→ 本機 archive
+成功、export 失敗，排除打包問題 → 比對封存裡兩個 app 的 `CFBundleShortVersionString`、
+`CFBundleVersion`、`WKApplication`、device family，全部正確 → 用 spaceship 直接查入口的
+App ID 清單，`com.billchan.BigTwo` 在、`.watchkitapp` 不在。**這種錯 repo 裡改什麼都沒用**，
+只能去帳號裡註冊。
+
+**watchOS 支援雙擊，兩種都支援——但要先驗過再說。** 被上次 `XCUIAutomation` 的錯誤教訓過，
+這次先查 SDK 再寫一支拋棄式測試打一遍：`.onTapGesture(count: 2)` 在 watchOS 上**真的會觸發**，
+XCUITest 也有 `doubleTap()` / `press(forDuration:)`，甚至有 `XCUIDeviceHandGesture` 可以模擬
+Apple 自己的「輕點兩下」。⚠️ `count: 2` 的手勢一定要掛在 `count: 1` **之前**，否則單擊先吃掉事件。
+⚠️ `handGestureShortcut` 是 watchOS 11+，本 app 出到 10，所以包一層 `if #available` 而不是
+為了一個快捷把整個 deployment target 拉高。
+
+**兩台裝置之間同步設定，用 application context，不要用 message。** application context 是
+「單一最新值」的槽位，會被覆寫而不是排隊，而且背景送達。用 message queue 會把每一次中間
+狀態的切換都重播一遍；用 file transfer 又太慢。⚠️ 而且要傳**修改時間**做最後寫入判定——不是
+送達時間：在手機改了座位名字之後才打開手錶，手錶那份較舊的資料會直接把新名字蓋掉。
+⚠️ `updateApplicationContext` 在字典沒變時會 throw，那不是需要處理的錯誤。
+⚠️ Swift 6：`[String: Any]` 不是 `Sendable`，delegate 要在自己的執行緒先把 `Data` 與時間戳
+取出來，只有這兩個 Sendable 值能跨到 main actor；那兩個 key 常數也得標 `nonisolated`。
+
+**別家出的牌要橫排，不要沿用手牌的直排。** 手牌的「點數在上、花色在下」是為了**重疊**時
+只露左邊一條也讀得出來；但別家出的牌不會重疊、也不用點選，直排縮到 16pt 只剩一團糊。
+改成 `WatchPlayedCardView`（點數與花色並排）之後，同樣的寬度放得下五張還看得清楚。
+一個元件不該因為「已經有了」就套到用途不同的地方。
+
+**手錶版面就是一場空間拉鋸，三個地方都要跟系統搶。** 把出牌區放大之後，整副手牌又被擠出
+畫面，只好逐一把系統白白保留的空間要回來：導覽列在時鐘下方留了一條沒人畫的帶子（負的
+top padding）、底部為圓角玻璃留了很深的安全區（`ignoresSafeArea`）、工具列把項目放在
+時鐘基線下方（`offset(y: -8)`）。三塊加起來才夠讓 13 張牌不用捲動就全在畫面上。
+
+**標題放進系統時鐘那一列，是整個版面的關鍵。** 一開始把 navy 標題列做成
+`safeAreaInset(edge: .top)`，它自己吃掉一條螢幕，手牌第一排只露得出點數那一截。改成
+`NavigationStack` + `ToolbarItem(placement: .topBarLeading)`，標題與 `Deal n/10` 與系統
+時鐘同列，省下的那條剛好讓**第一排牌完整顯示**——而這在手錶上是硬需求，因為 UI 測試根本
+不能捲動（見下）。
+
+⚠️ **手錶自己的偏好設定也要有測試隔離。** 加上 `PreferencesStore` 讓排序順序存得住之後，
+一個切換排序的測試會把結果存起來，**下一次執行**就從相反的順序開始、第一個斷言直接掛。
+這不是假設——故意弄壞排序那一輪跑完，還原後整套就紅了，錯誤訊息還完全指向別的地方。
+解法跟手機端一樣：`UITestMode` 下用丟棄式 suite，每次啟動清掉。驗證方式是同一個測試連跑
+兩次。
+
+**手錶版照 iPhone 版的形狀做，chrome 放上下 safe area。** navy「Big Two」頁籤＋navy 橫線
+＋`Deal n/10` 放 `safeAreaInset(edge: .top)`，Lead/Play 與 Pass 放
+`safeAreaInset(edge: .bottom)`，中間才是四列玩家、提示、手牌。只有 320×320 正方形本身沒搬
+上去——手腕放不下——所以手牌是 adaptive `LazyVGrid`，用 Digital Crown 捲。
+
+⚠️ **釘住的 bar 一定要有不透明底色**：拿掉 `Color.felt` 之後手牌直接從按鈕底下捲過去，
+按鈕變成幽靈。編譯完全不報，只有截圖看得出來。
+
+⚠️ **`WatchPalmButtonView` 必須自帶 `ButtonStyle`**，理由跟手機端 `PalmPressStyle` 一模一樣：
+SwiftUI 所有內建樣式都會把 **disabled** 的按鈕沖淡，白色藥丸疊在綠桌面上就變成半透明綠。
+樣式本身不能去讀 `isEnabled`，改由 `enabled` 參數把文字塗成灰的。第一版用
+`.buttonStyle(.plain)` 就中了這個。
+
+⚠️ **watchOS 的 UI 測試根本不能捲動。** 改版後手牌掉到摺線下，三個測試有兩個開始失敗，
+訊息是「never became selected」。我第一反應是加一個「捲到 `isHittable` 為止」的 helper，
+測試也確實轉綠——**但那個 helper 一次都沒執行過**。兩件事同時為真：
+
+- `isHittable` 對摺線下的牌也回 `true`，所以 `while !x.isHittable` 迴圈直接跳過；
+- `swipeUp()` 不管對 app 還是對 scroll view，畫面都**位元完全相同**（把抽出來的 PNG 做
+  雜湊才發現的），Digital Crown 也沒有 XCUITest API。
+
+真正修好 tap 的是**把玩家列壓扁、讓手牌第一排露出來**。教訓有兩層：一是別把「改了兩件事
+之後測試轉綠」當成「後改的那件事有效」；二是**手錶上凡是要點得到、要拍得到的東西，都必須
+不用捲就在畫面上**——這直接限制了手牌上方能擺多少 chrome。
+
+**IAP 管的是能不能玩，不是能不能裝。** 手錶 app 是包在 iPhone app 裡出貨的，一定會裝上去，
+所以購買只能 gate 畫面。`WatchUnlock` 用 StoreKit 2 的 `Transaction.currentEntitlements`
+自己問 App Store——權利跟著 Apple ID 走，不必從手機同步旗標過來，手錶離線開也還是對的。
+
+**watchOS 有 XCUITest——我一開始說沒有，是錯的。** Xcode 27 的 WatchOS 平台目錄裡就放著
+`XCUIAutomation.framework`，`xcodebuild test -scheme BigTwoWatch -destination 'platform=watchOS Simulator,…'`
+一跑就過。教訓：**先去 `/Applications/Xcode.app/…/Platforms/WatchOS.platform` 看一眼，
+不要憑印象斷言平台能力。**
+
+⚠️ **手錶上的卡片必須是單一無障礙元素。** `WatchCardView` 是 `HStack(rank, suit)`，識別碼套在
+外層時 `hand_3d` 會同時比中容器與兩個 Text，每一次 tap 都是
+*Multiple matching elements found*，三個測試裡有兩個直接掛掉。
+`.accessibilityElement(children: .combine)` 才讓它可點。iPhone 端沒踩到這個，因為那邊的
+`CardRowView` 用單一 row 手勢再按 x 座標挑牌。
+
+⚠️ **`simctl launch` 不會套用 scheme 的 StoreKit 設定檔。** 只有從 Xcode 跑才會，所以指令列
+啟動時 paywall 上沒有價格（`Product.products` 回空陣列，`.locked(price: nil)`）。這代表**購買
+流程本身沒有端到端跑過**——只驗到 paywall 畫面與 `.unavailable` 的文案分支。
+
+**paywall 先關掉。** `BigTwoWatchApp.paywallEnabled = false`——商品在 App Store Connect
+還不存在，掛著 paywall 等於把遊戲鎖死而且沒有任何解法。`WatchUnlock` 與 `WatchStoreView`
+寫完了、留在樹上不動，商品建好後翻一個常數就恢復。
+
+⚠️ **還沒做的**：App Store Connect 的 IAP 商品（只能在網頁建）、商店文案、iPhone 端的購買
+入口（手機上完全看不到這個商品）。
+
+---
+
 ## game-record（續）— 一次看一盤，◄ ► 往回翻
 
 **把所有牌局接成一大段是錯的。** 原本 `historyText` 把本盤和最多 20 盤舊紀錄串成一份丟進捲動區，愈玩愈長、也分不出哪一段是哪一盤。改成 `historyRounds`：本盤（`id` 0，標題「本局／This game」）在前，舊的依序往後，對話框一次只顯示一盤，`history_prev`（◄，往回）／`history_next`（►）翻頁。`historyText` 留著，只是變成把每盤接起來——kit 測試讀的是它。

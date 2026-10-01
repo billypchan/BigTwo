@@ -84,3 +84,11 @@
 "queen" = "reyna";
 "king" = "hari";
 "ace" = "alas";
+
+/* Apple Watch purchase */
+"Big Two on Apple Watch" = "Big Two sa Apple Watch";
+"Play the full game on your wrist. One purchase, no subscription." = "Laruin ang buong laro sa iyong pulso. Isang bili lang, hindi subscription.";
+"Buy %@" = "Bilhin %@";
+"Buy" = "Bilhin";
+"The App Store could not be reached." = "Hindi maabot ang App Store.";
+"Restore Purchase" = "Ibalik ang Binili";
