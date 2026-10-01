@@ -14,7 +14,7 @@ struct WatchPlayerRowView: View {
   let action: SeatAction?
   let isTurn: Bool
 
-  private static let cardHeight: CGFloat = 21
+  private static let cardHeight: CGFloat = 17
 
   var body: some View {
     HStack(spacing: 2) {
@@ -23,7 +23,7 @@ struct WatchPlayerRowView: View {
         .foregroundColor(isTurn ? .cardFace : .ink)
         .lineLimit(1)
         .minimumScaleFactor(0.6)
-        .frame(width: 34, height: 17)
+        .frame(width: 32, height: 16)
         .background(RoundedRectangle(cornerRadius: 3).fill(isTurn ? Color.ink : Color.chrome))
         .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Color.inkDim, lineWidth: 1))
         .accessibilityLabel(isTurn ? L10n.string("%@, to play", player.name) : player.name)
@@ -56,7 +56,9 @@ struct WatchPlayerRowView: View {
         .accessibilityLabel(L10n.string("left: %d", player.hand.count))
         .accessibilityIdentifier("left_\(player.id)")
     }
-    .frame(height: 23)
+    // ⚠️ 20, not 23: the table is a fixed budget that has to fit a 40mm, and four of
+    // these are the largest single item in it. See `WatchGameView`'s metrics.
+    .frame(height: 20)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("seat_\(player.id)")
   }

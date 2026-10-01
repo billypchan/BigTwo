@@ -116,9 +116,11 @@ final class WatchGameUITests: XCTestCase {
     three.tap()
     waitForSelected(1, "tap before opening the menu")
 
-    // ⚠️ `.firstMatch`: a watchOS toolbar item is published more than once, so the plain
-    // query fails with "Multiple matching elements found" before it ever taps.
-    let title = app.buttons["menu_button"].firstMatch
+    // ⚠️ `descendants` + `.firstMatch`, not `app.buttons`: the title is one combined
+    // accessibility element, and what type it is published as has changed under us once
+    // already — it was a toolbar item, and a toolbar publishes its item more than once,
+    // which failed the other way with "Multiple matching elements found".
+    let title = app.descendants(matching: .any)["menu_button"].firstMatch
     XCTAssertTrue(title.waitForExistence(timeout: 20))
     title.tap()
 

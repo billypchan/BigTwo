@@ -1,10 +1,24 @@
 //
 //  WatchGameView.swift
 //  Big Two on the watch, in the phone's shape: the navy title and the deal counter share
-//  the top bar with the system clock, the four player rows and your hand fill the middle,
-//  and Lead/Play and Pass sit in the band the watch keeps at the bottom. The square itself cannot come
-//  along — a wrist has no room for 320×320 — so the hand is a grid, and its cards are
-//  sized to whatever space is left so that nothing ever has to be scrolled to.
+//  the top row with the system clock, the four player rows and your hand fill the middle,
+//  and Lead/Play and Pass sit along the bottom edge. Only the 320×320 square is dropped —
+//  a wrist has no room for it — so the hand is a grid, seven to a row.
+//
+//  ⚠️ **No `NavigationStack` and no `GeometryReader`.** The title used to be a toolbar
+//  item, which is what put it on the clock's row; but a navigation stack also reserves a
+//  band under the clock that nothing draws in, and nothing will tell you how deep it is —
+//  inside the stack the top inset reads 0 and outside it reads the whole bar. Three builds
+//  tried to take that band back: a flat -22, a measured difference of two insets, and a
+//  probe on the title's own frame. Each one was right here and raised the first player
+//  rows off the top of the screen on a real watch. Without the stack there is no band, so
+//  there is nothing to take back and nothing to guess. The title shares the clock's row by
+//  being the first row of a view that ignores the safe area — the clock draws trailing,
+//  this draws leading.
+//
+//  Nothing is measured, so nothing scrolls either: the rows, the prompt and the bar are
+//  fixed, a card's height comes from its own text, and the slack between the hand and the
+//  buttons is a `Spacer`.
 //
 
 import BigTwoKit
@@ -15,21 +29,22 @@ struct WatchGameView: View {
   @State private var selection: Set<Card> = []
   @State private var message: String?
   @State private var menuShown = false
-  /// Where the navy title tab ends, in screen coordinates — see `table(raise:sink:)`.
-  /// It starts at infinity so that until it has been measured the content is not raised
-  /// at all: a wrong guess here is what pushes the player rows off the top of the screen.
-  @State private var titleBottom: CGFloat = .greatestFiniteMagnitude
 
   /// Seven to a row, as the phone's hand reads — and never more, however many you hold,
   /// so a card does not change size as the deal goes on.
   private static let columnsPerRow = 7
   private static let cardSpacing: CGFloat = 2
-  /// The hand's cards are sized to the space that is left, between these two.
-  private static let maxCardHeight: CGFloat = 30
-  private static let minCardHeight: CGFloat = 12
-  /// The pinned button bar: how tall it is, and how far its pills stay off the glass.
-  private static let barHeight: CGFloat = 32
-  private static let barLift: CGFloat = 2
+  /// ⚠️ These are a budget, not a taste. Nothing is measured, so the whole table has to
+  /// fit the *smallest* watch this ships to — a 40mm is 162×197pt — and every point here
+  /// is one the hand does not get. A 46mm has room to spare and spends it on the `Spacer`
+  /// between the hand and the buttons.
+  private static let titleHeight: CGFloat = 22
+  private static let barHeight: CGFloat = 28
+  /// How far the pills stay off the curved glass at the bottom.
+  private static let barLift: CGFloat = 4
+
+  private static let columns = Array(repeating: GridItem(.flexible(), spacing: cardSpacing),
+                                     count: columnsPerRow)
 
   private var seat: Int { game.humanSeat ?? 1 }
   private var hand: [Card] {
@@ -40,97 +55,56 @@ struct WatchGameView: View {
   private var rowOrder: [Int] { (0..<4).map { (seat + $0) % 4 } }
 
   var body: some View {
-    // The top bar only exists inside a navigation stack; it is what puts the title on
-    // the clock's own row instead of costing a strip of the screen below it.
-    NavigationStack {
-      // ⚠️ The band's depth is read live, in the same layout pass that uses it. Stashed
-      // in `@State` from an `onAppear` it looked identical on every simulator here and
-      // was wrong on a real watch: the first value a paged `TabView` hands out is not the
-      // one the page settles at, and a bar sunk by a depth that is too large walks off
-      // the bottom of the screen.
-      GeometryReader { geo in
-        // The navigation bar reserves a band under the clock that nothing draws in. How
-        // deep it is, is the gap between where the title tab ends and where this content
-        // area begins — both read in screen coordinates, so it is the same arithmetic on
-        // every watch. ⚠️ It used to be a flat `-22`, which is what it measures on the
-        // watches here and is *not* what it measures on every watch: too large, and the
-        // first player rows are pulled up off the top of the screen.
-        table(raise: max(geo.frame(in: .global).minY - titleBottom, 0),
-              sink: max(geo.safeAreaInsets.bottom - Self.barLift, 0))
-      }
-    }
-  }
-
-  private func table(raise: CGFloat, sink: CGFloat) -> some View {
-    // A plain stack, not `safeAreaInset`: the whole thing is pushed down into the system's
-    // bottom band, and an inset bar leaves the content laid out over it — the hand's last
-    // row came back clipped.
     VStack(spacing: 0) {
+      // The clock is drawn by the system at the trailing end of this row; the title keeps
+      // to the leading end of it.
+      WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) {
+        menuShown = true
+      }
+      .frame(height: Self.titleHeight, alignment: .bottom)
+      .frame(maxWidth: .infinity, alignment: .leading)
+
       VStack(spacing: 1) {
         ForEach(rowOrder, id: \.self) { s in
           WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
                              isTurn: game.turn == s && game.result == nil)
         }
         Text(verbatim: message ?? prompt)
-          .font(.palm(12, .heavy))
+          .font(.palm(11, .heavy))
           .foregroundColor(.ink)
-          .lineLimit(2)
+          .lineLimit(1)
           .minimumScaleFactor(0.7)
           .frame(maxWidth: .infinity, alignment: .leading)
           .accessibilityIdentifier("prompt")
-        // ⚠️ Nothing scrolls any more. A hand that does not fit is the whole bug: a
-        // watchOS UI test cannot scroll, the Digital Crown has no XCUITest API, and on a
-        // real watch the table came up already scrolled, with the player rows above the
-        // fold — a smaller screen than any simulator here reproduced it on. A
-        // GeometryReader in a stack takes exactly what is left, so the cards are sized to
-        // it instead.
-        GeometryReader { space in
-          let height = fittedCardHeight(in: space.size)
-          LazyVGrid(columns: Self.columns, spacing: Self.cardSpacing) {
-            ForEach(hand) { card in
-              WatchCardView(card: card, selected: selection.contains(card), height: height)
-                // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
-                // the single tap swallows the event and the double never fires.
-                .onTapGesture(count: 2) { selectSuitOrPair(card) }
-                .onTapGesture { toggle(card) }
-                .onLongPressGesture { selectAll(sameRankAs: card) }
-                .accessibilityIdentifier("hand_\(card.code)")
-            }
-          }
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+      }
+
+      // Your hand runs along the bottom edge, as it does on the phone. On a 40mm this
+      // spacer is a few points; a 46mm has room to spare and this is where it goes.
+      Spacer(minLength: 0)
+
+      // A card is as wide as its seventh of the row and as tall as its own text asks
+      // for — no measurement, and the same shape on every watch.
+      LazyVGrid(columns: Self.columns, spacing: Self.cardSpacing) {
+        ForEach(hand) { card in
+          WatchCardView(card: card, selected: selection.contains(card))
+            // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
+            // the single tap swallows the event and the double never fires.
+            .onTapGesture(count: 2) { selectSuitOrPair(card) }
+            .onTapGesture { toggle(card) }
+            .onLongPressGesture { selectAll(sameRankAs: card) }
+            .accessibilityIdentifier("hand_\(card.code)")
         }
       }
-      .padding(.horizontal, 2)
       controls
     }
-    // Taking the band back is also what puts the rule against the bottom of the tab: the
-    // raise *is* the gap between them, so closing it leaves none.
-    .padding(.top, -raise)
-    // The system keeps a deep band at the bottom for the curved glass — 26pt on a 40mm,
-    // 36pt on a 46mm. Left alone it is an empty strip under the buttons and costs the
-    // hand a row; the screen has no room to give it away. ⚠️ `.ignoresSafeArea` does not
-    // take it back: on watchOS 11 the modifier is a no-op there at every level (the bar,
-    // the scroll view, the navigation stack, the TabView — all four measured), and it
-    // only began working in watchOS 27. A negative padding does reach into it on both,
-    // unclipped. ⚠️ `ToolbarItemGroup(placement: .bottomBar)` is not the answer either:
-    // measured on a 46mm it leaves the content 204×133 of a 208×248 screen — 53pt at the
-    // bottom — and still draws the pills taller than it reserved, so the hand's last row
-    // ends up under them unless the cards shrink to about 20pt, which cannot be read.
-    .padding(.bottom, -sink)
-    .toolbar {
-      ToolbarItem(placement: .topBarLeading) {
-        WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) {
-          menuShown = true
-        }
-          // The toolbar drops its item below the clock's baseline; this lifts the tab
-          // back onto the clock's own row, which is where the phone puts the title.
-          .offset(y: -8)
-          // Measured *after* the offset, so it is where the tab really ends. A background
-          // is used rather than an overlay so nothing is drawn over the title.
-          .background(titleProbe)
-      }
-    }
-    .background(Color.felt.ignoresSafeArea())
+    // The glass curves at all four corners once the safe area is ignored, so the content
+    // keeps a margin of its own.
+    .padding(.horizontal, 6)
+    .padding(.top, 2)
+    .background(Color.felt)
+    // The whole screen, clock row included. Without this the title cannot share that row
+    // and the content does not reach the bottom edge.
+    .ignoresSafeArea()
     // The menu the title tab drops, as on the phone. A clear layer under it swallows the
     // tap that dismisses it, so nothing behind is picked by accident.
     .overlay(alignment: .topLeading) {
@@ -146,6 +120,7 @@ struct WatchGameView: View {
             }
           ])
           .padding(.leading, 4)
+          .padding(.top, Self.titleHeight)
         }
       }
     }
@@ -189,38 +164,10 @@ struct WatchGameView: View {
     }
     // Wider side margins than the rest of the screen uses: this bar sits in the curved
     // glass, where the rounded corners bite into the corners of a full-width pill.
-    .padding(.horizontal, 10)
+    .padding(.horizontal, 8)
     .frame(maxWidth: .infinity)
     .frame(height: Self.barHeight)
-    // The bar reaches below the scroll view into the band; without an opaque fill the
-    // felt behind it is a different shade and the strip reads as a seam.
-    .background(Color.felt)
-  }
-
-  private static let columns = Array(repeating: GridItem(.flexible(), spacing: cardSpacing),
-                                     count: columnsPerRow)
-
-  /// The largest card height that fits `size` both ways: a column is a seventh of the
-  /// width, and `aspect` turns that into the tallest card that fills one; the rows the
-  /// hand needs then have to fit the height as well.
-  private func fittedCardHeight(in size: CGSize) -> CGFloat {
-    let columns = CGFloat(Self.columnsPerRow)
-    let columnWidth = (size.width - (columns - 1) * Self.cardSpacing) / columns
-    let rows = CGFloat(max((hand.count + Self.columnsPerRow - 1) / Self.columnsPerRow, 1))
-    let byHeight = (size.height + Self.cardSpacing) / rows - Self.cardSpacing
-    return max(min(Self.maxCardHeight, columnWidth / WatchCardView.aspect, byHeight),
-               Self.minCardHeight)
-  }
-
-  /// Reports the bottom of the title tab in screen coordinates. ⚠️ If it never reports,
-  /// `titleBottom` stays at infinity and the content is simply not raised — a gap under
-  /// the title, which is the harmless way for this to fail.
-  private var titleProbe: some View {
-    GeometryReader { title in
-      Color.clear
-        .onAppear { titleBottom = title.frame(in: .global).maxY }
-        .onChange(of: title.frame(in: .global).maxY) { _, bottom in titleBottom = bottom }
-    }
+    .padding(.bottom, Self.barLift)
   }
 
   private var prompt: String {
