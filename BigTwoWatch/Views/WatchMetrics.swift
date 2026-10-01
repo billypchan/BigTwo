@@ -25,13 +25,18 @@ struct WatchMetrics {
 
   var namePlate: CGSize { CGSize(width: row * 1.7, height: row - 4) }
 
-  static let huge = WatchMetrics(row: 31, playedCard: 27, nameFont: 15,
+  /// ⚠️ `playedCard` is `row - 2`, not `row - 4`: the gap above a player's row is the
+  /// navigation bar's own band and cannot be taken back, so the only way to grow a played
+  /// card is to let it fill the row it is already in.
+  static let giant = WatchMetrics(row: 35, playedCard: 33, nameFont: 16,
+                                  promptFont: 16, handFont: 22)
+  static let huge = WatchMetrics(row: 31, playedCard: 29, nameFont: 15,
                                  promptFont: 15, handFont: 20)
-  static let large = WatchMetrics(row: 27, playedCard: 23, nameFont: 13,
+  static let large = WatchMetrics(row: 27, playedCard: 25, nameFont: 13,
                                   promptFont: 13, handFont: 17)
-  static let medium = WatchMetrics(row: 23, playedCard: 19, nameFont: 12,
+  static let medium = WatchMetrics(row: 23, playedCard: 21, nameFont: 12,
                                    promptFont: 12, handFont: 15)
-  static let small = WatchMetrics(row: 20, playedCard: 17, nameFont: 11,
+  static let small = WatchMetrics(row: 20, playedCard: 18, nameFont: 11,
                                   promptFont: 11, handFont: 13)
   /// ⚠️ The floor, and a 40mm needs it: the round buttons are 40pt and the bottom bar
   /// takes its own band on top of that, which leaves a 162×197pt screen very little. With

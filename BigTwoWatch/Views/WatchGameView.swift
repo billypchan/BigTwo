@@ -98,6 +98,7 @@ struct WatchGameView: View {
     // system bars cost whatever they cost without anyone having to know the number.
     ZStack(alignment: .topLeading) {
       ViewThatFits(in: .vertical) {
+        table(.giant)
         table(.huge)
         table(.large)
         table(.medium)
