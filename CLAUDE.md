@@ -184,12 +184,14 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - **Same shape as the phone, chrome in the safe areas.** The navy "Big Two" tab and
   `Deal n/10` share the **top bar with the system clock** — a `ToolbarItem(placement:
   .topBarLeading)` inside a `NavigationStack`, not a strip of screen below the clock;
-  Lead/Play, Pass and the sort icon are `safeAreaInset(edge: .bottom)`. Between them: one
+  Lead/Play, Pass and the sort icon are the last row of a `VStack`. Between them: one
   row per player in play order from you (name chip inverted on that player's turn, their
   last move, cards left), the prompt, and your hand. Only the 320×320 square itself is
-  dropped — a wrist has no room — so the hand is an adaptive `LazyVGrid` that scrolls
-  under the Digital Crown. Putting the title on the clock's row is what buys the space
-  for a **full first row of cards** to be visible without scrolling.
+  dropped — a wrist has no room — so the hand is an adaptive `LazyVGrid`.
+  **Nothing scrolls.** The grid sits in a `GeometryReader`, which in a stack takes exactly
+  the space that is left, and `fittedCardHeight(in:)` picks the largest card height from
+  34 down to 18 whose rows fit it. A 46mm keeps big cards; a 41mm gets smaller ones and
+  still shows all thirteen. Putting the title on the clock's row is what buys that space.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
   not, and shows the order a tap switches *to* (`♠` / `2`).
   A card in someone else's row is `WatchPlayedCardView` — rank and suit **side by side**,
@@ -199,15 +201,28 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   keeps `WatchCardView`.
   ⚠️ Three offsets fight the system here and all are deliberate: the toolbar drops its item
   below the clock's baseline, so the title carries `.offset(y: -8)` to sit on that row;
-  the watch reserves a deep bottom safe area for the curved glass, so the button bar
-  takes it back with `.ignoresSafeArea(.container, edges: .bottom)` and keeps clear of the
-  rounded corners with its own wider side margins; and the navigation bar reserves a band
-  under the clock that nothing draws in, which the scroll content takes back with a
-  negative top padding. Between them the **whole 13-card hand
-  fits without scrolling** — which is the only way it can be played, since a watchOS UI
-  test (and the Digital Crown) cannot scroll it.
-  ⚠️ The pinned bars need an opaque `Color.felt` background: without one the hand scrolls
-  through them and the buttons read as ghosts.
+  the navigation bar reserves a band under the clock that nothing draws in, which the
+  content takes back with a negative top padding; and the watch reserves a deep band at
+  the **bottom** for the curved glass (26pt on a 40mm, 36pt on a 46mm), which the whole
+  stack takes back with a negative bottom padding of that measured depth. Between them the
+  **whole 13-card hand fits without scrolling** — the only way it can be played, since a
+  watchOS UI test (and the Digital Crown) cannot scroll it.
+  ⚠️ **The bottom band cannot be taken back with `.ignoresSafeArea`.** On watchOS 11 that
+  modifier is a **no-op** there — measured at all four levels (the button bar, the scroll
+  view, the `NavigationStack`, the `TabView`) — and it only began working in watchOS 27;
+  a 40mm on watchOS 11 showed a 26pt empty strip under the buttons. A negative padding
+  does reach into it on both, and is not clipped. The depth is read **live**, from a
+  `GeometryReader` wrapping the page, in the same layout pass that uses it: stashed in
+  `@State` from an `onAppear` it looked right on every simulator and was wrong on a real
+  watch, where the bar sank past the bottom edge.
+  ⚠️ `safeAreaInset(edge: .bottom)` cannot hold that bar either — it reserves the height
+  the bar was *given*, not the part of it that ends up above the band, so the hand's last
+  row came back clipped on a 46mm. A plain `VStack` of content + bar divides the space
+  correctly once the stack itself is the thing that sinks.
+  ⚠️ **`ToolbarItemGroup(placement: .bottomBar)` is not the answer.** Measured on a 46mm it
+  leaves the content 204×133 of a 208×248 screen — 53pt at the bottom, against 32 for the
+  hand-built bar — and still draws its pills taller than it reserved, so the hand's last
+  row lands under them unless the cards shrink to about 20pt, which cannot be read.
   ⚠️ **`WatchPalmButtonView` needs its own `ButtonStyle`**, for the same reason
   `PalmPressStyle` exists on the phone: every built-in style fades a *disabled* button, so
   a white pill over the felt comes back translucent green. The style must not read

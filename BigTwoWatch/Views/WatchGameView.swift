@@ -2,9 +2,9 @@
 //  WatchGameView.swift
 //  Big Two on the watch, in the phone's shape: the navy title and the deal counter share
 //  the top bar with the system clock, the four player rows and your hand fill the middle,
-//  and Lead/Play and Pass sit in the bottom safe area. The square itself cannot come
-//  along — a wrist has no room for 320×320 — so the hand is a grid under the Digital
-//  Crown rather than a strip along the bottom edge.
+//  and Lead/Play and Pass sit in the band the watch keeps at the bottom. The square itself cannot come
+//  along — a wrist has no room for 320×320 — so the hand is a grid, and its cards are
+//  sized to whatever space is left so that nothing ever has to be scrolled to.
 //
 
 import BigTwoKit
@@ -14,11 +14,11 @@ struct WatchGameView: View {
   @ObservedObject var game: BigTwoGame
   @State private var selection: Set<Card> = []
   @State private var message: String?
-  /// How deep the band the system keeps at the bottom is on this watch — measured,
-  /// because it differs by watch size and by watchOS version. See `controls`.
-  @State private var bottomInset: CGFloat = 0
 
-  private static let handCardHeight: CGFloat = 34
+  /// The hand's cards are sized to the space that is left, between these two. A 46mm has
+  /// room for the full 34; a 41mm does not, and a card it has to shrink still reads.
+  private static let maxCardHeight: CGFloat = 34
+  private static let minCardHeight: CGFloat = 18
   /// The pinned button bar: how tall it is, and how far its pills stay off the glass.
   private static let barHeight: CGFloat = 32
   private static let barLift: CGFloat = 2
@@ -31,46 +31,50 @@ struct WatchGameView: View {
   /// Play order starting from you, as on the phone.
   private var rowOrder: [Int] { (0..<4).map { (seat + $0) % 4 } }
 
-  private let columns = [
-    GridItem(.adaptive(minimum: WatchGameView.handCardHeight * WatchCardView.aspect), spacing: 2)
-  ]
-
   var body: some View {
     // The top bar only exists inside a navigation stack; it is what puts the title on
     // the clock's own row instead of costing a strip of the screen below it.
-    NavigationStack { table }
-      // The one way to learn how deep that band is: an overlay is not laid out into it,
-      // but it does report it.
-      .overlay {
-        GeometryReader { geo in
-          Color.clear.onAppear { bottomInset = geo.safeAreaInsets.bottom }
-        }
-        .allowsHitTesting(false)
+    NavigationStack {
+      // ⚠️ The band's depth is read live, in the same layout pass that uses it. Stashing
+      // it in `@State` from an `onAppear` looked identical on every simulator here and
+      // was wrong on a real watch: the first value a paged `TabView` hands out is not the
+      // one the page settles at, and a bar sunk by a depth that is too large walks off
+      // the bottom of the screen.
+      GeometryReader { geo in
+        table(sink: max(geo.safeAreaInsets.bottom - Self.barLift, 0))
       }
+    }
   }
 
-  private var table: some View {
+  private func table(sink: CGFloat) -> some View {
     // A plain stack, not `safeAreaInset`: the whole thing is pushed down into the system's
-    // bottom band (see `bottomInset`), and an inset bar leaves the scroll view laid out
-    // over it — the hand's last row came back clipped.
+    // bottom band, and an inset bar leaves the content laid out over it — the hand's last
+    // row came back clipped.
     VStack(spacing: 0) {
-      ScrollView {
-        VStack(spacing: 1) {
-          ForEach(rowOrder, id: \.self) { s in
-            WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
-                               isTurn: game.turn == s && game.result == nil)
-          }
-          Text(verbatim: message ?? prompt)
-            .font(.palm(12, .heavy))
-            .foregroundColor(.ink)
-            .lineLimit(2)
-            .minimumScaleFactor(0.7)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .accessibilityIdentifier("prompt")
-          LazyVGrid(columns: columns, spacing: 2) {
+      VStack(spacing: 1) {
+        ForEach(rowOrder, id: \.self) { s in
+          WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
+                             isTurn: game.turn == s && game.result == nil)
+        }
+        Text(verbatim: message ?? prompt)
+          .font(.palm(12, .heavy))
+          .foregroundColor(.ink)
+          .lineLimit(2)
+          .minimumScaleFactor(0.7)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .accessibilityIdentifier("prompt")
+        // ⚠️ Nothing scrolls any more. A hand that does not fit is the whole bug: a
+        // watchOS UI test cannot scroll, the Digital Crown has no XCUITest API, and on a
+        // real watch the table came up already scrolled, with the player rows above the
+        // fold — a smaller screen than any simulator here reproduced it on. A
+        // GeometryReader in a stack takes exactly what is left, so the cards are sized to
+        // it instead: the full 34 wherever there is room, less where there is not.
+        GeometryReader { space in
+          let height = fittedCardHeight(in: space.size)
+          LazyVGrid(columns: [GridItem(.adaptive(minimum: height * WatchCardView.aspect),
+                                       spacing: 2)], spacing: 2) {
             ForEach(hand) { card in
-              WatchCardView(card: card, selected: selection.contains(card),
-                            height: Self.handCardHeight)
+              WatchCardView(card: card, selected: selection.contains(card), height: height)
                 // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
                 // the single tap swallows the event and the double never fires.
                 .onTapGesture(count: 2) { selectSuitOrPair(card) }
@@ -79,25 +83,26 @@ struct WatchGameView: View {
                 .accessibilityIdentifier("hand_\(card.code)")
             }
           }
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .padding(.horizontal, 2)
-        // The navigation bar reserves a band under the clock that nothing draws in. Taking
-        // it back is what keeps the whole hand on one screen once the played cards grew.
-        .padding(.top, -22)
       }
-      // Open at the top. Reported from a real watch: the table came up already scrolled,
-      // with the first player rows above the fold. Not reproducible on any simulator here
-      // (40mm/46mm, watchOS 11 and 27), so this pins what the simulators do by default.
-      .defaultScrollAnchor(.top)
+      .padding(.horizontal, 2)
+      // The navigation bar reserves a band under the clock that nothing draws in. Taking
+      // it back is what keeps the whole hand on one screen once the played cards grew.
+      .padding(.top, -22)
       controls
     }
     // The system keeps a deep band at the bottom for the curved glass — 26pt on a 40mm,
     // 36pt on a 46mm. Left alone it is an empty strip under the buttons and costs the
-    // hand a row. ⚠️ `.ignoresSafeArea` does not take it back: on watchOS 11 the modifier
-    // is a no-op there at every level (the bar, the scroll view, the navigation stack,
-    // the TabView — all four measured), and it only began working in watchOS 27. A
-    // negative padding of the measured depth reaches into it on both, unclipped.
-    .padding(.bottom, -max(bottomInset - Self.barLift, 0))
+    // hand a row; the screen has no room to give it away. ⚠️ `.ignoresSafeArea` does not
+    // take it back: on watchOS 11 the modifier is a no-op there at every level (the bar,
+    // the scroll view, the navigation stack, the TabView — all four measured), and it
+    // only began working in watchOS 27. A negative padding does reach into it on both,
+    // unclipped. ⚠️ `ToolbarItemGroup(placement: .bottomBar)` is not the answer either:
+    // measured on a 46mm it leaves the content 204×133 of a 208×248 screen — 53pt at the
+    // bottom — and still draws the pills taller than it reserved, so the hand's last row
+    // ends up under them unless the cards shrink to about 20pt, which cannot be read.
+    .padding(.bottom, -sink)
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
         WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
@@ -153,6 +158,19 @@ struct WatchGameView: View {
     // The bar reaches below the scroll view into the band; without an opaque fill the
     // felt behind it is a different shade and the strip reads as a seam.
     .background(Color.felt)
+  }
+
+  /// The largest card height, up to `maxCardHeight`, whose rows all fit in `size`. The
+  /// grid is `.adaptive`, so the column count follows from the width the same way it does.
+  private func fittedCardHeight(in size: CGSize) -> CGFloat {
+    var height = Self.maxCardHeight
+    while height > Self.minCardHeight {
+      let columns = max(Int((size.width + 2) / (height * WatchCardView.aspect + 2)), 1)
+      let rows = (hand.count + columns - 1) / columns
+      if CGFloat(rows) * (height + 2) - 2 <= size.height { break }
+      height -= 1
+    }
+    return height
   }
 
   private var prompt: String {
