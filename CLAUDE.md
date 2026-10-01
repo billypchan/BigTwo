@@ -181,30 +181,29 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit declares
 `.watchOS(.v10)` and imports only Foundation, which is why this cost nothing.
 
-- **Same shape as the phone, and nothing measured.** ⚠️ **No `NavigationStack` and no
-  `GeometryReader` anywhere in `WatchGameView`.** The whole table is one `VStack` over
-  `.ignoresSafeArea()`: the navy "Big Two" tab and `Deal n/10` are its first row and share
-  the clock's row by being leading while the system draws the clock trailing; then one row
-  per player in play order from you (name chip inverted on that player's turn, their last
-  move, cards left), the prompt, a `Spacer`, your hand along the bottom edge as on the
-  phone, and Lead/Play, Pass and the sort icon as the last row. The hand is a `LazyVGrid`,
+- **Both bars are the system's, and nothing else is measured.** Following
+  [watchOS 10's UI guidance](https://developer.apple.com/documentation/watchos-apps/creating-an-intuitive-and-effective-ui-in-watchos-10):
+  the navy "Big Two" tab and `Deal n/10` are a `ToolbarItem(placement: .topBarLeading)`,
+  Lead/Play, Pass and the sort icon are a `ToolbarItemGroup(placement: .bottomBar)`, and
+  `BigTwoWatch` touches neither. Between them: one row per player in play order from you
+  (name chip inverted on that player's turn, their last move, cards left), the prompt, a
+  `Spacer`, and your hand along the bottom edge as on the phone. The hand is a `LazyVGrid`,
   **seven to a row** and never more, however many you hold, so a card does not change size
   as the deal goes on; a card is as wide as its seventh of the row and as tall as its own
-  text asks for, so it needs nothing measured.
-  ⚠️ **The title was a toolbar item for six builds and it cost four bugs.** A
-  `NavigationStack` is what put it on the clock's row, but it also reserves a band under
-  the clock that nothing draws in, and nothing will tell you how deep it is — inside the
-  stack the top inset reads 0, outside it reads the whole bar. Three builds tried to take
-  that band back: a flat `-22`, the difference of two insets, and a probe on the title's
-  own frame. Every one of them was right on the simulators here and raised the first
-  player rows off the top of the screen on a real watch. Without the stack there is no
-  band, so there is nothing to take back and nothing to guess.
-  ⚠️ **The metrics are a budget, not a taste.** Nothing is measured, so the table has to
-  fit the *smallest* watch it ships to — a 40mm is 162×197pt — and every point spent above
-  the hand is one the hand does not get. That is why a player row is 20 and not 23, the
-  title row 22, the button bar 28. A 46mm has room to spare and spends it on the `Spacer`,
-  which puts the hand on the bottom edge where the phone has it. Change any of those
-  numbers and check a **40mm** before anything else.
+  text asks for.
+  ⚠️ **`ViewThatFits` is the whole of the layout arithmetic — there is no `GeometryReader`
+  in `WatchGameView`.** The table is built once per `WatchMetrics` step, largest first, and
+  SwiftUI lays out the first one whose ideal height fits. A 46mm takes `.huge`; a 40mm
+  (162×197pt, the smallest watch this ships to) falls through to `.small` and still shows
+  all thirteen cards. Add a step rather than stretch one, and check a **40mm** first.
+  ⚠️ **Never claw back a system band by hand.** The navigation bar reserves a strip under
+  the clock and nothing will tell you how deep it is — inside the stack the top inset reads
+  0, outside it reads the whole bar. Three builds tried: a flat `-22`, the difference of
+  two insets, and a probe on the title's own frame. Every one was right on every simulator
+  here and raised the first player rows off the top of the screen on a real watch. The one
+  constant that is still needed is `.padding(.bottom, 18)`: the bottom bar **draws taller
+  than it reserves** — 53pt of a 248pt screen at the bottom, with 26pt pills in it — and
+  the hand's last row came up behind the pills on a 40mm without it.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
   not, and shows the order a tap switches *to* (`♠` / `2`).
   **Every card on the watch is rank and suit side by side**, not the phone's rank-over-suit

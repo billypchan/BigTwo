@@ -19,6 +19,10 @@ struct WatchPalmButtonView: View {
         .foregroundColor(enabled ? .ink : .inkDim)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
+        // ⚠️ The toolbar proposes no width, so the pill has to carry its own: without the
+        // padding `maxWidth: .infinity` falls back to the width of the word and "Lead"
+        // comes out as a circle.
+        .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
         .frame(height: 26)
         .background(Capsule().fill(Color.cardFace))

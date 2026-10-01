@@ -6,8 +6,8 @@
 //  by side a card is legible at half the height. Selected cards invert.
 //
 //  ⚠️ No height is passed in. A card is as wide as the grid column it lands in and as tall
-//  as its own text asks for, so the hand needs nothing measured to lay itself out — which
-//  is what lets the table drop its `GeometryReader`.
+//  as its own text asks for, so the hand needs nothing measured to lay itself out — the
+//  font comes from the `WatchMetrics` step the table settled on.
 //
 
 import BigTwoKit
@@ -16,20 +16,19 @@ import SwiftUI
 struct WatchCardView: View {
   let card: Card
   var selected = false
-
-  private static let font: CGFloat = 13
+  var font: CGFloat = 13
 
   var body: some View {
     HStack(spacing: 0) {
       Text(card.rank.label)
       Text(card.suit.symbol)
     }
-    .font(.palm(Self.font, .heavy))
+    .font(.palm(font, .heavy))
     .foregroundColor(glyphColor)
     .lineLimit(1)
     .minimumScaleFactor(0.4)
     .padding(.horizontal, 1)
-    .padding(.vertical, 1)
+    .padding(.vertical, font * 0.12)
     .frame(maxWidth: .infinity)
     .background(RoundedRectangle(cornerRadius: 3).fill(selected ? Color.ink : Color.cardFace))
     .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Color.ink, lineWidth: 1))

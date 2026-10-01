@@ -124,7 +124,9 @@ final class WatchGameUITests: XCTestCase {
     XCTAssertTrue(title.waitForExistence(timeout: 20))
     title.tap()
 
-    let newGame = app.descendants(matching: .any)["menu_new_game"]
+    // ⚠️ `.firstMatch`: the menu hangs off a toolbar item, and a watchOS
+    // toolbar publishes its content more than once.
+    let newGame = app.descendants(matching: .any)["menu_new_game"].firstMatch
     XCTAssertTrue(newGame.waitForExistence(timeout: 10), "the menu never came up")
     newGame.tap()
 

@@ -36,11 +36,14 @@ struct WatchTitleBarView: View {
       .accessibilityElement(children: .ignore)
       .accessibilityLabel(L10n.string("Menu"))
       .accessibilityIdentifier("menu_button")
+      // The tab keeps its width; the deal counter is the one that gives way when the row
+      // is narrow, which on a 40mm it is. Without this "Big Two" came back as "Big…".
+      .layoutPriority(1)
       Text(L10n.string("Deal %d/%d", deal, dealsPerGame))
         .font(.palm(11))
         .foregroundColor(.ink)
         .lineLimit(1)
-        .minimumScaleFactor(0.7)
+        .minimumScaleFactor(0.55)
         .accessibilityIdentifier("deal_label")
     }
     // An *overlay*, drawn over the bottom of the tab so its rounded corners never show —
@@ -48,10 +51,10 @@ struct WatchTitleBarView: View {
     // row: a `Rectangle` in a stack wants every point of width it can get, and in a
     // toolbar item that is what truncated "Big Two" to "Big T…". An overlay is sized to
     // the view it is over, so it spans the title and no more.
+    .frame(maxWidth: .infinity, alignment: .leading)
     .overlay(alignment: .bottom) {
       Rectangle().fill(Color.titleNavy).frame(height: 3)
     }
-    .fixedSize()
   }
 }
 

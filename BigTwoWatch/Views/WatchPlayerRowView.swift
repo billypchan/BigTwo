@@ -13,17 +13,17 @@ struct WatchPlayerRowView: View {
   let player: Seat
   let action: SeatAction?
   let isTurn: Bool
-
-  private static let cardHeight: CGFloat = 17
+  /// The size step the table settled on — see `WatchMetrics`.
+  var metrics: WatchMetrics = .small
 
   var body: some View {
     HStack(spacing: 2) {
       Text(player.name)
-        .font(.palm(11))
+        .font(.palm(metrics.nameFont))
         .foregroundColor(isTurn ? .cardFace : .ink)
         .lineLimit(1)
         .minimumScaleFactor(0.6)
-        .frame(width: 32, height: 16)
+        .frame(width: metrics.namePlate.width, height: metrics.namePlate.height)
         .background(RoundedRectangle(cornerRadius: 3).fill(isTurn ? Color.ink : Color.chrome))
         .overlay(RoundedRectangle(cornerRadius: 3).strokeBorder(Color.inkDim, lineWidth: 1))
         .accessibilityLabel(isTurn ? L10n.string("%@, to play", player.name) : player.name)
@@ -35,11 +35,11 @@ struct WatchPlayerRowView: View {
           // Side by side and readable, not overlapped: a watch row has the width for
           // five of these once the name chip stops taking a fifth of it.
           HStack(spacing: 1) {
-            ForEach(play.cards) { WatchPlayedCardView(card: $0, height: Self.cardHeight) }
+            ForEach(play.cards) { WatchPlayedCardView(card: $0, height: metrics.playedCard) }
           }
         case .passed?:
           Text(L10n.string("PASS"))
-            .font(.palm(12, .regular))
+            .font(.palm(metrics.promptFont, .regular))
             .foregroundColor(.ink)
             .accessibilityIdentifier("pass_\(player.id)")
         case nil:
@@ -49,16 +49,14 @@ struct WatchPlayerRowView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
 
       Text(verbatim: "\(player.hand.count)")
-        .font(.palm(11, .semibold))
+        .font(.palm(metrics.nameFont, .semibold))
         .foregroundColor(.ink)
         .fixedSize()
         .frame(minWidth: 16, alignment: .trailing)
         .accessibilityLabel(L10n.string("left: %d", player.hand.count))
         .accessibilityIdentifier("left_\(player.id)")
     }
-    // ⚠️ 20, not 23: the table is a fixed budget that has to fit a 40mm, and four of
-    // these are the largest single item in it. See `WatchGameView`'s metrics.
-    .frame(height: 20)
+    .frame(height: metrics.row)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier("seat_\(player.id)")
   }

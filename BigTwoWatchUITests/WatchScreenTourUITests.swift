@@ -42,17 +42,34 @@ final class WatchScreenTourUITests: XCTestCase {
     XCTAssertEqual(gone, .completed, "the 3 of diamonds was still in the hand after leading")
     capture("watch_screen_03_trick")
 
+    // ⚠️ `descendants` + `.firstMatch`: what element type the title is published as has
+    // changed under us once already — see `WatchGameUITests`.
+    let title = app.descendants(matching: .any)["menu_button"].firstMatch
+    XCTAssertTrue(title.waitForExistence(timeout: 10))
+    title.tap()
+    // ⚠️ `.firstMatch`: the menu hangs off a toolbar item, and a watchOS
+    // toolbar publishes its content more than once.
+    let newGame = app.descendants(matching: .any)["menu_new_game"].firstMatch
+    XCTAssertTrue(newGame.waitForExistence(timeout: 10), "the menu never came up")
+    capture("watch_screen_04_menu")
+    // Tapping outside closes it, which is also the only way back to the table.
+    app.descendants(matching: .any)["prompt"].firstMatch.tap()
+    let closed = XCTWaiter().wait(
+      for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+                                      object: newGame)], timeout: 10)
+    XCTAssertEqual(closed, .completed, "the menu would not close")
+
     // Paging is a different mechanism from scrolling a ScrollView, which a watchOS UI
     // test cannot drive — a swipe between tabs does work.
     app.swipeLeft()
     let preferences = app.descendants(matching: .any)["pref_hongKong"]
     XCTAssertTrue(preferences.waitForExistence(timeout: 10), "the Preferences page never came up")
-    capture("watch_screen_04_preferences")
+    capture("watch_screen_05_preferences")
 
     app.swipeLeft()
     let about = app.descendants(matching: .any)["about_version"]
     XCTAssertTrue(about.waitForExistence(timeout: 10), "the About page never came up")
-    capture("watch_screen_05_about")
+    capture("watch_screen_06_about")
   }
 
   private func capture(_ name: String) {
