@@ -53,11 +53,11 @@ struct BigTwoWatchApp: App {
     WindowGroup {
       Group {
         if !Self.paywallEnabled {
-          WatchTabsView(game: game)
+          tabs
         } else {
           switch unlock.state {
           case .unlocked:
-            WatchTabsView(game: game)
+            tabs
           case .loading:
             ProgressView()
           case .locked, .unavailable:
@@ -65,22 +65,17 @@ struct BigTwoWatchApp: App {
           }
         }
       }
-      .onChange(of: game.preferences) { _, preferences in
-        store.save(preferences)
-        sync.send(preferences)
-      }
-      // Settings and player names follow whichever device was edited last.
-      .onChange(of: sync.incoming) { _, incoming in
-        guard let incoming, incoming != game.preferences else { return }
-        game.preferences = incoming
-        game.applyNames(incoming.playerNames)
-        store.save(incoming)
-        sync.clearIncoming()
-      }
       .task {
         guard Self.paywallEnabled else { return }
         await unlock.refresh()
       }
     }
+  }
+
+  // ⚠️ Saving and syncing the preferences are `WatchTabsView`'s, not this scene's: an
+  // `App` body is not a reliable place to watch a `@StateObject` it owns, and a setting
+  // changed on the watch was applied to the game and never written to the store.
+  private var tabs: some View {
+    WatchTabsView(game: game, sync: sync, store: store)
   }
 }

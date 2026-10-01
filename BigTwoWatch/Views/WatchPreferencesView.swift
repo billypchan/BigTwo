@@ -1,8 +1,16 @@
 //
 //  WatchPreferencesView.swift
 //  Big Two — the Palm Preferences form as a watch page. Same settings, same wording and
-//  the same identifiers as the phone; a change here is saved and pushed to the phone by
-//  the app, because they are one set of preferences on two devices.
+//  the same identifiers as the phone; a change here is saved and pushed to the phone,
+//  because they are one set of preferences on two devices.
+//
+//  The Palm form had an OK button and so does this one: a change applies as you make it,
+//  and OK writes it and takes you back to the table. Without it there was no way to leave
+//  the page except a swipe, and nothing told you the setting had been kept.
+//
+//  ⚠️ OK is **pinned**, not the last thing in the scroll. The settings are longer than any
+//  watch screen, so at the bottom of the list it was below the fold — a confirm button
+//  nobody can see is the thing this was added to fix.
 //
 
 import BigTwoKit
@@ -10,8 +18,26 @@ import SwiftUI
 
 struct WatchPreferencesView: View {
   @ObservedObject var game: BigTwoGame
+  /// Writes the preferences and returns to the table.
+  let onDone: () -> Void
 
   var body: some View {
+    // The same bottom band the table page sinks into — see `WatchGameView.controls`.
+    GeometryReader { geo in
+      VStack(spacing: 0) {
+        settings
+        WatchPalmButtonView(title: L10n.string("OK"), action: onDone)
+          .accessibilityIdentifier("pref_ok")
+          .padding(.horizontal, 10)
+          .frame(height: 32)
+          .background(Color.felt)
+      }
+      .padding(.bottom, -max(geo.safeAreaInsets.bottom - 2, 0))
+    }
+    .background(Color.felt.ignoresSafeArea())
+  }
+
+  private var settings: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 8) {
         Text(L10n.string("Preferences"))
@@ -42,7 +68,6 @@ struct WatchPreferencesView: View {
       }
       .padding(.horizontal, 4)
     }
-    .background(Color.felt.ignoresSafeArea())
   }
 
   /// A Palm checkbox: a square box with a tick, and the label beside it.
@@ -83,5 +108,5 @@ struct WatchPreferencesView: View {
 }
 
 #Preview {
-  WatchPreferencesView(game: BigTwoGame(seed: 2))
+  WatchPreferencesView(game: BigTwoGame(seed: 2)) {}
 }

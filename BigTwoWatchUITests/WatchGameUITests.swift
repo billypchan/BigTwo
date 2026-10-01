@@ -109,4 +109,55 @@ final class WatchGameUITests: XCTestCase {
                                       object: three)], timeout: 15)
     XCTAssertEqual(gone, .completed, "the 3 of diamonds was still in the hand after leading")
   }
+
+  /// Tapping the title opens the menu, as it does on the phone, and New Game re-deals.
+  func testTitleOpensTheMenuAndNewGameDeals() {
+    let three = card("hand_3d")
+    three.tap()
+    waitForSelected(1, "tap before opening the menu")
+
+    // ⚠️ `.firstMatch`: a watchOS toolbar item is published more than once, so the plain
+    // query fails with "Multiple matching elements found" before it ever taps.
+    let title = app.buttons["menu_button"].firstMatch
+    XCTAssertTrue(title.waitForExistence(timeout: 20))
+    title.tap()
+
+    let newGame = app.descendants(matching: .any)["menu_new_game"]
+    XCTAssertTrue(newGame.waitForExistence(timeout: 10), "the menu never came up")
+    newGame.tap()
+
+    // A new game closes the menu, clears the selection and deals again.
+    let closed = XCTWaiter().wait(
+      for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+                                      object: newGame)], timeout: 10)
+    XCTAssertEqual(closed, .completed, "the menu stayed up after New Game")
+    // ⚠️ `deal_label` is not asserted here: the watch publishes nothing for it, the text
+    // lives in a toolbar item and no query of any element type finds it. The selection
+    // clearing is what a new deal looks like from the outside.
+    waitForSelected(0, "after New Game")
+    // ⚠️ Not `hand_3d`: New Game deals again from the same seeded generator, so the next
+    // hand is a different one. Thirteen cards is what a fresh deal looks like.
+    let hand = app.descendants(matching: .any)
+      .matching(NSPredicate(format: "identifier BEGINSWITH 'hand_'"))
+    let dealt = XCTWaiter().wait(
+      for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "count == 13"),
+                                      object: hand)], timeout: 10)
+    XCTAssertEqual(dealt, .completed, "New Game did not deal a full hand")
+  }
+
+  /// The Preferences page has the Palm form's OK button, and it comes back to the table.
+  func testPreferencesOKReturnsToTheTable() {
+    // ⚠️ `swipeLeft()` does page a TabView even though it cannot scroll a ScrollView.
+    app.swipeLeft()
+
+    let autopass = app.descendants(matching: .any)["pref_autopass"]
+    XCTAssertTrue(autopass.waitForExistence(timeout: 20), "the Preferences page never came up")
+
+    let ok = app.buttons["pref_ok"]
+    XCTAssertTrue(ok.waitForExistence(timeout: 10), "Preferences has no OK button")
+    ok.tap()
+
+    let prompt = app.staticTexts["prompt"]
+    XCTAssertTrue(prompt.waitForExistence(timeout: 10), "OK did not come back to the table")
+  }
 }

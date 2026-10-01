@@ -25,10 +25,24 @@ public final class PreferenceSync: NSObject, ObservableObject {
 
   /// When the local copy last changed. An edit made while the other device was away
   /// arrives later than it was made, so the newer *edit* wins, not the later delivery.
-  private var lastLocalChange = Date.distantPast
+  ///
+  /// ⚠️ **Persisted.** This used to live only in memory, and that is what "the setting is
+  /// not saved" was: change something on the watch, quit, come back, and it had reverted.
+  /// On activation WatchConnectivity hands over whatever the other device last pushed —
+  /// an *older* copy — and against a `lastLocalChange` that had just been reset to
+  /// `.distantPast` it won, and was then written to the store over the change.
+  /// `double(forKey:)` is 0 when the key is absent, which is 1970 and loses to anything,
+  /// so the first launch after an update can still be overwritten once.
+  private static let stampKeyDefaults = "preferenceSync.lastLocalChange"
+  private let defaults: UserDefaults
+  private var lastLocalChange: Date {
+    get { Date(timeIntervalSince1970: defaults.double(forKey: Self.stampKeyDefaults)) }
+    set { defaults.set(newValue.timeIntervalSince1970, forKey: Self.stampKeyDefaults) }
+  }
   private var session: WCSession?
 
-  public override init() {
+  public init(defaults: UserDefaults = .standard) {
+    self.defaults = defaults
     super.init()
     guard WCSession.isSupported() else { return }
     let session = WCSession.default
@@ -40,7 +54,8 @@ public final class PreferenceSync: NSObject, ObservableObject {
   /// Push the local preferences to the other device. Cheap to call on every change:
   /// the context is a slot, so repeated writes collapse into the latest one.
   public func send(_ preferences: Preferences) {
-    lastLocalChange = Date()
+    let now = Date()
+    lastLocalChange = now
     guard let session, session.activationState == .activated,
           let data = try? JSONEncoder().encode(preferences)
     else { return }
@@ -48,7 +63,7 @@ public final class PreferenceSync: NSObject, ObservableObject {
     // that is not worth surfacing — the other side already has this value.
     try? session.updateApplicationContext([
       Self.payloadKey: data,
-      Self.stampKey: lastLocalChange.timeIntervalSince1970,
+      Self.stampKey: now.timeIntervalSince1970,
     ])
   }
 

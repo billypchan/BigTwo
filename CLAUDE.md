@@ -201,6 +201,8 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   strip exists so an *overlapped* card still reads from its left edge; nothing overlaps on
   a watch, and laid out horizontally a card is legible at half the height — which is what
   lets five fit across a player's row and seven across your hand.
+  The phone's **navy rule under the title** is here too — the first row of the content,
+  edge to edge, drawn in the band the navigation bar reserves.
   ⚠️ Three offsets fight the system here and all are deliberate: the toolbar drops its item
   below the clock's baseline, so the title carries `.offset(y: -8)` to sit on that row;
   the navigation bar reserves a band under the clock that nothing draws in, which the
@@ -298,6 +300,15 @@ change and apply whatever arrives.
 - **Last *edit* wins, not last delivery.** The payload carries the time the value changed.
   Without it, opening the watch after renaming a seat on the phone would push the watch's
   older copy straight back over the new name.
+  ⚠️ **That time has to be persisted**, and was not. It lived in memory, so every launch
+  started at `.distantPast`; on activation WatchConnectivity hands over whatever the other
+  device last pushed — an *older* copy — which then beat it and was written to the store
+  over the change just made. From the outside that is "the setting is not saved": kept
+  until the next launch, then reverted. It is in `UserDefaults` now
+  (`preferenceSync.lastLocalChange`); an absent key reads 0, so the first launch after an
+  update can still be overwritten once. ⚠️ **No simulator reproduces this** — it needs a
+  paired phone and watch, which one `xcodebuild` run cannot drive; a watch on its own
+  saves and reloads correctly either way, which is what made it look like a save bug.
 - ⚠️ `updateApplicationContext` **throws when the dictionary is unchanged**; that is not an
   error worth surfacing, the other side already has the value.
 - ⚠️ `[String: Any]` is not `Sendable`, so the delegate pulls `Data` and the timestamp out
@@ -314,7 +325,17 @@ does.
   Digital Crown, and the table needs it to scroll.
 - Preferences carries the same settings, the same wording and the **same identifiers** as
   the phone (`pref_hongKong`, `pref_bots_Strong`, …), so a change is saved and pushed to
-  the phone like any other.
+  the phone like any other. It ends in the Palm form's **OK** (`pref_ok`), which writes
+  and returns to the table. ⚠️ OK is **pinned**, not the last thing in the scroll: the
+  settings are longer than any watch screen, and a confirm button below the fold is the
+  thing it was added to fix.
+- **Tapping the title opens a menu on the watch too** (`menu_button` → `WatchMenuView`),
+  with the one item that has nowhere else to live: **New Game** (`menu_new_game`).
+  Preferences and About are pages, so they are not in it. ⚠️ A watchOS toolbar item is
+  published more than once, so a UI test needs `app.buttons["menu_button"].firstMatch` —
+  the plain query fails with *Multiple matching elements found* before it ever taps. And
+  `deal_label` cannot be asserted at all on the watch: it lives in a toolbar item and no
+  query of any element type finds it.
 - About drops the rows that open a browser — Share, Rate, Report and Source stay on the
   phone. ⚠️ Its disclaimer is **not** `.inkDim`: the phone dims that line against a white
   dialog body, and the same grey on the green felt is barely legible.

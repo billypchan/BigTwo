@@ -14,6 +14,7 @@ struct WatchGameView: View {
   @ObservedObject var game: BigTwoGame
   @State private var selection: Set<Card> = []
   @State private var message: String?
+  @State private var menuShown = false
 
   /// Seven to a row, as the phone's hand reads — and never more, however many you hold,
   /// so a card does not change size as the deal goes on.
@@ -38,8 +39,8 @@ struct WatchGameView: View {
     // The top bar only exists inside a navigation stack; it is what puts the title on
     // the clock's own row instead of costing a strip of the screen below it.
     NavigationStack {
-      // ⚠️ The band's depth is read live, in the same layout pass that uses it. Stashing
-      // it in `@State` from an `onAppear` looked identical on every simulator here and
+      // ⚠️ The band's depth is read live, in the same layout pass that uses it. Stashed
+      // in `@State` from an `onAppear` it looked identical on every simulator here and
       // was wrong on a real watch: the first value a paged `TabView` hands out is not the
       // one the page settles at, and a bar sunk by a depth that is too large walks off
       // the bottom of the screen.
@@ -54,6 +55,8 @@ struct WatchGameView: View {
     // bottom band, and an inset bar leaves the content laid out over it — the hand's last
     // row came back clipped.
     VStack(spacing: 0) {
+      // The phone's navy rule under the title tab, edge to edge.
+      Rectangle().fill(Color.titleNavy).frame(height: 2)
       VStack(spacing: 1) {
         ForEach(rowOrder, id: \.self) { s in
           WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
@@ -89,11 +92,15 @@ struct WatchGameView: View {
         }
       }
       .padding(.horizontal, 2)
-      // The navigation bar reserves a band under the clock that nothing draws in. Taking
-      // it back is what keeps the whole hand on one screen once the played cards grew.
-      .padding(.top, -22)
       controls
     }
+    // The navigation bar reserves a band under the clock that nothing draws in; the navy
+    // rule is drawn at the top of it and the content takes the rest back. ⚠️ 22 is not a
+    // guess but it is not measured either: inside the navigation stack the top inset
+    // reads 0, and outside it reads the whole bar, so the band can only be had as the
+    // difference — 62 against 40 on every watch checked here. Dropping it costs a 42mm
+    // most of its second row of cards, which is why it is still here.
+    .padding(.top, -22)
     // The system keeps a deep band at the bottom for the curved glass — 26pt on a 40mm,
     // 36pt on a 46mm. Left alone it is an empty strip under the buttons and costs the
     // hand a row; the screen has no room to give it away. ⚠️ `.ignoresSafeArea` does not
@@ -107,13 +114,33 @@ struct WatchGameView: View {
     .padding(.bottom, -sink)
     .toolbar {
       ToolbarItem(placement: .topBarLeading) {
-        WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame)
+        WatchTitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) {
+          menuShown = true
+        }
           // The toolbar drops its item below the clock's baseline; this lifts the tab
           // back onto the clock's own row, which is where the phone puts the title.
           .offset(y: -8)
       }
     }
     .background(Color.felt.ignoresSafeArea())
+    // The menu the title tab drops, as on the phone. A clear layer under it swallows the
+    // tap that dismisses it, so nothing behind is picked by accident.
+    .overlay(alignment: .topLeading) {
+      if menuShown {
+        ZStack(alignment: .topLeading) {
+          Color.clear.contentShape(Rectangle()).onTapGesture { menuShown = false }
+          WatchMenuView(items: [
+            .init(id: "new_game", title: L10n.string("New Game")) {
+              game.startGame()
+              selection = []
+              message = nil
+              menuShown = false
+            }
+          ])
+          .padding(.leading, 4)
+        }
+      }
+    }
     .onChange(of: game.seats[seat].hand) {
       selection = []
       message = nil
