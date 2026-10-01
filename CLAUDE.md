@@ -184,8 +184,15 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - **Both bars are the system's, and nothing else is measured.** Following
   [watchOS 10's UI guidance](https://developer.apple.com/documentation/watchos-apps/creating-an-intuitive-and-effective-ui-in-watchos-10):
   the navy "Big Two" tab and `Deal n/10` are a `ToolbarItem(placement: .topBarLeading)`,
-  Lead/Play, Pass and the sort icon are a `ToolbarItemGroup(placement: .bottomBar)`, and
-  `BigTwoWatch` touches neither. Between them: one row per player in play order from you
+  the three actions are a `ToolbarItemGroup(placement: .bottomBar)`, and `BigTwoWatch`
+  touches neither. The actions are **round 40pt discs with one mark each**, not worded
+  pills — a watch bar has room for three discs and not for three words: a check to play
+  the selection, the sort toggle **in the middle** (the one that never hides), and a
+  forward arrow to pass. ⚠️ The sort toggle keeps its literal `♠` / `2` glyph rather than
+  a symbol: it says *which order a tap switches to*, which no SF Symbol says. ⚠️ A
+  *worded* pill in a toolbar needs its own horizontal padding — the toolbar proposes no
+  width, so `maxWidth: .infinity` falls back to the width of the word, and "Lead" came out
+  as a circle. The discs sidestep that by being circles on purpose. Between them: one row per player in play order from you
   (name chip inverted on that player's turn, their last move, cards left), the prompt, a
   `Spacer`, and your hand along the bottom edge as on the phone. The hand is a `LazyVGrid`,
   **seven to a row** and never more, however many you hold, so a card does not change size
@@ -193,17 +200,21 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   text asks for.
   ⚠️ **`ViewThatFits` is the whole of the layout arithmetic — there is no `GeometryReader`
   in `WatchGameView`.** The table is built once per `WatchMetrics` step, largest first, and
-  SwiftUI lays out the first one whose ideal height fits. A 46mm takes `.huge`; a 40mm
-  (162×197pt, the smallest watch this ships to) falls through to `.small` and still shows
-  all thirteen cards. Add a step rather than stretch one, and check a **40mm** first.
+  SwiftUI lays out the first one whose ideal height fits. A 46mm takes a big step; a 40mm
+  (162×197pt, the smallest watch this ships to) falls through to `.tiny` and still shows
+  all thirteen cards. Add a step rather than stretch one, and check a **40mm** first —
+  ⚠️ with nowhere smaller to fall, `ViewThatFits` keeps the step that does *not* fit and
+  the first player's row is pushed up behind the title. That is what `.tiny` is for.
   ⚠️ **Never claw back a system band by hand.** The navigation bar reserves a strip under
   the clock and nothing will tell you how deep it is — inside the stack the top inset reads
   0, outside it reads the whole bar. Three builds tried: a flat `-22`, the difference of
   two insets, and a probe on the title's own frame. Every one was right on every simulator
   here and raised the first player rows off the top of the screen on a real watch. The one
-  constant that is still needed is `.padding(.bottom, 18)`: the bottom bar **draws taller
-  than it reserves** — 53pt of a 248pt screen at the bottom, with 26pt pills in it — and
-  the hand's last row came up behind the pills on a 40mm without it.
+  constant that is still needed is `.padding(.bottom, 30)`: the bottom bar **draws taller
+  than it reserves** — 53pt of a 248pt screen at the bottom, with the 40pt discs in it —
+  and the hand's last row came up behind them on a 40mm without it. It is a property of
+  the bar and the buttons, not of the screen, so it is the same on every watch — but it
+  has to be re-checked on a 40mm whenever the buttons change size.
   Lead/Play and Pass hide when it is not your turn, as on the phone; the sort icon does
   not, and shows the order a tap switches *to* (`♠` / `2`).
   **Every card on the watch is rank and suit side by side**, not the phone's rank-over-suit
