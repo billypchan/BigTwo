@@ -304,15 +304,30 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.
-- The IAP product **exists**: `com.billchan.BigTwo.watch`, id `6818312724`, non-consumable,
-  Family Sharable, **US$10.99** (base territory USA), created through the API on
-  2026-10-01 with an en-US localization ("Play on Apple Watch") and a review screenshot.
-  ⚠️ It still reads `MISSING_METADATA` with the localization, the price schedule and the
-  screenshot all attached and the screenshot's asset `COMPLETE` — the API does not say
-  what else it wants, so the remaining step is a look in the web UI (the Paid Applications
-  agreement is the usual culprit on an app that has never sold anything).
-  ⚠️ `availableInAllTerritories` is **not** an attribute on `inAppPurchases` — the create
-  call 409s if you send it.
+- The IAP product **exists and is `READY_TO_SUBMIT`**: `com.billchan.BigTwo.watch`, id
+  `6818312724`, non-consumable, Family Sharable, **US$10.99** (base territory USA), with an
+  en-US localization ("Play on Apple Watch") and a review screenshot. All of it was made
+  through the API on 2026-10-01 — the old note that it had to be done by hand is wrong.
+  Four things it needs, and the order matters only in that the last one is the one
+  everybody forgets:
+  1. `POST /v2/inAppPurchases` — ⚠️ `availableInAllTerritories` is **not** an attribute
+     here; the call 409s if you send it. It moved to its own resource (4).
+  2. `POST /v1/inAppPurchaseLocalizations` — relationship is `inAppPurchaseV2`.
+  3. `POST /v1/inAppPurchasePriceSchedules` — the included price needs a local id in the
+     literal form `${name}`, or it 409s on "invalid format"; the price point id comes from
+     `/v2/inAppPurchases/{id}/pricePoints?filter[territory]=USA`.
+  4. `POST /v1/inAppPurchaseAvailabilities`. ⚠️ **This is what `MISSING_METADATA` means**
+     when the name, the price and the screenshot are all attached and the API will not say
+     what else it wants. Setting it flipped the state to `READY_TO_SUBMIT` immediately.
+  ⚠️ **A first IAP cannot be submitted on its own.** `POST /v1/inAppPurchaseSubmissions`
+  answers *this in-app purchase cannot be reviewed, please check associated errors* even
+  from `READY_TO_SUBMIT`, and `reviewSubmissionItems` has no in-app-purchase relationship
+  at all — only `appStoreVersion`, `appCustomProductPageVersion`,
+  `appStoreVersionExperiment` and `appEvent`. It has to ride along with an App Store
+  version submission.
+  ⚠️ An empty `reviewSubmissions` container (`67711d24…`, `READY_FOR_REVIEW`) was created
+  while working this out and **can be neither deleted (403) nor cancelled (409)**. It
+  holds no items; the next real submission should take it over.
 
 ## Settings and names across the two devices
 
