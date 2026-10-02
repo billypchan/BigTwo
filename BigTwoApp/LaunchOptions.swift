@@ -27,6 +27,12 @@ enum LaunchOptions {
   /// `-keepPreferences YES` keeps the UI-test preference suite across a relaunch.
   static var keepPreferences: Bool { UserDefaults.standard.bool(forKey: "keepPreferences") }
 
+  /// `-watchNotice YES` shows the one-time Apple Watch note even under `UITestMode`,
+  /// which otherwise suppresses it. ⚠️ Without that suppression the note would cover the
+  /// table on the first launch of *every* test — the preference suite is wiped each time,
+  /// so "once" would mean "every run".
+  static var forceWatchNotice: Bool { UserDefaults.standard.bool(forKey: "watchNotice") }
+
   private static let uiTestSuite = "UITestPreferences"
 
   /// UI tests wipe this unless `-keepPreferences YES`, so one run can't fill Game History.
@@ -48,4 +54,20 @@ enum LaunchOptions {
     if !keepPreferences { defaults.removePersistentDomain(forName: uiTestSuite) }
     return PreferencesStore(defaults: defaults)
   }
+}
+
+
+/// Whether the one-time Apple Watch note has been shown. ⚠️ Deliberately *not* part of
+/// `Preferences`: that is synced to the watch, and whether the phone has shown a note is
+/// the phone's business. Shipped user data — renaming the key shows the note again.
+enum WatchNotice {
+  private static let key = "watchNoticeShown.v1"
+
+  static var shouldShow: Bool {
+    if LaunchOptions.forceWatchNotice { return true }
+    if LaunchOptions.uiTestMode { return false }
+    return !UserDefaults.standard.bool(forKey: key)
+  }
+
+  static func markShown() { UserDefaults.standard.set(true, forKey: key) }
 }

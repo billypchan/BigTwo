@@ -460,6 +460,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-autoplay YES` | The bot plays your seat too — a deal finishes on its own (score sheet) |
 | `-dealsPerGame 1` | One-deal game, so autoplay opens **Final Score** / New Game |
 | `-keepPreferences YES` | Keep the UI-test preference suite across a relaunch |
+| `-watchNotice YES` | Show the one-time Apple Watch note, which `UITestMode` otherwise suppresses |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
@@ -535,6 +536,17 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
   Markdown. Game strings with `*` or `_` use `Text(verbatim:)`.
 - ⚠️ **Shipped user data**: `PreferencesStore.key` and `Preferences`' coding keys. Renaming
   either resets everyone's preferences; new preferences decode with `decodeIfPresent`.
+- The About dialog's rows are Share / Rate / Report / Source / **Buy Me a Coffee** / X.
+  ⚠️ Do not import `billypchan/SharedKit` to get them: it needs iOS 17 and this app ships
+  iOS 15, so each row is a plain link. ⚠️ `about_coffee` joins `about_source` and
+  `about_report` as a row a UI test must **not** tap — it opens a browser.
+- A **one-time note** tells the player the game is on Apple Watch too
+  (`WatchNoticeDialogView`, `watch_notice_ok`). The flag is `watchNoticeShown.v1` in
+  `UserDefaults` — ⚠️ deliberately *not* in `Preferences`, which is synced to the watch;
+  whether the phone has shown a note is the phone's business. ⚠️ `UITestMode` suppresses
+  it: the preference suite is wiped every launch, so "once" would otherwise mean "every
+  run" and the note would cover the table in every test. `-watchNotice YES` asks for it
+  back, which is how its own test sees it.
 - Every tappable thing a test touches has an `accessibilityIdentifier` (`hand_<code>`,
   `button_play`, `score_ok`, `pref_hongKong`, `about_sharedkit`, …); cards read as "3 of diamonds" to VoiceOver.
 

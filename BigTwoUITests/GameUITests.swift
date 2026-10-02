@@ -146,6 +146,27 @@ final class GameUITests: XCTestCase {
     XCTAssertFalse(app.element("hand_8h").isSelected)
   }
 
+  /// The Apple Watch note is shown once. ⚠️ `UITestMode` suppresses it — the preference
+  /// suite is wiped every launch, so without that it would cover the table in every test —
+  /// and `-watchNotice YES` is what asks for it back.
+  func testWatchNotice_showsOnceAndDismisses() {
+    app.launchArguments += ["-watchNotice", "YES"]
+    app.launch()
+    XCTAssertTrue(app.buttons["watch_notice_ok"].waitForExistence(timeout: 10),
+                  "the Apple Watch note never came up")
+    app.buttons["watch_notice_ok"].tap()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10),
+                  "the table was not there after dismissing the note")
+    XCTAssertFalse(app.buttons["watch_notice_ok"].exists)
+  }
+
+  /// Every other test launches without that argument, so the note must stay away.
+  func testWatchNotice_staysAwayInTests() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    XCTAssertFalse(app.buttons["watch_notice_ok"].exists)
+  }
+
   func testAbout_showsSharedKit() {
     app.launch()
     app.buttons["menu_button"].tap()
@@ -157,6 +178,9 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.element("about_report").exists)
     // Moved here from Preferences: the repo link belongs with the other credits rows.
     XCTAssertTrue(app.element("about_source").exists)
+    // ⚠️ Not tapped, like about_source and about_report: it opens a browser and the test
+    // cannot come back.
+    XCTAssertTrue(app.element("about_coffee").exists)
     XCTAssertTrue(app.element("about_x").exists)
     XCTAssertFalse(app.buttons["about_sharedkit"].exists)
     XCTAssertEqual(app.state, .runningForeground)
