@@ -89,6 +89,38 @@ struct StrongBotTests {
     #expect(choice(try context("5c 5d 9h Kd 2s", table: "4s", owner: 1)) == "9h")
   }
 
+  // A long hand with one two cannot buy the lead often enough to empty. The
+  // recorded games were lost by spending that two on an ace, or on another two.
+  @Test func weakHandKeepsItsTwoWhenAnAceIsLed() throws {
+    #expect(choice(try context("3c 5d 7h 8s Tc Qd Kh 2c", table: "As")) == nil)
+  }
+
+  @Test func weakHandKeepsItsTwoWhenATwoIsLed() throws {
+    #expect(choice(try context("3c 5d 7h 8s Tc Qd Kh 2c", table: "2d")) == nil)
+  }
+
+  @Test func weakHandStillAnswersANearbyCard() throws {
+    #expect(choice(try context("3c 5d 7h 8s Tc Qd Kh 2c", table: "4d")) == "5d")
+  }
+
+  @Test func weakHandDoesNotJumpALowCardWithItsKing() throws {
+    #expect(choice(try context("3c 3d 4h Kh 2c", table: "5d")) == nil)
+  }
+
+  @Test func strongHandTakesAKingBackWithATwo() throws {
+    // Straight plus two twos covers the hand, so the king is worth answering.
+    #expect(choice(try context("3c 4d 5h 6s 7d 2c 2s", table: "Ks")) == "2c")
+  }
+
+  @Test func playsThePlannedBombOverAStraight() throws {
+    let hand = "4h 5d 5c 5h 5s 9d 9c Td Qc Qh Kc Kh 2s"
+    #expect(choice(try context(hand, table: "6s 7d 8c 9h Ts")) == "4h 5d 5c 5h 5s")
+  }
+
+  @Test func weakHandLeadsADeadSingleInsteadOfItsKingPair() throws {
+    #expect(choice(try context("3c 5d 7h 9s Kc Kd 2c")) == "3c")
+  }
+
   /// One Strong seat against three greedy seats — they fight each other, so 3v1
   /// would let greedy win. Strong should still come out ahead on its own score.
   @MainActor @Test func oneStrongBotOutscoresThreeGreedyBots() {
@@ -106,7 +138,7 @@ struct StrongBotTests {
       strongTotal += game.seats[0].score
     }
     print("one Strong vs three greedy over 8 games: \(strongTotal)")
-    // 2026-09-26: +344. Floor stays under that so a reshuffle of the heuristic can move.
+    // 2026-10-03: +867 (was +344 on 2026-09-26). Floor stays under that so a reshuffle can move.
     #expect(strongTotal > 200, "a single StrongBot should beat greedy seats")
   }
 }

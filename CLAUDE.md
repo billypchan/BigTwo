@@ -165,12 +165,19 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   (`BotContext.discarded` — `BigTwoGame` appends each play). Reading another seat's
   cards is the Classic peek; `ignoresOtherPlayersHoleCards` fails if Strong starts.
   Classic still peeks and lets a fellow bot's K/A/2 stand. Strong fights every seat.
-- Strong plans the fewest plays that empty the hand and holds twos, ace singles and
-  bombs as control. **Leading a two first, even when nothing beats it, made an earlier
+- Strong plans the fewest plays that empty the hand. The hand is **strong** when
+  control covers that plan (a two, an ace single, an ace pair or triple, a bomb, or a
+  play nothing still out can beat; a king pair is half) and **weak** when it does not.
+  Holding the lead covers one extra play. A weak hand with more than three cards does
+  **not** spend a two on a king, ace or two, and does not jump a low card with a king —
+  that is how the recorded games lost the deal. A strong hand does, and will split a
+  pair of twos to take a king. A five that is already one play of the plan is played,
+  bomb included. **Leading a two first, even when nothing beats it, made an earlier
   Strong weaker than greedy** — keep that test. It will break one pair to answer a low
-  card rather than pass the lead away. Playing your last card wins immediately, so a
+  card rather than pass the lead away. A weak hand leads a low single rather than a
+  king pair. Playing your last card wins immediately, so a
   seat on one card must be stopped before their turn, not after. `oneStrongBotOutscoresThreeGreedyBots`
-  is one Strong seat vs three greedy (8 seeds, floor > 200; +344 on 2026-09-26).
+  is one Strong seat vs three greedy (8 seeds, floor > 200; +867 on 2026-10-03, was +344).
   Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
 
