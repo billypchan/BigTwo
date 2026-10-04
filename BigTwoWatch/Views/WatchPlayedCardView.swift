@@ -18,7 +18,7 @@ struct WatchPlayedCardView: View {
       Text(card.rank.label)
       Text(card.suit.symbol)
     }
-    .font(.palm(height * 0.62, .heavy))
+    .font(.palm(height * 0.82, .heavy))
     .foregroundColor(card.suit.isRed ? .suitRed : .ink)
     .lineLimit(1)
     .minimumScaleFactor(0.6)

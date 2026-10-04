@@ -215,7 +215,12 @@ struct GameView: View {
       return
     }
     let ofRank = cards.filter { $0.rank == card.rank }
-    if ofRank.count >= 2 {
+    guard ofRank.count >= 2 else { return }
+    // A pair or triple joins one already chosen — a full house is both — instead of
+    // wiping it. A flush still replaces the selection; it is a hand of its own.
+    if selection.count == 2 || selection.count == 3 {
+      selection.formUnion(ofRank)
+    } else {
       selection = Set(ofRank)
     }
   }

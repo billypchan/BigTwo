@@ -23,7 +23,7 @@ struct WatchMetrics {
   let promptFont: CGFloat
   let handFont: CGFloat
 
-  var namePlate: CGSize { CGSize(width: row * 1.7, height: row - 4) }
+  var namePlate: CGSize { CGSize(width: row * 1.4, height: row - 4) }
 
   /// ⚠️ `playedCard` is `row - 2`, not `row - 4`: the gap above a player's row is the
   /// navigation bar's own band and cannot be taken back, so the only way to grow a played

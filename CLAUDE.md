@@ -191,11 +191,14 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - **Both bars are the system's, and nothing else is measured.** Following
   [watchOS 10's UI guidance](https://developer.apple.com/documentation/watchos-apps/creating-an-intuitive-and-effective-ui-in-watchos-10):
   the navy "Big Two" tab and `Deal n/10` are a `ToolbarItem(placement: .topBarLeading)`,
-  the three actions are a `ToolbarItemGroup(placement: .bottomBar)`, and `BigTwoWatch`
-  touches neither. The actions are **round discs with one mark each**, not worded pills —
-  a watch bar has room for three discs and not for three words: a check to play the
-  selection, the sort toggle **in the middle** (the one that never hides), and a forward
-  arrow to pass. ⚠️ A disc has **no fixed diameter** — it is its mark plus even padding,
+  the four actions are a `ToolbarItemGroup(placement: .bottomBar)`, and the title is the
+  first row of the table — a top-bar item reserved a second empty band under the clock.
+  The navigation bar is hidden; the band is not clawed back with a negative padding.
+  The actions are **round discs with one mark each**, not worded pills —
+  a watch bar has room for four discs and not for four words: a check to play the
+  selection, a cross to clear it (`button_clear`, the phone's empty box), the sort
+  toggle (the one that never hides), and a forward arrow to pass. Play and Pass hide
+  off-turn; Clear and Sort stay. ⚠️ A disc has **no fixed diameter** — it is its mark plus even padding,
   which comes out at the size the system draws a bottom-bar button. A 40pt one was tried
   and cost twice over: 30pt of empty felt to clear it, and a whole size step on a 40mm. ⚠️ The sort toggle keeps its literal `♠` / `2` glyph rather than
   a symbol: it says *which order a tap switches to*, which no SF Symbol says. ⚠️ A
@@ -204,9 +207,9 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   as a circle. The discs sidestep that by being circles on purpose. Between them: one row per player in play order from you
   (name chip inverted on that player's turn, their last move, cards left), the prompt, a
   `Spacer`, and your hand along the bottom edge as on the phone. The hand is a `LazyVGrid`,
-  **seven to a row** and never more, however many you hold, so a card does not change size
-  as the deal goes on; a card is as wide as its seventh of the row and as tall as its own
-  text asks for.
+  seven to a row while two rows are needed. Once the second row is gone the grid uses one
+  column per card and a larger face, so three cards fill the width instead of sitting in
+  the left three sevenths. A card is as tall as its own text asks for.
   ⚠️ **`ViewThatFits` is the whole of the layout arithmetic — there is no `GeometryReader`
   in `WatchGameView`.** The table is built once per `WatchMetrics` step, largest first, and
   SwiftUI lays out the first one whose ideal height fits. A 46mm takes a big step; a 40mm
@@ -398,7 +401,9 @@ does.
 The watch has the phone's two selection shortcuts, and one of its own:
 
 - **Double tap a card** — the whole suit when you hold five or more of it, otherwise the
-  pair or triple of that rank. ⚠️ `.onTapGesture(count: 2)` must be attached **before**
+  pair or triple of that rank. A pair or triple is unioned onto a pair or triple already
+  chosen (a full house is both) instead of clearing it; a flush still replaces the
+  selection. Same rule on the phone. ⚠️ `.onTapGesture(count: 2)` must be attached **before**
   `.onTapGesture`, or the single tap swallows the event and the double never fires.
 - **Long press a card** — every card of that rank.
 - **Apple's Double Tap** (pinch twice) plays the selection: `handGestureShortcut(.primaryAction)`.

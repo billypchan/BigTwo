@@ -1,8 +1,8 @@
 //
 //  WatchPalmIconView.swift
 //  Big Two — the watch's round action button: a white disc with a black border and one
-//  mark on it. All three of the bottom bar's actions are these, because a watch bar has
-//  room for three discs and not for three worded pills.
+//  mark on it. The bottom bar holds four of these: play, clear, sort and pass. A worded
+//  pill does not fit; a disc does, once the mark's padding stays small.
 //
 //  ⚠️ The disc has **no fixed diameter** — it is the mark plus even padding, which comes
 //  out at the size the system draws a bottom-bar button. A 40pt one was tried: it had to
@@ -20,8 +20,8 @@ struct WatchPalmIconView: View {
   var enabled = true
   let action: () -> Void
 
-  private static let mark: CGFloat = 15
-  private static let padding: CGFloat = 7
+  private static let mark: CGFloat = 14
+  private static let padding: CGFloat = 5
 
   var body: some View {
     Button(action: action) {

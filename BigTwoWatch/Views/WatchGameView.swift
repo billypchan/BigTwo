@@ -2,19 +2,16 @@
 //  WatchGameView.swift
 //  Big Two on the watch, in the phone's shape: the navy title and the deal counter share
 //  the top row with the system clock, the four player rows and your hand fill the middle,
-//  and Lead/Play and Pass sit along the bottom edge. Only the 320×320 square is dropped —
-//  a wrist has no room for it — so the hand is a grid, seven to a row.
+//  and Lead/Play, Clear, Sort and Pass sit along the bottom edge. Only the 320×320 square
+//  is dropped — a wrist has no room for it — so the hand is a grid, seven to a row until
+//  the second row is gone, when the remaining cards widen to fill it.
 //
-//  ⚠️ **No `NavigationStack` and no `GeometryReader`.** The title used to be a toolbar
-//  item, which is what put it on the clock's row; but a navigation stack also reserves a
-//  band under the clock that nothing draws in, and nothing will tell you how deep it is —
-//  inside the stack the top inset reads 0 and outside it reads the whole bar. Three builds
-//  tried to take that band back: a flat -22, a measured difference of two insets, and a
-//  probe on the title's own frame. Each one was right here and raised the first player
-//  rows off the top of the screen on a real watch. Without the stack there is no band, so
-//  there is nothing to take back and nothing to guess. The title shares the clock's row by
-//  being the first row of a view that ignores the safe area — the clock draws trailing,
-//  this draws leading.
+//  ⚠️ The title is the first row of the table, not a toolbar item. A top-bar item sits on
+//  the clock's row and then reserves a second band under it that nothing draws in — that
+//  is the empty felt above the first player. Hiding the navigation bar and drawing the
+//  title here gives that band back without a negative padding: three builds that clawed
+//  the band back with a guessed inset raised the first row off a real watch. The clock
+//  still draws trailing, so the title keeps a fixed trailing reserve.
 //
 //  Nothing is measured, so nothing scrolls either: the rows, the prompt and the bar are
 //  fixed, a card's height comes from its own text, and the slack between the hand and the
@@ -31,8 +28,8 @@ struct WatchGameView: View {
   @State private var menuShown = false
 
   //TODO: these const should be depends on watch size?
-  /// Seven to a row, as the phone's hand reads — and never more, however many you hold,
-  /// so a card does not change size as the deal goes on.
+  /// Seven to a row while two rows are needed. Once the second row is gone the grid uses
+  /// one column per card, so the ones left widen instead of sitting in the left seventh.
   private static let columnsPerRow = 7
   private static let cardSpacing: CGFloat = 2
   private static let topInset: CGFloat = 2
@@ -50,6 +47,17 @@ struct WatchGameView: View {
   private static let columns = Array(repeating: GridItem(.flexible(), spacing: cardSpacing),
                                      count: columnsPerRow)
 
+  private func handColumns(count: Int) -> [GridItem] {
+    let n = max(1, min(count, Self.columnsPerRow))
+    return Array(repeating: GridItem(.flexible(), spacing: Self.cardSpacing), count: n)
+  }
+
+  /// One row of cards has the width, and the felt the second row used to take, so the
+  /// rank can grow. Two rows stay on the step's font — seven across a 40mm cannot.
+  private func handFont(_ metrics: WatchMetrics, count: Int) -> CGFloat {
+    count <= Self.columnsPerRow ? metrics.handFont * 1.35 : metrics.handFont
+  }
+
   private var seat: Int { game.humanSeat ?? 1 }
   private var hand: [Card] {
     (game.preferences.sortBySuit ? HandSort.bySuit : .byRank).sorted(game.seats[seat].hand)
@@ -59,16 +67,16 @@ struct WatchGameView: View {
   private var rowOrder: [Int] { (0..<4).map { (seat + $0) % 4 } }
 
   var body: some View {
-    // ⚠️ The navigation stack is back, for the toolbar alone — that is how watchOS 10
-    // wants the title put on the clock's row and the actions put in a bottom bar, and
-    // both bars are then the system's to place. Nothing reaches into either: the raise
-    // bug was never the stack, it was the `.padding(.top, -22)` that used to claw back
-    // the band under the clock. The table sizes itself to whatever is left instead.
+    // ⚠️ Navigation stack stays, for the bottom bar only. The title is not a toolbar item:
+    // that placement reserves a band under the clock (the empty felt above Bill), and
+    // taking it back with a negative padding raised the first row off a real watch.
+    // Hiding the navigation bar means the band is never reserved. The title is the first
+    // row of `table`, with a trailing reserve so it does not run under the clock.
     NavigationStack {
       table
         .background(Color.felt.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
         .toolbar {
-          ToolbarItem(placement: .topBarLeading) { titleBar }
           ToolbarItemGroup(placement: .bottomBar) { controls }
         }
     }
@@ -77,7 +85,8 @@ struct WatchGameView: View {
       message = nil
     }
     .sheet(item: Binding(get: { game.result }, set: { _ in })) { result in
-      WatchScoreView(result: result, seats: game.seats, gameOver: game.gameOver) {
+      WatchScoreView(result: result, seats: game.seats, gameOver: game.gameOver,
+                     showCardsLeft: game.preferences.showCardsLeft) {
         game.continueAfterScore()
       }
     }
@@ -109,9 +118,8 @@ struct WatchGameView: View {
         // A clear layer swallows the tap that dismisses the menu, so nothing behind it
         // is picked by accident.
         Color.clear.contentShape(Rectangle()).onTapGesture { menuShown = false }
-        // The menu's top is the top of the content, which is the bottom of the title bar:
-        // the navigation bar is what divides them, and neither side has to know how deep
-        // it is. ⚠️ `.fixedSize()` is not optional — a stack proposes its whole height to
+        // The title is the first row of the table now, so the menu starts under it.
+        // ⚠️ `.fixedSize()` is not optional — a stack proposes its whole height to
         // the menu, and `WatchMenuView`'s white face is then painted over all of it, with
         // the one item floating in a white column that reaches the top of the screen.
         WatchMenuView(items: [
@@ -122,12 +130,15 @@ struct WatchGameView: View {
             menuShown = false
           }
         ])
+        .padding(.top, Self.titleHeight)
         .fixedSize()
       }
     }
     .padding(.horizontal, 2)
-    // Clear of the title's rule: the navigation bar leaves nothing between them on a 40mm.
-    .padding(.top, 3)
+    // The title shares the clock's row. No negative inset: the navigation bar is hidden,
+    // so the band under the clock is not reserved, and this edge is the only one ignored.
+    .ignoresSafeArea(edges: .top)
+    .padding(.top, 1)
     // ⚠️ The bottom bar draws taller than it reserves — measured on a 46mm, it takes 53pt
     // of a 248pt screen at the bottom and draws the discs over the top of that, and the
     // hand's last row came up behind them without this. It is a property of the bar and
@@ -142,6 +153,10 @@ struct WatchGameView: View {
   /// while still letting the hand drop to the bottom edge once a step has been chosen.
   private func table(_ metrics: WatchMetrics) -> some View {
     VStack(spacing: 0) {
+      titleBar
+        .padding(.leading, Self.titleLeading)
+        .padding(.trailing, Self.clockReserve)
+        .frame(height: Self.titleHeight, alignment: .bottom)
       VStack(spacing: 1) {
         ForEach(rowOrder, id: \.self) { s in
           WatchPlayerRowView(player: game.seats[s], action: game.lastActions[s],
@@ -159,11 +174,14 @@ struct WatchGameView: View {
       // Your hand runs along the bottom edge, as it does on the phone.
       Spacer(minLength: 0)
 
-      // A card is as wide as its seventh of the row and as tall as its own text asks for.
-      LazyVGrid(columns: Self.columns, spacing: Self.cardSpacing) {
+      // Two rows stay seven across. One row uses a column per card so the ones left
+      // fill the width the empty columns used to waste, and a larger face.
+      LazyVGrid(columns: hand.count <= Self.columnsPerRow
+                  ? handColumns(count: hand.count) : Self.columns,
+                spacing: Self.cardSpacing) {
         ForEach(hand) { card in
           WatchCardView(card: card, selected: selection.contains(card),
-                        font: metrics.handFont)
+                        font: handFont(metrics, count: hand.count))
             // ⚠️ The two-tap gesture has to be attached *before* the one-tap one, or
             // the single tap swallows the event and the double never fires.
             .onTapGesture(count: 2) { selectSuitOrPair(card) }
@@ -175,9 +193,9 @@ struct WatchGameView: View {
     }
   }
 
-  /// Lead/Play and Pass are hidden when it is not your turn, as on the phone; the sort
-  /// toggle is not, because re-ordering your hand is something you do while you wait.
-  /// The bar keeps its height either way, so the hand does not jump when a bot moves.
+  /// Play, Clear, Sort and Pass. Play and Pass hide when it is not your turn, as on the
+  /// phone; Clear and Sort stay, because both are things you do while you wait. Clear is
+  /// the empty-box button from the phone, drawn as a cross so a disc still reads.
   @ViewBuilder private var controls: some View {
     if isYourTurn {
       WatchPalmIconView(systemImage: "checkmark", enabled: !selection.isEmpty) { play() }
@@ -187,9 +205,14 @@ struct WatchGameView: View {
         .accessibilityLabel(L10n.string(game.table == nil ? "Lead" : "Play"))
         .accessibilityIdentifier("button_play")
     }
-    // Sort sits in the middle, and is the one that never hides: re-ordering your hand is
-    // something you do while you wait. The glyph is the order a tap switches *to*, as on
-    // the phone.
+    WatchPalmIconView(systemImage: "xmark", enabled: !selection.isEmpty) {
+      selection = []
+      message = nil
+    }
+    .accessibilityLabel(L10n.string("Clear selection"))
+    .accessibilityIdentifier("button_clear")
+    // Sort sits between Clear and Pass, and is the one that never hides. The glyph is
+    // the order a tap switches *to*, as on the phone.
     WatchPalmIconView(glyph: game.preferences.sortBySuit ? "2" : "♠") {
       game.preferences.sortBySuit.toggle()
     }
@@ -214,16 +237,22 @@ struct WatchGameView: View {
   }
 
   /// Double tap: the whole suit when you hold five or more of it — the makings of a
-  /// flush — otherwise the pair or triple of that rank. Same rule as the phone.
+  /// flush — otherwise the pair or triple of that rank. Same rule as the phone. A pair
+  /// or triple does not clear a pair or triple already chosen: that is how a full house
+  /// is picked, two double taps, without the second wiping the first.
   private func selectSuitOrPair(_ card: Card) {
     let cards = game.seats[seat].hand
     let ofSuit = cards.filter { $0.suit == card.suit }
     if ofSuit.count >= 5 {
       selection = Set(ofSuit)
+      message = nil
       return
     }
     let ofRank = cards.filter { $0.rank == card.rank }
-    if ofRank.count >= 2 {
+    guard ofRank.count >= 2 else { return }
+    if selection.count == 2 || selection.count == 3 {
+      selection.formUnion(ofRank)
+    } else {
       selection = Set(ofRank)
     }
     message = nil
