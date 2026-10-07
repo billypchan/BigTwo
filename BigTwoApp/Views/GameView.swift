@@ -15,7 +15,7 @@ struct GameView: View {
   @State private var dialog: Dialog?
   @State private var nameDraft = ["", "", "", ""]
 
-  enum Dialog { case menu, preferences, names, history, about }
+  enum Dialog { case menu, preferences, names, history, about, watchNotice }
 
   /// Palm units below the square for the tracker.
   private static let trackerHeight: CGFloat = 100
@@ -43,7 +43,10 @@ struct GameView: View {
       .frame(width: geo.size.width, height: geo.size.height)
     }
     .background(Color.bezel.ignoresSafeArea())
-    .onAppear { game.applyDisplayNames(PlayerNames.defaults) }
+    .onAppear {
+      game.applyDisplayNames(PlayerNames.defaults)
+      if WatchNotice.shouldShow { dialog = .watchNotice }
+    }
     // Your hand only changes when you play (selection already cleared) or on a
     // redeal / new game — never carry a selection into a fresh hand.
     .onChange(of: game.seats[seat].hand) { _ in
@@ -169,6 +172,13 @@ struct GameView: View {
         }
       case .about:
         modal(u) { AboutDialogView { self.dialog = nil } }
+      case .watchNotice:
+        modal(u) {
+          WatchNoticeDialogView {
+            WatchNotice.markShown()
+            self.dialog = nil
+          }
+        }
       }
     }
   }
