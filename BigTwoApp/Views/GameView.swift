@@ -58,42 +58,42 @@ struct GameView: View {
   // MARK: - The square
 
   private func screen(_ u: CGFloat) -> some View {
-    ZStack(alignment: .topLeading) {
-      VStack(spacing: 0) {
-        TitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) { dialog = .menu }
-          // 24 units, not `max(…, minTouch)`: the Palm's bar is 24 and padding it to 44
-          // is what lifted the tab off its own rule.
-          .frame(height: 24 * u, alignment: .top)
-        ZStack(alignment: .bottomTrailing) {
-          VStack(spacing: 0) {
-            ForEach(rowOrder, id: \.self) { s in
-              PlayerRowView(player: game.seats[s], action: game.lastActions[s],
-                            isTurn: game.turn == s && game.result == nil,
-                            trailingReserve: controlsWidth(u) + 16 * u)
-            }
+    VStack(spacing: 0) {
+      TitleBarView(deal: game.deal, dealsPerGame: game.rules.dealsPerGame) { dialog = .menu }
+        // 24 units, not `max(…, minTouch)`: the Palm's bar is 24 and padding it to 44
+        // is what lifted the tab off its own rule.
+        .frame(height: 24 * u, alignment: .top)
+      ZStack(alignment: .bottomTrailing) {
+        VStack(spacing: 0) {
+          ForEach(rowOrder, id: \.self) { s in
+            PlayerRowView(player: game.seats[s], action: game.lastActions[s],
+                          isTurn: game.turn == s && game.result == nil,
+                          trailingReserve: controlsWidth(u) + 16 * u)
           }
-          controls(u).padding(.trailing, 2 * u)
         }
-        .frame(height: 224 * u - max(24 * u, PalmMetrics.minTouch), alignment: .top)
-        Text(prompt)
-          .font(.palm(13 * u, .heavy))
-          .foregroundColor(.ink)
-          .lineLimit(1)
-          .minimumScaleFactor(0.7)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 4 * u)
-          .frame(height: 30 * u)
-          .accessibilityIdentifier("prompt")
-        CardRowView(cards: hand, height: 62 * u, selection: selection, idPrefix: "hand",
-                    onTap: { toggle($0) },
-                    onDoubleTap: { selectSuitOrPair($0) },
-                    onLongPress: { selectAll(sameRankAs: $0) })
-          .padding(.horizontal, 2 * u)
-          .frame(height: 66 * u, alignment: .top)
+        controls(u).padding(.trailing, 2 * u)
       }
-      overlay(u)
+      .frame(height: 224 * u - max(24 * u, PalmMetrics.minTouch), alignment: .top)
+      Text(prompt)
+        .font(.palm(13 * u, .heavy))
+        .foregroundColor(.ink)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4 * u)
+        .frame(height: 30 * u)
+        .accessibilityIdentifier("prompt")
+      CardRowView(cards: hand, height: 62 * u, selection: selection, idPrefix: "hand",
+                  onTap: { toggle($0) },
+                  onDoubleTap: { selectSuitOrPair($0) },
+                  onLongPress: { selectAll(sameRankAs: $0) })
+        .padding(.horizontal, 2 * u)
+        .frame(height: 66 * u, alignment: .top)
     }
     .background(Color.felt)
+    // ⚠️ Overlay, not a sibling of this stack. The dismiss layer is flexible, so a
+    // sibling grows the stack to the proposed side and the centered table jumps up.
+    .overlay(alignment: .topLeading) { overlay(u) }
     .clipped()
   }
 
@@ -146,7 +146,12 @@ struct GameView: View {
         ZStack(alignment: .topLeading) {
           Color.clear.contentShape(Rectangle()).onTapGesture { self.dialog = nil }
           PalmMenuView(items: menuItems)
-            .padding(.top, 24 * u)
+            // ⚠️ Without this the stack proposes the whole square, and `minHeight`
+            // on each row takes it — the same stretch the watch menu had.
+            .fixedSize(horizontal: false, vertical: true)
+            // The rule is the bottom of the 22u tab. The title slot is 24u and
+            // top-aligned, so padding 24u leaves a strip of felt under the rule.
+            .padding(.top, 22 * u)
             .padding(.leading, 2 * u)
         }
       case .preferences:

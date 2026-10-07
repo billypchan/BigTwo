@@ -165,12 +165,19 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   (`BotContext.discarded` — `BigTwoGame` appends each play). Reading another seat's
   cards is the Classic peek; `ignoresOtherPlayersHoleCards` fails if Strong starts.
   Classic still peeks and lets a fellow bot's K/A/2 stand. Strong fights every seat.
-- Strong plans the fewest plays that empty the hand and holds twos, ace singles and
-  bombs as control. **Leading a two first, even when nothing beats it, made an earlier
+- Strong plans the fewest plays that empty the hand. The hand is **strong** when
+  control covers that plan (a two, an ace single, an ace pair or triple, a bomb, or a
+  play nothing still out can beat; a king pair is half) and **weak** when it does not.
+  Holding the lead covers one extra play. A weak hand with more than three cards does
+  **not** spend a two on a king, ace or two, and does not jump a low card with a king —
+  that is how the recorded games lost the deal. A strong hand does, and will split a
+  pair of twos to take a king. A five that is already one play of the plan is played,
+  bomb included. **Leading a two first, even when nothing beats it, made an earlier
   Strong weaker than greedy** — keep that test. It will break one pair to answer a low
-  card rather than pass the lead away. Playing your last card wins immediately, so a
+  card rather than pass the lead away. A weak hand leads a low single rather than a
+  king pair. Playing your last card wins immediately, so a
   seat on one card must be stopped before their turn, not after. `oneStrongBotOutscoresThreeGreedyBots`
-  is one Strong seat vs three greedy (8 seeds, floor > 200; +344 on 2026-09-26).
+  is one Strong seat vs three greedy (8 seeds, floor > 200; +867 on 2026-10-03, was +344).
   Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
   `preferences.strongBots`.
 
@@ -276,10 +283,10 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   nothing in the repo could have fixed it. The archive itself was never the problem — host
   and watch agreed on `CFBundleShortVersionString` and `CFBundleVersion`, and the watch
   carried `WKApplication`, `WKCompanionAppBundleIdentifier` and device family 4.
-- ⚠️ **The paywall is off**: `BigTwoWatchApp.paywallEnabled` is `false` until the product
-  exists in App Store Connect — until it does there is nothing to buy, so a paywall would
-  lock the game with no way past it. `WatchUnlock` and `WatchStoreView` are complete and
-  unused; flip that one constant to gate again.
+- ⚠️ **The paywall is on** (`BigTwoWatchApp.paywallEnabled`). The product exists, and the
+  binary that goes to review has to show it — a build that plays for free gives the
+  reviewer nothing to buy. Watch UI tests pass `-unlocked YES` so they open on the game.
+  That switch is `#if DEBUG` only.
 - **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
   and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
   (`-seed 2` gives it the same fixed deal the phone suite uses):
@@ -304,11 +311,11 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.
-- The IAP product **exists and is `READY_TO_SUBMIT`**: `com.billchan.BigTwo.watch`, id
-  `6818312724`, non-consumable, Family Sharable, **US$10.99** (base territory USA), with an
-  en-US localization ("Play on Apple Watch") and a review screenshot. All of it was made
-  through the API on 2026-10-01 — the old note that it had to be done by hand is wrong.
-  Four things it needs, and the order matters only in that the last one is the one
+- The IAP product is `com.billchan.BigTwo.watch`, id `6818312724`, non-consumable,
+  Family Sharable, **US$10.99** (base territory USA). The customer-facing name is
+  **Play on your Watch** — ⚠️ not "Apple Watch"; an Apple product name inside the
+  product name is a rejection. Reference name can say it; the localization cannot.
+  Created through the API on 2026-10-02. Four calls, and the last one is the one
   everybody forgets:
   1. `POST /v2/inAppPurchases` — ⚠️ `availableInAllTerritories` is **not** an attribute
      here; the call 409s if you send it. It moved to its own resource (4).
@@ -320,14 +327,19 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
      when the name, the price and the screenshot are all attached and the API will not say
      what else it wants. Setting it flipped the state to `READY_TO_SUBMIT` immediately.
   ⚠️ **A first IAP cannot be submitted on its own.** `POST /v1/inAppPurchaseSubmissions`
-  answers *this in-app purchase cannot be reviewed, please check associated errors* even
-  from `READY_TO_SUBMIT`, and `reviewSubmissionItems` has no in-app-purchase relationship
-  at all — only `appStoreVersion`, `appCustomProductPageVersion`,
-  `appStoreVersionExperiment` and `appEvent`. It has to ride along with an App Store
-  version submission.
-  ⚠️ An empty `reviewSubmissions` container (`67711d24…`, `READY_FOR_REVIEW`) was created
-  while working this out and **can be neither deleted (403) nor cancelled (409)**. It
-  holds no items; the next real submission should take it over.
+  still refuses it. The working path is a review submission with **two** items:
+  `inAppPurchaseVersion` (the IAP's version, not the purchase id) and the new
+  `appStoreVersion`. The Oct 2 note that `reviewSubmissionItems` has no IAP relationship
+  was the wrong name — the relationship is `inAppPurchaseVersion`. Then
+  `PATCH /v1/reviewSubmissions/{id}` with `submitted: true`.
+  Submitted 2026-10-07 with version 1.3 build 105:
+  `226e35df-5f4b-4d0e-997a-ea3db685c47e`, state `WAITING_FOR_REVIEW`.
+  ⚠️ While that IAP version sits on the submission, its name and locales are locked
+  (`409 UNMODIFIABLE`). Delete the review-submission item, edit, then add it back.
+  ⚠️ A binary that contains the watch app needs a watch screenshot set before the
+  version item can be added. The error names `WATCH_SERIES_3_PROFILE`;
+  `APP_WATCH_SERIES_10` with the committed 416×496 shots was accepted, and en-US
+  alone was enough. Do not replace those shots with a larger watch's capture.
 
 ## Settings and names across the two devices
 
@@ -598,37 +610,37 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - Build numbers so far: 1.0 (1) old layout, 1.0 (2) square layout (submitted, then pulled),
   1.0 (3) = (2) without "Palm" + white status bar — **released 2026-09-19**; **1.1 —
   released 2026-09-29**, archived by Xcode Cloud from `26c69b6` (iOS 15+, seven UI
-  languages, six-locale listing), tagged `v1.1`. **1.3 (95)** was archived and uploaded
-  **locally** on 2026-10-01 — Xcode Cloud's quota was spent — and is `VALID` in App Store
-  Connect; it is the first build carrying the watch app. Marketing URL left
-  empty on purpose: it pointed at the GitHub README, which tells the Palm story. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
-  expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
-- **The App Store Connect API key lives outside this repo**:
-  `~/Documents/lab/zonevirbrate/AuthKey_2PLR6QY775.p8`, `ASC_KEY_ID=2PLR6QY775`,
-  `ASC_ISSUER_ID=69a6de76-aec0-47e3-e053-5b8c7c11a4d1`. `asc.swift` finds it through
-  `ASC_KEY_PATH`; `altool` only searches its own folders, so copy it to
-  `~/.appstoreconnect/private_keys/` before an upload.
-  ⚠️ An earlier note here said this key is App Manager and that export fails with *Cloud
-  signing permission error*. **It does not** — on 2026-10-01 it archived, cloud-signed,
-  exported and uploaded 1.3 (95) with no distribution certificate in the keychain at all
-  (only two *Apple Development* identities). If an export ever does fail that way, the
-  role is the thing to check, not the command.
+  languages, six-locale listing), tagged `v1.1`. **1.2 — released 2026-10-07**, tagged
+  `v1.2`. **1.3 (105)** was archived and uploaded **locally** on 2026-10-07 from
+  `df2ffbd` (paywall on) and submitted the same day with the watch purchase:
+  `WAITING_FOR_REVIEW`, `AFTER_APPROVAL`, tagged `v1.3`. 1.3 (95) and (104) are `VALID`
+  and carry the watch app, but the paywall is off — do not attach them. Marketing URL
+  left empty on purpose: it pointed at the GitHub README, which tells the Palm story.
+  Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh expand a flags
+  variable with `${=AUTH}` (plain `$AUTH` is passed as one argument). Do not commit
+  that build number; `Version.xcconfig` stays at `CURRENT_PROJECT_VERSION = 1`.
+- **The App Store Connect API keys live outside this repo**, in
+  `~/.appstoreconnect/private_keys/`. Issuer `69a6de76-aec0-47e3-e053-5b8c7c11a4d1`.
+  This Mac has two. `ASC_KEY_ID=3URS293Q46` calls the API. Export and `altool` with
+  that key fail: *Cloud signing permission error*, no iOS Distribution certificate,
+  no profile for the watch app. Sign and upload with `UB93M4QPXW`. That key
+  cloud-signed 1.3 (105) with no distribution certificate in the keychain. `altool`
+  only searches `~/.appstoreconnect/private_keys/`.
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 67 kit tests and
-14 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
+Single-player against three bots is complete and runs on the simulator; 79 kit tests
+pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. App Store: **1.1 is live (released 2026-09-29)**, tagged `v1.1` at `26c69b6`; 1.0 is
-   tagged `v1.0`. `main` is **1.2**; Xcode Cloud archives each push. The listing now
-   carries six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App
-   Store metadata language); `docs/store/` holds the copy of record. ⚠️ The **4.7"
-   (750×1334) screenshot set** is in the repo (`scripts/make_47_screenshots.py`) but was
-   **not** uploaded before 1.1 shipped, so an iPhone SE / 6s on iOS 15 still sees no
-   screenshots — it goes on the **1.2** listing. ⚠️ No App Store Connect API key exists on this Mac
-   (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing builds,
-   uploading screenshots, submitting — is fastlane-on-a-session or web-only until one
-   is made.
+1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is
+   `WAITING_FOR_REVIEW` since 2026-10-07, submission
+   `226e35df-5f4b-4d0e-997a-ea3db685c47e`, together with the watch purchase
+   `com.billchan.BigTwo.watch` ("Play on your Watch", US$10.99). Approval releases it
+   (`AFTER_APPROVAL`). Tagged `v1.3` at `df2ffbd`. `main` is **1.4**. The listing has
+   six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App Store
+   metadata language), both iPhone sizes, and an en-US watch set at 416×496.
+   ⚠️ A push starts Xcode Cloud on 1.4. Do not attach that build to the 1.3 version
+   already in review.
 2. Save the game in progress — the transcript (open hands and each step) now survives
    on device, but killing the app still deals a new hand. The table itself is not restored.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,

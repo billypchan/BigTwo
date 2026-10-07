@@ -13,6 +13,49 @@ and the evidence.
 
 ---
 
+## v1.3 — 付費牆必須在送審的那支 binary 裡
+
+**第一個 IAP 不能單獨送。** `inAppPurchaseSubmissions` 會拒。能走的是 review submission
+上的兩個 item：`inAppPurchaseVersion`（商品的 version id，不是購買 id）加上新的
+`appStoreVersion`，然後 `PATCH` 那個 submission 的 `submitted: true`。2026-10-02 寫的
+「reviewSubmissionItems 沒有 IAP relationship」是關係名稱寫錯，正確的是
+`inAppPurchaseVersion`。
+
+**顯示名稱不能出現 Apple Watch。** 參考名稱可以，給使用者看的 localization 不行，這是
+商標拒稿。英文是 "Play on your Watch"。
+
+**付費牆關掉的 build 不能拿去送這個 IAP。** 審核打開手錶直接進牌局，就沒有東西可買。
+`paywallEnabled` 在送審的 binary 裡要是 true。UI 測試靠 `-unlocked YES` 跳過，而且那個
+開關只在 DEBUG 編譯，Release 沒有。
+
+**含手錶的 binary 一定要有手錶截圖。** 把版本加進 submission 時 409，錯誤寫
+`WATCH_SERIES_3_PROFILE`。實際過關的是 `APP_WATCH_SERIES_10`，上傳 repo 裡 416×496
+的六張。只有 en-US 有這組，送審仍被接受。不要改成 Ultra 的 422×514。
+
+**名稱在 IAP 掛著 submission 時鎖住。** PATCH 名稱或加語系會 409 `UNMODIFIABLE`。
+先 DELETE 那個 reviewSubmissionItem（204），改完再 POST 回去。
+
+**這台 Mac 有兩把 key。** `3URS293Q46` 能打 API，export 會 exit 70。`UB93M4QPXW`
+能簽、能上傳。`altool` 只看 `~/.appstoreconnect/private_keys/`。
+
+---
+
+## hand-strength — 弱牌不要用 2 去搶
+
+紀錄裡人類連勝的那幾局，電腦都是在手上還很多張時，用 2 去壓 A、甚至用 2 去壓 2。
+舊的 Strong 把「還有另一張控制牌」就當成可以買回牌權，低牌高牌都買。牌權買回來，
+2 已經沒了，下一輪人類再用自己的 2 拿走。
+
+**強弱看的是最短拆法夠不夠控制牌蓋住，不是手牌張數。** 2、A、A 對、炸彈、以及外面
+已經沒有牌打得過的組合，算控制；K 對只算一半。有牌權時第一手免費，所以同一手牌
+領出時比較強。弱牌（控制不夠）超過三張就不花 2 去壓 K/A/2，也不用 K 去跳一張小牌。
+強牌才花，而且可以拆一對 2。
+
+量過：一個 Strong 對三個 greedy、seed 1–8，由 +344（2026-09-26）到 **+867**
+（2026-10-03）。地板仍是 > 200。不要改回「有多餘的 2 就出」。
+
+---
+
 ## watch-app — 手錶版面：不要自己算系統留下來的帶子
 
 **最後能動的版本，是把兩條 bar 都交還給系統的那一版。** 標題是

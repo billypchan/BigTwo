@@ -8,6 +8,28 @@ final class GameUITests: XCTestCase {
     app = .bigTwo()
   }
 
+  /// Opening the menu used to grow the square (the dismiss layer is flexible) and
+  /// leave a strip of felt between the title rule and the menu.
+  func testMenu_staysFlushWithTheTitleAndDoesNotMoveTheTable() {
+    app.launch()
+    let title = app.buttons["menu_button"]
+    let deal = app.element("deal_label")
+    XCTAssertTrue(title.waitForExistence(timeout: 10))
+    XCTAssertTrue(app.prompt.waitForExistence(timeout: 10))
+    let dealY = deal.frame.origin.y
+    let promptY = app.prompt.frame.origin.y
+    let titleMaxY = title.frame.maxY
+    title.tap()
+    let item = app.buttons["menu_new_game"]
+    XCTAssertTrue(item.waitForExistence(timeout: 5))
+    waitUntilSettled(item)
+    XCTAssertEqual(deal.frame.origin.y, dealY, accuracy: 0.5, "the table moved when the menu opened")
+    XCTAssertEqual(app.prompt.frame.origin.y, promptY, accuracy: 0.5, "the table moved when the menu opened")
+    XCTAssertEqual(title.frame.maxY, titleMaxY, accuracy: 0.5, "the title moved when the menu opened")
+    XCTAssertEqual(item.frame.minY, title.frame.maxY, accuracy: 1,
+                   "felt is showing between the title and the menu")
+  }
+
   func testLaunch_youHoldThreeOfDiamondsAndLead() {
     app.launch()
     XCTAssertTrue(app.prompt.waitForExistence(timeout: 10))

@@ -1,8 +1,6 @@
-Phiên bản 1.2
+Phiên bản 1.3
 
-• Lịch sử giữ trọn trận đấu: bài của bốn người khi chia, rồi từng lượt đánh và PASS
-• 20 trận gần nhất được lưu trên máy — trận đang chơi ghi "Trận này"
-• Lật tới lui từng trận một để xem lại các trận trước
-• Sao chép trận đang xem, hoặc Xuất ra tệp văn bản để chia sẻ
-• Nguồn chuyển từ Cài đặt sang Giới thiệu
-• Máy Mạnh nay tính số lượt ít nhất để đánh hết bài và giữ lại các lá khống chế
+• Chơi trọn ván trên Apple Watch — cùng luật, cùng máy, cùng cách tính điểm
+• Một lần mua để mở khóa đồng hồ. Ứng dụng đồng hồ cài cùng điện thoại; mua hoặc khôi phục trên đồng hồ
+• Máy Mạnh nay phân biệt bài yếu và bài mạnh trước khi đánh lá 2
+• Cài đặt và tên người chơi giữ đồng bộ giữa điện thoại và đồng hồ

@@ -86,9 +86,12 @@ and a king is three plays; breaking that pair into singles is four, and it treat
 broken hand as worse. If the whole hand is already one play, it plays it. The last
 card wins the moment it is played — there is no chance to beat it afterwards.
 
-Twos, a single ace, four of a kind and a straight flush are control cards. It keeps
-them to take the lead back. Leading a two first spends the card that would have won
-the lead later.
+A hand is **strong** when that plan is covered by control, and **weak** when it is
+not. Control is a two, a single ace, a pair or triple of aces, four of a kind, a
+straight flush, or any play that nothing still out can beat. A king pair counts as
+half. Holding the lead makes the same cards a little stronger, because the first
+play is free. Twos, aces and bombs are kept to take the lead back. Leading a two
+first spends the card that would have won the lead later.
 
 When it **leads**:
 
@@ -103,6 +106,8 @@ When it **leads**:
   included. That card wins the deal as soon as they play it.
 - If someone has one or two cards and a single is the only lead, it leads a higher
   single rather than a low one.
+- A weak hand leads a low single rather than a king pair. The pair is what takes
+  the lead back later.
 
 When it **follows**:
 
@@ -112,20 +117,24 @@ When it **follows**:
   answers with its strongest play, or the cheapest one that nothing left can beat.
 - If someone has one card, it tries to take the trick so that seat does not get the
   lead.
+- A five that is already one play of the plan is played, four of a kind included.
+  Passing on it lets a straight run.
 - Otherwise it follows with the smallest card that does not break a combo and is not
-  a control card.
+  a control card. A weak hand will not answer a low card with a king — the step has
+  to be a small one.
 - If it has no such card, it will break one pair to follow a low card rather than
   pass the lead away.
-- It spends a two or an ace when the table is a king, ace or two, or a full house or
-  better, or someone has one or two cards, or it is itself down to two cards.
-- A spare two — another control card still in hand — can be spent to buy the lead.
-  The last two is not spent on a low card.
+- A strong hand spends a two or an ace on a king, ace, two, or a full house or
+  better, and will split a pair of twos to do it.
+- A weak hand with more than three cards does not. The two stays until someone is
+  down to one or two cards, or it is itself down to three.
 - Otherwise it passes.
 
 The test `palmBotsOutscoreTheGreedyBot` keeps a greedy bot in the test target as a
 yardstick: over 8 seeded games the greedy seat finished at −719 against Classic.
 `oneStrongBotOutscoresThreeGreedyBots` is one Strong seat against three greedy; on
-2026-09-26 that seat finished at +344 (the test requires more than 200).
+2026-10-03 that seat finished at +867 (the test requires more than 200). It was
++344 on 2026-09-26.
 
 ## License
 

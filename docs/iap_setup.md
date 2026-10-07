@@ -1,5 +1,10 @@
 # Setting up the Apple Watch in-app purchase
 
+**Submitted 2026-10-07.** Review submission `226e35df-5f4b-4d0e-997a-ea3db685c47e` is
+`WAITING_FOR_REVIEW` with version 1.3 build 105 and this purchase. Live price is
+US$10.99 — the table below still says $4.99 because it is the 2026-09-30 handoff.
+Do not create the product again, do not change the price, and do not turn the paywall off.
+
 Handoff written 2026-09-30 from a Claude Code session. The watch app and its StoreKit
 code are finished and merged into the `watch-app` branch; the **product does not exist in
 App Store Connect yet**, and that is the only thing standing between the code and a

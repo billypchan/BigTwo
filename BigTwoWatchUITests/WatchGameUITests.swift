@@ -8,7 +8,7 @@ final class WatchGameUITests: XCTestCase {
   override func setUp() {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", "2"]
+    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", "2", "-unlocked", "YES"]
     app.launch()
   }
 
@@ -23,7 +23,7 @@ final class WatchGameUITests: XCTestCase {
     return element
   }
 
-  /// The paywall is off, so the game is what opens.
+  /// `-unlocked YES` skips the paywall, so the game is what opens.
   func testOpensOnTheGame() {
     let prompt = app.staticTexts["prompt"]
     XCTAssertTrue(prompt.waitForExistence(timeout: 20))

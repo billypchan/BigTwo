@@ -10,10 +10,10 @@ import SwiftUI
 
 @main
 struct BigTwoWatchApp: App {
-  /// ⚠️ Off until `com.billchan.BigTwo.watch` exists in App Store Connect. Until it does
-  /// there is nothing to buy, so a paywall would lock the game with no way past it.
-  /// `WatchUnlock` and `WatchStoreView` are complete and unused — flip this to gate again.
-  private static let paywallEnabled = false
+  /// On for the build that goes to review with `com.billchan.BigTwo.watch`. A binary
+  /// that plays for free gives the reviewer nothing to buy. UI tests pass `-unlocked YES`
+  /// (debug only) so they open on the game.
+  private static let paywallEnabled = true
 
   private static let uiTestSuite = "WatchUITestPreferences"
 
