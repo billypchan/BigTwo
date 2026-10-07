@@ -1,8 +1,6 @@
-Versi 1.2
+Versi 1.3
 
-• Riwayat menyimpan seluruh permainan: kartu keempat pemain saat dibagi, lalu tiap langkah dan PASS
-• 20 permainan terakhir tersimpan di perangkat — yang sedang berjalan tertulis "Permainan ini"
-• Buka satu per satu, maju atau mundur, untuk melihat permainan sebelumnya
-• Salin permainan di layar, atau Ekspor sebagai berkas teks untuk dibagikan
-• Sumber dipindahkan dari Pengaturan ke Tentang
-• Bot Kuat kini menyusun langkah paling sedikit untuk menghabiskan kartu dan menahan kartu penentu
+• Main permainan penuh di Apple Watch — aturan, bot, dan skor yang sama
+• Satu pembelian membuka kunci jam tangan. Aplikasi jam terpasang bersama ponsel; beli atau pulihkan di jam
+• Bot Kuat kini membedakan kartu lemah dan kuat sebelum memakai kartu 2
+• Pengaturan dan nama pemain tetap selaras di ponsel dan jam tangan

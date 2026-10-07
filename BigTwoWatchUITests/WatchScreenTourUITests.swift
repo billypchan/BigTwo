@@ -9,7 +9,7 @@ final class WatchScreenTourUITests: XCTestCase {
   override func setUp() {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", "2"]
+    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", "2", "-unlocked", "YES"]
     app.launch()
   }
 

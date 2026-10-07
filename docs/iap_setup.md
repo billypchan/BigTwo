@@ -1,5 +1,9 @@
 # Setting up the Apple Watch in-app purchase
 
+**Done 2026-10-07.** The product exists (`6818312724`, US$10.99, Ready to Submit) and
+`paywallEnabled` is true. The notes below are the handoff from 2026-09-30, when it did
+not. Do not create the product again, and do not turn the paywall back off.
+
 Handoff written 2026-09-30 from a Claude Code session. The watch app and its StoreKit
 code are finished and merged into the `watch-app` branch; the **product does not exist in
 App Store Connect yet**, and that is the only thing standing between the code and a

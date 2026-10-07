@@ -92,3 +92,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-10-03 22:31 — iOS ✗ 0/1 deliberate (`testMenu_…`, title padding put back to 24u): menu top 238.7 vs title bottom 236.0, a 2.7pt felt strip.
 - 2026-10-03 22:32 — iOS ✗ 0/1 deliberate (`testMenu_…`, menu put back in the stack): deal label moved 209.1 → 203.6, 5.5pt up.
 - 2026-10-03 22:33 — iOS ✓ 1/1 (`testMenu_staysFlushWithTheTitleAndDoesNotMoveTheTable`) after both breaks were restored.
+- 2026-10-07 — paywall on for the 1.3 review. BigTwoKit ✓ 79/79 · `BigTwoWatchUITests` ✓ 10/10 (Apple Watch Ultra 3, watchOS 26.2). `-unlocked YES` opens the game; the shots were a different watch size (422×514 vs the committed 416×496) so the PNGs were not kept.

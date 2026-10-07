@@ -13,6 +13,23 @@ and the evidence.
 
 ---
 
+## v1.3 — 付費牆必須在送審的那支 binary 裡
+
+**第一個 IAP 不能單獨送。** `inAppPurchaseSubmissions` 會拒。能走的是 review submission
+上的兩個 item：`inAppPurchaseVersion`（商品的 version id，不是購買 id）加上新的
+`appStoreVersion`，然後 `PATCH` 那個 submission 的 `submitted: true`。2026-10-02 寫的
+「reviewSubmissionItems 沒有 IAP relationship」是關係名稱寫錯，正確的是
+`inAppPurchaseVersion`。
+
+**顯示名稱不能出現 Apple Watch。** 參考名稱可以，給使用者看的 localization 不行，這是
+商標拒稿。英文是 "Play on your Watch"。
+
+**付費牆關掉的 build 不能拿去送這個 IAP。** 審核打開手錶直接進牌局，就沒有東西可買。
+`paywallEnabled` 在送審的 binary 裡要是 true。UI 測試靠 `-unlocked YES` 跳過，而且那個
+開關只在 DEBUG 編譯，Release 沒有。
+
+---
+
 ## hand-strength — 弱牌不要用 2 去搶
 
 紀錄裡人類連勝的那幾局，電腦都是在手上還很多張時，用 2 去壓 A、甚至用 2 去壓 2。

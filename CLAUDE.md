@@ -283,10 +283,10 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   nothing in the repo could have fixed it. The archive itself was never the problem — host
   and watch agreed on `CFBundleShortVersionString` and `CFBundleVersion`, and the watch
   carried `WKApplication`, `WKCompanionAppBundleIdentifier` and device family 4.
-- ⚠️ **The paywall is off**: `BigTwoWatchApp.paywallEnabled` is `false` until the product
-  exists in App Store Connect — until it does there is nothing to buy, so a paywall would
-  lock the game with no way past it. `WatchUnlock` and `WatchStoreView` are complete and
-  unused; flip that one constant to gate again.
+- ⚠️ **The paywall is on** (`BigTwoWatchApp.paywallEnabled`). The product exists, and the
+  binary that goes to review has to show it — a build that plays for free gives the
+  reviewer nothing to buy. Watch UI tests pass `-unlocked YES` so they open on the game.
+  That switch is `#if DEBUG` only.
 - **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
   and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
   (`-seed 2` gives it the same fixed deal the phone suite uses):
@@ -311,11 +311,11 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.
-- The IAP product **exists and is `READY_TO_SUBMIT`**: `com.billchan.BigTwo.watch`, id
-  `6818312724`, non-consumable, Family Sharable, **US$10.99** (base territory USA), with an
-  en-US localization ("Play on Apple Watch") and a review screenshot. All of it was made
-  through the API on 2026-10-01 — the old note that it had to be done by hand is wrong.
-  Four things it needs, and the order matters only in that the last one is the one
+- The IAP product is `com.billchan.BigTwo.watch`, id `6818312724`, non-consumable,
+  Family Sharable, **US$10.99** (base territory USA). The customer-facing name is
+  **Play on your Watch** — ⚠️ not "Apple Watch"; an Apple product name inside the
+  product name is a rejection. Reference name can say it; the localization cannot.
+  Created through the API on 2026-10-02. Four calls, and the last one is the one
   everybody forgets:
   1. `POST /v2/inAppPurchases` — ⚠️ `availableInAllTerritories` is **not** an attribute
      here; the call 409s if you send it. It moved to its own resource (4).
@@ -327,14 +327,12 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
      when the name, the price and the screenshot are all attached and the API will not say
      what else it wants. Setting it flipped the state to `READY_TO_SUBMIT` immediately.
   ⚠️ **A first IAP cannot be submitted on its own.** `POST /v1/inAppPurchaseSubmissions`
-  answers *this in-app purchase cannot be reviewed, please check associated errors* even
-  from `READY_TO_SUBMIT`, and `reviewSubmissionItems` has no in-app-purchase relationship
-  at all — only `appStoreVersion`, `appCustomProductPageVersion`,
-  `appStoreVersionExperiment` and `appEvent`. It has to ride along with an App Store
-  version submission.
-  ⚠️ An empty `reviewSubmissions` container (`67711d24…`, `READY_FOR_REVIEW`) was created
-  while working this out and **can be neither deleted (403) nor cancelled (409)**. It
-  holds no items; the next real submission should take it over.
+  still refuses it. The working path is a review submission with **two** items:
+  `inAppPurchaseVersion` (the IAP's version, not the purchase id) and the new
+  `appStoreVersion`. The Oct 2 note that `reviewSubmissionItems` has no IAP relationship
+  was the wrong name — the relationship is `inAppPurchaseVersion`. Then
+  `PATCH /v1/reviewSubmissions/{id}` with `submitted: true`.
+  The draft that carries it is `226e35df-5f4b-4d0e-997a-ea3db685c47e`.
 
 ## Settings and names across the two devices
 
