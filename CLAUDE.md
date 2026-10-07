@@ -332,7 +332,14 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   `appStoreVersion`. The Oct 2 note that `reviewSubmissionItems` has no IAP relationship
   was the wrong name — the relationship is `inAppPurchaseVersion`. Then
   `PATCH /v1/reviewSubmissions/{id}` with `submitted: true`.
-  The draft that carries it is `226e35df-5f4b-4d0e-997a-ea3db685c47e`.
+  Submitted 2026-10-07 with version 1.3 build 105:
+  `226e35df-5f4b-4d0e-997a-ea3db685c47e`, state `WAITING_FOR_REVIEW`.
+  ⚠️ While that IAP version sits on the submission, its name and locales are locked
+  (`409 UNMODIFIABLE`). Delete the review-submission item, edit, then add it back.
+  ⚠️ A binary that contains the watch app needs a watch screenshot set before the
+  version item can be added. The error names `WATCH_SERIES_3_PROFILE`;
+  `APP_WATCH_SERIES_10` with the committed 416×496 shots was accepted, and en-US
+  alone was enough. Do not replace those shots with a larger watch's capture.
 
 ## Settings and names across the two devices
 
@@ -591,37 +598,37 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 - Build numbers so far: 1.0 (1) old layout, 1.0 (2) square layout (submitted, then pulled),
   1.0 (3) = (2) without "Palm" + white status bar — **released 2026-09-19**; **1.1 —
   released 2026-09-29**, archived by Xcode Cloud from `26c69b6` (iOS 15+, seven UI
-  languages, six-locale listing), tagged `v1.1`. **1.3 (95)** was archived and uploaded
-  **locally** on 2026-10-01 — Xcode Cloud's quota was spent — and is `VALID` in App Store
-  Connect; it is the first build carrying the watch app. Marketing URL left
-  empty on purpose: it pointed at the GitHub README, which tells the Palm story. Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh
-  expand a flags variable with `${=AUTH}` (plain `$AUTH` is passed as one argument).
-- **The App Store Connect API key lives outside this repo**:
-  `~/Documents/lab/zonevirbrate/AuthKey_2PLR6QY775.p8`, `ASC_KEY_ID=2PLR6QY775`,
-  `ASC_ISSUER_ID=69a6de76-aec0-47e3-e053-5b8c7c11a4d1`. `asc.swift` finds it through
-  `ASC_KEY_PATH`; `altool` only searches its own folders, so copy it to
-  `~/.appstoreconnect/private_keys/` before an upload.
-  ⚠️ An earlier note here said this key is App Manager and that export fails with *Cloud
-  signing permission error*. **It does not** — on 2026-10-01 it archived, cloud-signed,
-  exported and uploaded 1.3 (95) with no distribution certificate in the keychain at all
-  (only two *Apple Development* identities). If an export ever does fail that way, the
-  role is the thing to check, not the command.
+  languages, six-locale listing), tagged `v1.1`. **1.2 — released 2026-10-07**, tagged
+  `v1.2`. **1.3 (105)** was archived and uploaded **locally** on 2026-10-07 from
+  `df2ffbd` (paywall on) and submitted the same day with the watch purchase:
+  `WAITING_FOR_REVIEW`, `AFTER_APPROVAL`, tagged `v1.3`. 1.3 (95) and (104) are `VALID`
+  and carry the watch app, but the paywall is off — do not attach them. Marketing URL
+  left empty on purpose: it pointed at the GitHub README, which tells the Palm story.
+  Pass `CURRENT_PROJECT_VERSION=<n>` to `xcodebuild archive`; in zsh expand a flags
+  variable with `${=AUTH}` (plain `$AUTH` is passed as one argument). Do not commit
+  that build number; `Version.xcconfig` stays at `CURRENT_PROJECT_VERSION = 1`.
+- **The App Store Connect API keys live outside this repo**, in
+  `~/.appstoreconnect/private_keys/`. Issuer `69a6de76-aec0-47e3-e053-5b8c7c11a4d1`.
+  This Mac has two. `ASC_KEY_ID=3URS293Q46` calls the API. Export and `altool` with
+  that key fail: *Cloud signing permission error*, no iOS Distribution certificate,
+  no profile for the watch app. Sign and upload with `UB93M4QPXW`. That key
+  cloud-signed 1.3 (105) with no distribution certificate in the keychain. `altool`
+  only searches `~/.appstoreconnect/private_keys/`.
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 67 kit tests and
-14 UI tests pass (see `docs/test_runs.md`). Open items, roughly in order:
+Single-player against three bots is complete and runs on the simulator; 79 kit tests
+pass (see `docs/test_runs.md`). Open items, roughly in order:
 
-1. App Store: **1.1 is live (released 2026-09-29)**, tagged `v1.1` at `26c69b6`; 1.0 is
-   tagged `v1.0`. `main` is **1.2**; Xcode Cloud archives each push. The listing now
-   carries six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App
-   Store metadata language); `docs/store/` holds the copy of record. ⚠️ The **4.7"
-   (750×1334) screenshot set** is in the repo (`scripts/make_47_screenshots.py`) but was
-   **not** uploaded before 1.1 shipped, so an iPhone SE / 6s on iOS 15 still sees no
-   screenshots — it goes on the **1.2** listing. ⚠️ No App Store Connect API key exists on this Mac
-   (`~/.appstoreconnect/private_keys/` is absent), so every store step — listing builds,
-   uploading screenshots, submitting — is fastlane-on-a-session or web-only until one
-   is made.
+1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is
+   `WAITING_FOR_REVIEW` since 2026-10-07, submission
+   `226e35df-5f4b-4d0e-997a-ea3db685c47e`, together with the watch purchase
+   `com.billchan.BigTwo.watch` ("Play on your Watch", US$10.99). Approval releases it
+   (`AFTER_APPROVAL`). Tagged `v1.3` at `df2ffbd`. `main` is **1.4**. The listing has
+   six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App Store
+   metadata language), both iPhone sizes, and an en-US watch set at 416×496.
+   ⚠️ A push starts Xcode Cloud on 1.4. Do not attach that build to the 1.3 version
+   already in review.
 2. Save the game in progress — the transcript (open hands and each step) now survives
    on device, but killing the app still deals a new hand. The table itself is not restored.
 3. High-score table — name entry, total rounds, total seconds, max score in one game,

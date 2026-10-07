@@ -28,6 +28,16 @@ and the evidence.
 `paywallEnabled` 在送審的 binary 裡要是 true。UI 測試靠 `-unlocked YES` 跳過，而且那個
 開關只在 DEBUG 編譯，Release 沒有。
 
+**含手錶的 binary 一定要有手錶截圖。** 把版本加進 submission 時 409，錯誤寫
+`WATCH_SERIES_3_PROFILE`。實際過關的是 `APP_WATCH_SERIES_10`，上傳 repo 裡 416×496
+的六張。只有 en-US 有這組，送審仍被接受。不要改成 Ultra 的 422×514。
+
+**名稱在 IAP 掛著 submission 時鎖住。** PATCH 名稱或加語系會 409 `UNMODIFIABLE`。
+先 DELETE 那個 reviewSubmissionItem（204），改完再 POST 回去。
+
+**這台 Mac 有兩把 key。** `3URS293Q46` 能打 API，export 會 exit 70。`UB93M4QPXW`
+能簽、能上傳。`altool` 只看 `~/.appstoreconnect/private_keys/`。
+
 ---
 
 ## hand-strength — 弱牌不要用 2 去搶
