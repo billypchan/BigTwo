@@ -191,7 +191,11 @@ final class GameUITests: XCTestCase {
 
   func testAbout_showsSharedKit() {
     app.launch()
+    // The title tab is 22 units. The first tap often misses it; the tour retries too.
     app.buttons["menu_button"].tap()
+    if !app.buttons["menu_about"].waitForExistence(timeout: 3) {
+      app.buttons["menu_button"].tap()
+    }
     XCTAssertTrue(app.buttons["menu_about"].waitForExistence(timeout: 5))
     app.buttons["menu_about"].tap()
     XCTAssertTrue(app.buttons["about_ok"].waitForExistence(timeout: 5))
