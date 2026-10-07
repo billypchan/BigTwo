@@ -1,0 +1,81 @@
+//
+//  BigTwoWatchApp.swift
+//  Big Two on Apple Watch. The rules, the bots and the scoring are BigTwoKit — the
+//  same code the phone runs. Only the screen is different: a watch cannot hold the
+//  320×320 square, so the hand is a grid and the table is one line.
+//
+
+import BigTwoKit
+import SwiftUI
+
+@main
+struct BigTwoWatchApp: App {
+  /// On for the build that goes to review with `com.billchan.BigTwo.watch`. A binary
+  /// that plays for free gives the reviewer nothing to buy. UI tests pass `-unlocked YES`
+  /// (debug only) so they open on the game.
+  private static let paywallEnabled = true
+
+  private static let uiTestSuite = "WatchUITestPreferences"
+
+  /// `-seed 2` deals the same hands every launch, so a UI test can assert on cards.
+  private static var seed: UInt64? {
+    UserDefaults.standard.string(forKey: "seed").flatMap(UInt64.init)
+  }
+
+  /// The watch keeps its own preferences, so the sort order survives a relaunch the way
+  /// it does on the phone. Nothing is shared with the phone's copy — they are separate
+  /// devices running separate games.
+  ///
+  /// ⚠️ Under `UITestMode` this is a throwaway suite, wiped each launch. Without that a
+  /// test that toggles the sort order saves it, and the *next* run starts in the other
+  /// order and fails on its first assertion — which is exactly what happened once.
+  private static func makeStore() -> PreferencesStore {
+    guard ProcessInfo.processInfo.arguments.contains("UITestMode"),
+          let defaults = UserDefaults(suiteName: uiTestSuite)
+    else { return PreferencesStore() }
+    defaults.removePersistentDomain(forName: uiTestSuite)
+    return PreferencesStore(defaults: defaults)
+  }
+
+  private let store: PreferencesStore
+  @StateObject private var unlock = WatchUnlock()
+  @StateObject private var sync = PreferenceSync()
+  @StateObject private var game: BigTwoGame
+
+  init() {
+    let store = Self.makeStore()
+    self.store = store
+    _game = StateObject(wrappedValue: BigTwoGame(preferences: store.load(), seed: Self.seed,
+                                                 humanSeats: [1]))
+  }
+
+  var body: some Scene {
+    WindowGroup {
+      Group {
+        if !Self.paywallEnabled {
+          tabs
+        } else {
+          switch unlock.state {
+          case .unlocked:
+            tabs
+          case .loading:
+            ProgressView()
+          case .locked, .unavailable:
+            WatchStoreView(unlock: unlock)
+          }
+        }
+      }
+      .task {
+        guard Self.paywallEnabled else { return }
+        await unlock.refresh()
+      }
+    }
+  }
+
+  // ⚠️ Saving and syncing the preferences are `WatchTabsView`'s, not this scene's: an
+  // `App` body is not a reliable place to watch a `@StateObject` it owns, and a setting
+  // changed on the watch was applied to the game and never written to the store.
+  private var tabs: some View {
+    WatchTabsView(game: game, sync: sync, store: store)
+  }
+}

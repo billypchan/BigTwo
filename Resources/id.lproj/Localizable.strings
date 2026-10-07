@@ -50,6 +50,9 @@
 "OK" = "OK";
 "Source" = "Sumber";
 "SharedKit" = "SharedKit";
+"Buy Me a Coffee" = "Traktir Saya Kopi";
+"Now on Apple Watch" = "Kini di Apple Watch";
+"The same game is on your watch" = "Permainan yang sama di jam tangan Anda: aturan, bot, dan skor yang sama.";
 
 "Final Score" = "Skor akhir";
 "Score — Deal %d" = "Skor — ronde %d";
@@ -84,3 +87,11 @@
 "queen" = "ratu";
 "king" = "raja";
 "ace" = "as";
+
+/* Apple Watch purchase */
+"Big Two on Apple Watch" = "Capsa di Apple Watch";
+"Play the full game on your wrist. One purchase, no subscription." = "Mainkan permainan penuh di pergelangan tangan. Sekali beli, bukan langganan.";
+"Buy %@" = "Beli %@";
+"Buy" = "Beli";
+"The App Store could not be reached." = "App Store tidak dapat dihubungi.";
+"Restore Purchase" = "Pulihkan Pembelian";

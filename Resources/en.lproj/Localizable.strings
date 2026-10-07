@@ -53,6 +53,9 @@
 "OK" = "OK";
 "Source" = "Source";
 "SharedKit" = "SharedKit";
+"Buy Me a Coffee" = "Buy Me a Coffee";
+"Now on Apple Watch" = "Now on Apple Watch";
+"The same game is on your watch" = "The same game is on your watch — same rules, same bots, same scoring.";
 
 /* Score */
 "Final Score" = "Final Score";
@@ -91,3 +94,11 @@
 "queen" = "queen";
 "king" = "king";
 "ace" = "ace";
+
+/* Apple Watch purchase */
+"Big Two on Apple Watch" = "Big Two on Apple Watch";
+"Play the full game on your wrist. One purchase, no subscription." = "Play the full game on your wrist. One purchase, no subscription.";
+"Buy %@" = "Buy %@";
+"Buy" = "Buy";
+"The App Store could not be reached." = "The App Store could not be reached.";
+"Restore Purchase" = "Restore Purchase";

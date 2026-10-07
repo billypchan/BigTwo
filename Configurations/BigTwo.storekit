@@ -1,0 +1,24 @@
+{
+  "identifier" : "BigTwoStoreKit",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "watch-unlock",
+      "localizations" : [
+        {
+          "description" : "Play the full game on your Apple Watch.",
+          "displayName" : "Big Two on Apple Watch",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.billchan.BigTwo.watch",
+      "referenceName" : "Watch app",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : { },
+  "subscriptionGroups" : [],
+  "version" : { "major" : 3, "minor" : 0 }
+}

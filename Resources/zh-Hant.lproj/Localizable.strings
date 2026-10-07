@@ -51,6 +51,9 @@
 "OK" = "確定";
 "Source" = "原始碼";
 "SharedKit" = "SharedKit";
+"Buy Me a Coffee" = "請我喝杯咖啡";
+"Now on Apple Watch" = "Apple Watch 上也能玩了";
+"The same game is on your watch" = "手錶上也是同一個遊戲：同樣的規則、同樣的電腦對手、同樣的計分。";
 
 "Final Score" = "總分";
 "Score — Deal %d" = "分數 — 第 %d 舖";
@@ -85,3 +88,11 @@
 "queen" = "Q";
 "king" = "K";
 "ace" = "A";
+
+/* Apple Watch purchase */
+"Big Two on Apple Watch" = "Apple Watch 版鋤大弟";
+"Play the full game on your wrist. One purchase, no subscription." = "在手腕上打完整的一局。一次購買，不是訂閱。";
+"Buy %@" = "購買 %@";
+"Buy" = "購買";
+"The App Store could not be reached." = "無法連上 App Store。";
+"Restore Purchase" = "回復購買";

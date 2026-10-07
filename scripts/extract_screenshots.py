@@ -16,6 +16,7 @@ Usage:
 
 If a PNG is already in output_dir and the new shot differs only in the status-bar
 clock, the old file is kept so git does not churn. --force always overwrites.
+Watch shots are handled too: their clock sits lower, so a wider top band is ignored.
 
 `--latest` takes the newest bundle under BigTwo's DerivedData, which is
 otherwise an `ls -t` over a long path — and, worse, a hand-picked path is how you
@@ -111,6 +112,14 @@ def _is_image_attachment(name: str, uti: str) -> bool:
 # Dynamic Island + clock on a 6.9" @3x is ~177px of 2868 (~6%). 8% covers SE too.
 _STATUS_BAR_FRACTION = 0.08
 
+# A watch puts its clock lower down: on a 46mm (416x496) it is rows 39-63, i.e. 12.7%.
+# 15% clears it and still stops short of the app's own title bar, which starts at ~22%.
+# ⚠️ `simctl status_bar override` answers "Operation not supported" on watchOS, so unlike
+# iOS the clock cannot be frozen to 9:41 — this is the only thing keeping watch shots
+# from churning in git on every run.
+_WATCH_STATUS_BAR_FRACTION = 0.15
+_WATCH_MAX_WIDTH = 600
+
 
 def _png_rgba_rows(path: str) -> tuple[int, int, bytes] | None:
     """Decode an 8-bit RGB/RGBA non-interlaced PNG to packed RGB rows (no filter)."""
@@ -195,7 +204,8 @@ def only_status_bar_changed(new_path: str, old_path: str) -> bool:
     ow, oh, opx = old
     if (nw, nh) != (ow, oh):
         return False
-    top = max(1, int(nh * _STATUS_BAR_FRACTION))
+    fraction = _WATCH_STATUS_BAR_FRACTION if nw <= _WATCH_MAX_WIDTH else _STATUS_BAR_FRACTION
+    top = max(1, int(nh * fraction))
     stride = nw * 3
     return npx[top * stride:] == opx[top * stride:]
 

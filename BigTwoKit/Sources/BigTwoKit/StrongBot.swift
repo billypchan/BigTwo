@@ -3,8 +3,11 @@
 //  BigTwoKit — fair opponent. Own hand, public `left: N`, and cards already
 //  played. Never another seat's hole cards (those are on `BotContext` for Classic).
 //
-//  Plans the fewest plays that empty the hand, dumps a low combo while it has the
-//  lead, and holds twos / aces / bombs to take the lead back.
+//  Plans the fewest plays that empty the hand. A hand is strong when its control
+//  (twos, aces, bombs, and anything already unbeatable) covers those plays, and
+//  weak when it does not. Strong takes the lead back. Weak keeps its control and
+//  only answers a nearby card — spending a two to beat a two is how the long
+//  hands in the recorded games lost the deal.
 //
 
 import Foundation
@@ -20,21 +23,22 @@ public enum StrongBot {
     let options = planner.choices(beating: c.table, mustInclude: c.mustInclude)
     guard !options.isEmpty else { return nil }
     if let out = options.first(where: { $0.play.count == hand.count }) { return out.play }
-    if c.leading { return lead(options, counts) }
-    guard let table = c.table else { return lead(options, counts) }
-    return follow(options, counts, table, handCount: hand.count)
+    let weak = planner.weak(leading: c.leading)
+    if c.leading { return lead(options, counts, weak: weak) }
+    guard let table = c.table else { return lead(options, counts, weak: weak) }
+    return follow(options, counts, table, handCount: hand.count, weak: weak)
   }
 
   // MARK: - Lead
 
   /// A two is control even when nothing beats it — leading it first is how a
   /// "strong" bot got weaker than greedy.
-  static func lead(_ options: [Choice], _ counts: [Int]) -> Play? {
+  static func lead(_ options: [Choice], _ counts: [Int], weak: Bool) -> Play? {
     let short = counts.contains { $0 <= 2 }
-    return options.min { betterLead($0, $1, counts: counts, short: short) }?.play
+    return options.min { betterLead($0, $1, counts: counts, short: short, weak: weak) }?.play
   }
 
-  static func betterLead(_ a: Choice, _ b: Choice, counts: [Int], short: Bool) -> Bool {
+  static func betterLead(_ a: Choice, _ b: Choice, counts: [Int], short: Bool, weak: Bool) -> Bool {
     if a.opensSweep != b.opensSweep { return a.opensSweep }
     if a.opensSweep && b.opensSweep {
       if a.play.count != b.play.count { return a.play.count > b.play.count }
@@ -52,6 +56,8 @@ public enum StrongBot {
       return stronger(a.play, b.play)
     }
     if a.control != b.control { return !a.control }
+    // A weak hand keeps a king pair as a stopper and leads a dead single instead.
+    if weak, highGroup(a.play) != highGroup(b.play) { return !highGroup(a.play) }
     if a.play.count != b.play.count { return a.play.count > b.play.count }
     if short { return stronger(a.play, b.play) }
     return weaker(a.play, b.play)
@@ -59,7 +65,8 @@ public enum StrongBot {
 
   // MARK: - Follow
 
-  static func follow(_ options: [Choice], _ counts: [Int], _ table: Play, handCount: Int) -> Play? {
+  static func follow(_ options: [Choice], _ counts: [Int], _ table: Play,
+                     handCount: Int, weak: Bool) -> Play? {
     if let sweep = shed(options.filter(\.restSweeps)) { return sweep }
     let oneLeft = counts.contains(1)
     if counts.contains(table.count) || oneLeft {
@@ -68,18 +75,48 @@ public enum StrongBot {
         return options.min { stronger($0.play, $1.play) }?.play
       }
     }
-    if let free = shed(options.filter { $0.damage == 0 && !$0.control }) { return free }
-    // Breaking one pair still sheds a card. Passing here is how a lead runs away.
-    if let cracked = shed(options.filter { $0.damage <= 1 && !$0.control }) { return cracked }
-    let short = counts.contains { $0 <= 2 }
-    let high = tableIsHigh(table)
-    if short || high || oneLeft || handCount <= 2 {
-      if let clean = shed(options.filter { $0.damage == 0 }) { return clean }
-      if short || oneLeft || handCount <= 2 { return shed(options) }
+    // A five that is already one play of the plan dumps five cards and takes the
+    // lead. Passing on it, bomb included, is how a straight runs out.
+    if table.count == 5,
+       let five = shed(options.filter { $0.play.count == 5 && $0.damage <= 0 }) {
+      return five
     }
-    // A spare two can buy the lead; the last two cannot, unless a rule above said so.
-    let spare = options.filter { $0.spareTwo }
-    return shed(spare)
+    if let free = shed(options.filter { casual($0, table, weak: weak) && $0.damage == 0 }) {
+      return free
+    }
+    // Breaking one pair still sheds a card. Passing here is how a lead runs away.
+    if let cracked = shed(options.filter { casual($0, table, weak: weak) && $0.damage <= 1 }) {
+      return cracked
+    }
+    guard worthControl(table, counts, handCount: handCount, weak: weak) else { return nil }
+    if let clean = shed(options.filter { $0.damage == 0 }) { return clean }
+    // A strong hand will split one pair of twos to take a king back. The other two stays.
+    if !weak, let split = shed(options.filter { $0.damage <= 1 }) { return split }
+    if counts.contains(where: { $0 <= 2 }) || oneLeft || handCount <= 2 { return shed(options) }
+    return nil
+  }
+
+  /// A weak hand answers a single only when the step is small. A king over a
+  /// four, or a two over a two, gives the trick away for nothing.
+  static func casual(_ choice: Choice, _ table: Play, weak: Bool) -> Bool {
+    if choice.control { return false }
+    guard weak, choice.play.count == 1,
+          let card = choice.play.cards.first, let shown = table.cards.first else { return true }
+    return card.rank.rawValue - shown.rank.rawValue <= 5
+  }
+
+  /// Endgame, a short opponent, or a strong hand facing a king / bomb.
+  /// A long weak hand does not spend its two on a high card.
+  static func worthControl(_ table: Play, _ counts: [Int], handCount: Int, weak: Bool) -> Bool {
+    if handCount <= 3 || counts.contains(where: { $0 <= 2 }) { return true }
+    if weak { return false }
+    return tableIsHigh(table)
+  }
+
+  /// King or ace pair / triple — a stopper, not a lead, when the hand is short of control.
+  static func highGroup(_ play: Play) -> Bool {
+    guard play.count == 2 || play.count == 3 else { return false }
+    return (play.cards.first?.rank ?? .three) >= .king
   }
 
   static func shed(_ options: [Choice]) -> Play? {
@@ -136,7 +173,20 @@ public enum StrongBot {
     if play.kind.isBomb { return true }
     if play.cards.contains(where: { $0.rank == .two }) { return true }
     if play.count == 1, play.cards.first?.rank ?? .three >= .ace { return true }
+    // A pair or triple of aces takes the lead as reliably as a single ace.
+    if (play.count == 2 || play.count == 3),
+       (play.cards.first?.rank ?? .three) >= .ace { return true }
     return false
+  }
+
+  /// Points of control in one play of the plan. Two is a hard stopper, a king
+  /// pair is only probable — the hand is strong when the total covers its plays.
+  static func power(of play: Play, unbeatable: Bool) -> Int {
+    if unbeatable || isControl(play) { return 2 }
+    if (play.count == 2 || play.count == 3),
+       (play.cards.first?.rank ?? .three) >= .king { return 1 }
+    if play.kind >= .fullHouse { return 1 }
+    return 0
   }
 }
 
@@ -151,14 +201,14 @@ struct Choice {
   let restSweeps: Bool
   /// Unbeatable, and every play after it is too, so the lead empties the hand.
   var opensSweep: Bool { unbeatable && restSweeps }
-  /// Spending this two still leaves a two or a bomb.
-  let spareTwo: Bool
 }
 
 private struct Planner {
   let full: Int
   let dp: [Int]
   let sweep: [Bool]
+  /// Control points in a shortest partition of each subset.
+  let power: [Int]
   private let tagged: [Tagged]
 
   struct Tagged {
@@ -166,6 +216,13 @@ private struct Planner {
     let play: Play
     let unbeatable: Bool
     let control: Bool
+    let power: Int
+  }
+
+  /// Leading spends one play for free, so the same cards are less weak with the lead.
+  func weak(leading: Bool) -> Bool {
+    let budget = power[full] + (leading ? 1 : 0)
+    return budget < dp[full]
   }
 
   init(hand: [Card], rules: RuleSet, unseen: [Card], maxHold: Int) {
@@ -180,28 +237,37 @@ private struct Planner {
         let taken = combo.map { cards[$0] }
         guard let play = Play(taken, rules: rules) else { continue }
         let mask = combo.reduce(0) { $0 | (1 << $1) }
+        let unbeatable = !reader.canBeat(play)
         found.append(Tagged(mask: mask, play: play,
-                            unbeatable: !reader.canBeat(play),
-                            control: StrongBot.isControl(play)))
+                            unbeatable: unbeatable,
+                            control: StrongBot.isControl(play),
+                            power: StrongBot.power(of: play, unbeatable: unbeatable)))
       }
     }
     tagged = found
 
     var dp = Array(repeating: n + 1, count: full + 1)
     var sweep = Array(repeating: false, count: full + 1)
+    var power = Array(repeating: 0, count: full + 1)
     dp[0] = 0
     sweep[0] = true
     if full > 0 {
       for mask in 1...full {
         for play in found where mask & play.mask == play.mask {
           let rest = mask ^ play.mask
-          if dp[rest] + 1 < dp[mask] { dp[mask] = dp[rest] + 1 }
+          let tricks = dp[rest] + 1
+          let gained = power[rest] + play.power
+          if tricks < dp[mask] || (tricks == dp[mask] && gained > power[mask]) {
+            dp[mask] = tricks
+            power[mask] = gained
+          }
           if play.unbeatable && sweep[rest] { sweep[mask] = true }
         }
       }
     }
     self.dp = dp
     self.sweep = sweep
+    self.power = power
   }
 
   func choices(beating table: Play?, mustInclude: Card?) -> [Choice] {
@@ -210,15 +276,11 @@ private struct Planner {
       if let must = mustInclude, !tag.play.cards.contains(must) { return nil }
       if let table, !tag.play.beats(table) { return nil }
       let rest = full ^ tag.mask
-      let spareTwo = tag.control && !tag.play.kind.isBomb && tagged.contains {
-        $0.control && rest & $0.mask == $0.mask
-      }
       return Choice(play: tag.play,
                     damage: dp[rest] - (base - 1),
                     unbeatable: tag.unbeatable,
                     control: tag.control,
-                    restSweeps: sweep[rest],
-                    spareTwo: spareTwo)
+                    restSweeps: sweep[rest])
     }
   }
 }

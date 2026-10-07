@@ -1,7 +1,10 @@
 //
 //  AboutDialogView.swift
-//  Big Two — version, credits, and support rows (share / rate / report / X).
-//  No SharedKit button. Do not import billypchan/SharedKit (iOS 17).
+//  Big Two — version, credits, and support rows (share / rate / report / source / coffee / X).
+//
+//  ⚠️ Do not import billypchan/SharedKit to get these: it needs iOS 17 and this app ships
+//  iOS 15. The one row SharedKit would have contributed that was missing here is Buy Me a
+//  Coffee; it is a plain link like the others.
 //
 
 import StoreKit
@@ -39,6 +42,7 @@ struct AboutDialogView: View {
           row("Rate this App", id: "about_rate", action: rateApp)
           row("Report an Issue", id: "about_report") { open(Self.issues) }
           row("Source", id: "about_source") { open(Self.github) }
+          row("Buy Me a Coffee", id: "about_coffee") { open(Self.coffee) }
           row("Follow on X", id: "about_x") { open(Self.twitter) }
         }
       }
@@ -87,6 +91,7 @@ struct AboutDialogView: View {
   private static let github = URL(string: "https://github.com/billypchan/BigTwo")
   private static let issues = URL(string: "https://github.com/billypchan/BigTwo/issues")
   private static let twitter = URL(string: "https://x.com/billchanios")
+  private static let coffee = URL(string: "https://buymeacoffee.com/billchan")
 }
 
 private struct ShareItem: Identifiable {

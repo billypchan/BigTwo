@@ -8,6 +8,28 @@ final class GameUITests: XCTestCase {
     app = .bigTwo()
   }
 
+  /// Opening the menu used to grow the square (the dismiss layer is flexible) and
+  /// leave a strip of felt between the title rule and the menu.
+  func testMenu_staysFlushWithTheTitleAndDoesNotMoveTheTable() {
+    app.launch()
+    let title = app.buttons["menu_button"]
+    let deal = app.element("deal_label")
+    XCTAssertTrue(title.waitForExistence(timeout: 10))
+    XCTAssertTrue(app.prompt.waitForExistence(timeout: 10))
+    let dealY = deal.frame.origin.y
+    let promptY = app.prompt.frame.origin.y
+    let titleMaxY = title.frame.maxY
+    title.tap()
+    let item = app.buttons["menu_new_game"]
+    XCTAssertTrue(item.waitForExistence(timeout: 5))
+    waitUntilSettled(item)
+    XCTAssertEqual(deal.frame.origin.y, dealY, accuracy: 0.5, "the table moved when the menu opened")
+    XCTAssertEqual(app.prompt.frame.origin.y, promptY, accuracy: 0.5, "the table moved when the menu opened")
+    XCTAssertEqual(title.frame.maxY, titleMaxY, accuracy: 0.5, "the title moved when the menu opened")
+    XCTAssertEqual(item.frame.minY, title.frame.maxY, accuracy: 1,
+                   "felt is showing between the title and the menu")
+  }
+
   func testLaunch_youHoldThreeOfDiamondsAndLead() {
     app.launch()
     XCTAssertTrue(app.prompt.waitForExistence(timeout: 10))
@@ -146,9 +168,34 @@ final class GameUITests: XCTestCase {
     XCTAssertFalse(app.element("hand_8h").isSelected)
   }
 
+  /// The Apple Watch note is shown once. ⚠️ `UITestMode` suppresses it — the preference
+  /// suite is wiped every launch, so without that it would cover the table in every test —
+  /// and `-watchNotice YES` is what asks for it back.
+  func testWatchNotice_showsOnceAndDismisses() {
+    app.launchArguments += ["-watchNotice", "YES"]
+    app.launch()
+    XCTAssertTrue(app.buttons["watch_notice_ok"].waitForExistence(timeout: 10),
+                  "the Apple Watch note never came up")
+    app.buttons["watch_notice_ok"].tap()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10),
+                  "the table was not there after dismissing the note")
+    XCTAssertFalse(app.buttons["watch_notice_ok"].exists)
+  }
+
+  /// Every other test launches without that argument, so the note must stay away.
+  func testWatchNotice_staysAwayInTests() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    XCTAssertFalse(app.buttons["watch_notice_ok"].exists)
+  }
+
   func testAbout_showsSharedKit() {
     app.launch()
+    // The title tab is 22 units. The first tap often misses it; the tour retries too.
     app.buttons["menu_button"].tap()
+    if !app.buttons["menu_about"].waitForExistence(timeout: 3) {
+      app.buttons["menu_button"].tap()
+    }
     XCTAssertTrue(app.buttons["menu_about"].waitForExistence(timeout: 5))
     app.buttons["menu_about"].tap()
     XCTAssertTrue(app.buttons["about_ok"].waitForExistence(timeout: 5))
@@ -157,6 +204,9 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.element("about_report").exists)
     // Moved here from Preferences: the repo link belongs with the other credits rows.
     XCTAssertTrue(app.element("about_source").exists)
+    // ⚠️ Not tapped, like about_source and about_report: it opens a browser and the test
+    // cannot come back.
+    XCTAssertTrue(app.element("about_coffee").exists)
     XCTAssertTrue(app.element("about_x").exists)
     XCTAssertFalse(app.buttons["about_sharedkit"].exists)
     XCTAssertEqual(app.state, .runningForeground)

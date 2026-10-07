@@ -1,8 +1,6 @@
-Versi 1.2
+Versi 1.3
 
-• Sejarah menyimpan seluruh permainan: kad keempat-empat pemain semasa diagih, kemudian setiap langkah dan PASS
-• 20 permainan terakhir kekal pada peranti — yang di atas meja tertulis "Permainan ini"
-• Selak satu permainan pada satu masa, ke hadapan atau ke belakang
-• Salin permainan di skrin, atau Eksport sebagai fail teks untuk dikongsi
-• Sumber dipindahkan dari Tetapan ke Perihal
-• Bot Kuat kini merancang langkah paling sedikit untuk menghabiskan kad dan menyimpan kad kawalan
+• Main permainan penuh pada Apple Watch — peraturan, bot dan mata yang sama
+• Satu pembelian membuka jam tangan. Apl jam dipasang bersama telefon; beli atau pulihkan pada jam
+• Bot Kuat kini membezakan kad lemah dan kuat sebelum menggunakan kad 2
+• Tetapan dan nama pemain kekal seiring antara telefon dan jam tangan

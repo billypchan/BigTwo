@@ -35,6 +35,8 @@ targets:
     sources:
       - path: BigTwoApp
         type: syncedFolder
+      - path: Shared
+        type: syncedFolder
       - path: Resources
         type: syncedFolder
     dependencies:
@@ -43,6 +45,11 @@ targets:
         product: GoogleMobileAds
       - package: GoogleUserMessagingPlatform
         product: GoogleUserMessagingPlatform
+      - target: BigTwoWatch
+        embed: true
+        copy:
+          destination: productsDirectory
+          subpath: $(CONTENTS_FOLDER_PATH)/Watch
     info:
       path: Configurations/BigTwo-Info.plist
       properties:
@@ -74,6 +81,72 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.billchan.BigTwo
 
+  BigTwoWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: BigTwoWatch
+        type: syncedFolder
+      - path: Shared
+        type: syncedFolder
+      # The watch draws with the same palette and looks up the same keys as the phone.
+      - path: BigTwoApp/Palette.swift
+      - path: BigTwoApp/L10n.swift
+      # Localizations only — the iOS asset catalog and the privacy manifest are the
+      # phone app's, and a watch target must not carry them.
+      - path: Resources
+        excludes:
+          - Assets.xcassets
+          - PrivacyInfo.xcprivacy
+    dependencies:
+      - package: BigTwoKit
+    info:
+      path: Configurations/BigTwoWatch-Info.plist
+      properties:
+        CFBundleDisplayName: Big Two
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.billchan.BigTwo
+        CFBundleLocalizations:
+          - en
+          - zh-Hant
+          - zh-Hans
+          - id
+          - fil
+          - ms
+          - vi
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.billchan.BigTwo.watchkitapp
+        WATCHOS_DEPLOYMENT_TARGET: 10.0
+        TARGETED_DEVICE_FAMILY: 4
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # The watch app is its own product; the shared xcconfig targets iPhone only.
+        SDKROOT: watchos
+        SUPPORTED_PLATFORMS: watchos watchsimulator
+
+  BigTwoWatchUITests:
+    type: bundle.ui-testing
+    platform: watchOS
+    sources:
+      - path: BigTwoWatchUITests
+        type: syncedFolder
+    dependencies:
+      - target: BigTwoWatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.billchan.BigTwoWatchUITests
+        TEST_TARGET_NAME: BigTwoWatch
+        GENERATE_INFOPLIST_FILE: YES
+        WATCHOS_DEPLOYMENT_TARGET: 10.0
+        TARGETED_DEVICE_FAMILY: 4
+        SDKROOT: watchos
+        SUPPORTED_PLATFORMS: watchos watchsimulator
+        # XCUIApplication is @MainActor; Swift 6 would need isolation on every test.
+        SWIFT_VERSION: "5.0"
+
   BigTwoUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -91,6 +164,19 @@ targets:
         SWIFT_VERSION: "5.0"
 
 schemes:
+  BigTwoWatch:
+    build:
+      targets:
+        BigTwoWatch: all
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - BigTwoWatchUITests
+    run:
+      # So a purchase can be made against the local product rather than the real store.
+      storeKitConfiguration: Configurations/BigTwo.storekit
+
   BigTwo:
     build:
       targets:

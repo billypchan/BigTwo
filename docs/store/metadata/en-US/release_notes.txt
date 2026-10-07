@@ -1,8 +1,6 @@
-Version 1.2
+Version 1.3
 
-• Game History keeps the whole game: the four hands as dealt, then every play and pass
-• Your last 20 games stay on the device — the game on the table reads "This game"
-• Page back and forward through them one game at a time
-• Copy the game on screen, or Export it as a text file to share
-• Source moved out of Preferences and into About
-• Strong bots now plan the fewest plays that empty the hand, and hold their control cards
+• Play the full game on Apple Watch — the same rules, the same bots, the same scoring
+• One purchase unlocks the watch. The watch app installs with the phone app; buy or restore on the watch
+• Strong bots now tell a weak hand from a strong one before they spend a two
+• Settings and player names stay in step between the phone and the watch
