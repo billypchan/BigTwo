@@ -24,6 +24,25 @@ and the evidence.
 超過 4000 字 TestFlight 會拒發佈，所以在 3900 bytes 切斷，再用 `iconv -c` 丟掉被
 切半的 UTF-8。
 
+## help-names-german — 說明、第一次問名字、德文
+
+**問名字的旗標不能放進 `Preferences`。** 跟手錶提示一樣：`Preferences` 會同步到手錶，
+「手機有沒有問過名字」是手機的事。鍵是 `namePromptShown.v1`。`UITestMode` 必須壓掉它，
+否則偏好每輪都清掉，「一次」會變成每個測試都蓋住牌桌。`-askName YES` 才叫出來。
+
+**一次只能有一個對話框。** 第一次開啟先問名字，按 OK 才接著手錶提示。倒過來的話，
+手錶提示先佔住，這次問名字就不會出現。
+
+**說明塞不進 320 的表格。** `PalmDialogView` 本身不捲動，所以內文用固定高度的
+`ScrollView`（210u），整段是一個 `help_text`，測試不用捲就能讀到。New Game 留在
+第一列，`testMenu_staysFlush` 仍然量 `menu_new_game` 對標題線。手錶選單只有
+New Game，沒有說明。
+
+**德文的 VoiceOver 是花色在前。** 點數 3…10 和 2 不是字串鍵，不會被翻譯。
+`%@ of %@` 照字面會變成「3 of Karo」。德文用 `%2$@ %1$@`，讀成「Karo 3」。
+`de` 要同時寫進 `knownRegions` 和手機、手錶的 `CFBundleLocalizations`，然後
+`xcodegen`。商店文案沒有加德文。
+
 ## admob-banner — 廣告條進 bezel，不動那個正方形
 
 **版面靠「先扣高度」而不是「疊上去」。** `GameView` 先把 `BannerAd.height` 從

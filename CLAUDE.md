@@ -41,7 +41,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
 | `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase), `PreferenceSync.swift` (phone ↔ watch settings) |
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
-| `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
+| `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi, de) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
 | `ci_scripts/` | `ci_post_xcodebuild.sh` — writes the TestFlight What to Test note on archive |
 | `docs/` | `pr_learnings.md`, `test_runs.md` |
@@ -107,7 +107,7 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   Identifiers stay English (`pref_bots_Classic`). UI tests launch with
   `-AppleLanguages (en)`. zh-Hant home/title name is 鋤大弟 (U+92E4), not 鍥.
   Every locale table must have the same keys, **and every key a view asks for must be
-  in them** — `L10n.string` falls back to the key, so a typo ships English to all seven
+  in them** — `L10n.string` falls back to the key, so a typo ships English to all eight
   languages and no test fails (`"I will not play with real money."` with a trailing
   period did exactly that in the About dialog; the four About rows had no entry at all).
   ⚠️ A fixed-width pill (`PalmButtonView.width`) does not grow: check a long
@@ -501,6 +501,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-keepPreferences YES` | Keep the UI-test preference suite across a relaunch |
 | `-showAds YES` | Put the banner back in a UI test — it is off in `UITestMode` by default |
 | `-watchNotice YES` | Show the one-time Apple Watch note, which `UITestMode` otherwise suppresses |
+| `-askName YES` | Open the first-launch name dialog, which `UITestMode` otherwise suppresses. It is shown before the watch note |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
@@ -587,6 +588,19 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
   it: the preference suite is wiped every launch, so "once" would otherwise mean "every
   run" and the note would cover the table in every test. `-watchNotice YES` asks for it
   back, which is how its own test sees it.
+- **Help** is the second menu row (`menu_help`), after New Game. It is a scrolling Palm
+  form (`help_text`, `help_ok`): tap, double-tap, long-press, Lead/Play, Pass, the empty
+  box, the sort mark, and the rules. ⚠️ `PalmDialogView` does not scroll, so the text
+  sits in its own `ScrollView`. The watch menu stays New Game only. New Game stays
+  first so `testMenu_staysFlush` still measures `menu_new_game` against the title rule.
+- The **first launch** opens the name dialog and tells the player to enter a name
+  (`name_intro`, `NamePrompt`, `namePromptShown.v1`). The dark row is them; a blank row
+  keeps its name. ⚠️ Same constraints as the watch note: not in `Preferences`, and
+  `UITestMode` suppresses it. `-askName YES` shows it. One dialog at a time — OK marks
+  the prompt shown and only then opens the watch note. The watch has no name dialog;
+  names arrive later through `PreferenceSync`. German (`de`) is an eighth UI language,
+  like Filipino not an App Store metadata language. VoiceOver for German is suit then
+  rank (`%2$@ %1$@`): the number ranks are not keys, so "3" + "Karo" reads "Karo 3".
 - Every tappable thing a test touches has an `accessibilityIdentifier` (`hand_<code>`,
   `button_play`, `score_ok`, `pref_hongKong`, `about_sharedkit`, …); cards read as "3 of diamonds" to VoiceOver.
 
@@ -670,8 +684,9 @@ pass (see `docs/test_runs.md`). Open items, roughly in order:
    `226e35df-5f4b-4d0e-997a-ea3db685c47e`, together with the watch purchase
    `com.billchan.BigTwo.watch` ("Play on your Watch", US$10.99). Approval releases it
    (`AFTER_APPROVAL`). Tagged `v1.3` at `df2ffbd`. `main` is **1.4**. The listing has
-   six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino is not an App Store
-   metadata language), both iPhone sizes, and an en-US watch set at 416×496.
+   six locales (en-US, zh-Hant, zh-Hans, vi, id, ms — Filipino and German are UI
+   languages only, not App Store metadata languages), both iPhone sizes, and an en-US
+   watch set at 416×496.
    ⚠️ A push starts Xcode Cloud on 1.4. Do not attach that build to the 1.3 version
    already in review.
 2. Save the game in progress — the transcript (open hands and each step) now survives

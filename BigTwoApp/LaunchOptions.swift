@@ -39,6 +39,9 @@ enum LaunchOptions {
   /// so "once" would mean "every run".
   static var forceWatchNotice: Bool { UserDefaults.standard.bool(forKey: "watchNotice") }
 
+  /// `-askName YES` opens the first-launch name dialog even under `UITestMode`.
+  static var forceNamePrompt: Bool { UserDefaults.standard.bool(forKey: "askName") }
+
   private static let uiTestSuite = "UITestPreferences"
 
   /// UI tests wipe this unless `-keepPreferences YES`, so one run can't fill Game History.
@@ -71,6 +74,22 @@ enum WatchNotice {
 
   static var shouldShow: Bool {
     if LaunchOptions.forceWatchNotice { return true }
+    if LaunchOptions.uiTestMode { return false }
+    return !UserDefaults.standard.bool(forKey: key)
+  }
+
+  static func markShown() { UserDefaults.standard.set(true, forKey: key) }
+}
+
+/// Whether the first launch has asked for a name. ⚠️ Not part of `Preferences`: that is
+/// synced to the watch, and whether the phone has asked is the phone's business.
+/// Renaming the key asks again. `UITestMode` suppresses it for the same reason as
+/// `WatchNotice` — a wiped suite would put the dialog over every test.
+enum NamePrompt {
+  private static let key = "namePromptShown.v1"
+
+  static var shouldShow: Bool {
+    if LaunchOptions.forceNamePrompt { return true }
     if LaunchOptions.uiTestMode { return false }
     return !UserDefaults.standard.bool(forKey: key)
   }

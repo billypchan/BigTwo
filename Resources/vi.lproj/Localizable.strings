@@ -95,3 +95,21 @@
 "Buy" = "Mua";
 "The App Store could not be reached." = "Không kết nối được App Store.";
 "Restore Purchase" = "Khôi phục";
+
+/* Help */
+"Help" = "Trợ giúp";
+"Tap a card to pick it. Tap it again to put it back." = "Chạm một lá để chọn. Chạm lần nữa để bỏ.";
+"Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "Chạm đúp lấy đôi hoặc sám số đó, hoặc cả chất khi bạn cầm từ năm lá.";
+"Hold a card to take every card of that rank." = "Giữ một lá để lấy mọi lá cùng số.";
+"Lead and Play send the cards you picked. Pass stays out. You cannot pass a lead. The empty box clears the pick." = "Đánh gửi các lá đã chọn. Bỏ là không đánh. Không bỏ được khi bạn đi trước. Ô trống xoá lựa chọn.";
+"The sort button shows ♠ or 2: that is the order a tap switches to." = "Nút xếp hiện ♠ hoặc 2: đó là thứ tự sau một lần chạm.";
+"The player with the 3♦ leads the first deal. Match the play on the table with a higher one, or pass." = "Người cầm 3♦ đi trước ván đầu. Đánh lớn hơn bài trên bàn, hoặc bỏ.";
+"Two or three of a kind: higher rank wins, then the highest suit among them." = "Đôi hoặc sám: số lớn hơn thắng, rồi chất cao nhất trong đó.";
+"Five cards, from low to high: straight, flush, full house, four of a kind, straight flush." = "Năm lá, từ thấp đến cao: sảnh, thùng, cù lũ, tứ quý, thùng phá sảnh.";
+"A straight runs A2345, then 23456, up to TJQKA. JQKA2 is not a straight." = "Sảnh là A2345, rồi 23456, đến TJQKA. JQKA2 không phải sảnh.";
+"A straight is ranked by its highest card, then that card's suit. In A2345 the high card is the 5." = "Sảnh so lá cao nhất, rồi chất của lá đó. Trong A2345 lá cao là 5.";
+"A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Thùng so lá cao nhất, rồi chất lá đó. Cù lũ so bộ ba. Tứ quý so bốn lá.";
+"Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Mỗi lá còn lại tính theo số: 3 là 1, đến 2 là 13. Từ mười lá thì nhân đôi. Người thắng lấy cả ba tổng.";
+"A game is ten deals." = "Một trận mười ván.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Luật Hồng Kông, từ ván sau: người thắng ván trước đi trước, và 23456 là sảnh lớn nhất.";
+"Enter your name. The dark row is you. Leave a row blank to keep its name." = "Nhập tên của bạn. Hàng đậm là bạn. Để trống thì giữ tên cũ.";

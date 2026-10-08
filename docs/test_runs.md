@@ -99,3 +99,5 @@ evidence that a test can fail; they stay in the log.
 - 2026-10-07 16:31 — iOS (iPhone 17 Pro Max, 26.3) ✗ 2/3 (`testWatchNotice_showsOnceAndDismisses` ✓, `testWatchNotice_staysAwayInTests` ✓, `testAbout_showsSharedKit` ✗: first title tap missed `menu_about`)
 - 2026-10-07 16:37 — iOS (iPhone 17 Pro Max, 26.3) ✓ 1/1 (`testAbout_showsSharedKit`, title tap retried once)
 - 2026-10-07 16:46 — iOS (iPhone 17 Pro Max, 26.3) ✓ 17/17 (GameUITests on admob-banner after merging main). Ads stayed off under `UITestMode`. No new screenshots: this suite does not capture.
+- 2026-10-08 — iOS (iPhone 17 Pro Max, 26.3) ✗ compile (`GameView` assigned the `if let dialog` binding). Fixed to `self.dialog`, then ✓ 20/20 (GameUITests: Help, name prompt then the watch note, name prompt stays away). Looked at the two new shots: Help scrolls inside the form and OK stays in the square; the name dialog's dark row is player 2 and its OK is clear of the hand. No tour screenshots.
+- 2026-10-08 — iOS ✓ 2/2 (`testHelp_explainsTheButtonsAndTheRules`, `testNamePrompt_asksThenTheWatchNote`, `-testLanguage de`). German Hilfe and Spielernamen fit; both OK buttons stay hittable.

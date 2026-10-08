@@ -58,6 +58,7 @@
 
 /* Begin PBXFileReference section */
 		1405F58214DFE607A39E33E0 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		15749F950B233E9B261FE7B1 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		287EF2890EF46B0F79446373 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		39888566BD541CCE8D0BC218 /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = ms.lproj/Localizable.strings; sourceTree = "<group>"; };
 		49F90944719399D926E68D53 /* BigTwoKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BigTwoKit; path = BigTwoKit; sourceTree = SOURCE_ROOT; };
@@ -71,6 +72,7 @@
 		7BC559F37FE005507F7390B2 /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/Localizable.strings; sourceTree = "<group>"; };
 		924D892FDC322C4628399167 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		978F171427753F9427641158 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A77D9DE68DE9E5F0F44EEEF3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C75174FA90F43FCC185C3263 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BigTwo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D88D343B4B0C5056BCE9F7B0 /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = fil.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -184,15 +186,15 @@
 		5E67529F69D4DCCF9405F8B3 = {
 			isa = PBXGroup;
 			children = (
-				AA983B1762A3843D4645D170 /* BigTwoApp */,
 				5C24637EC107664296640160 /* BigTwoApp */,
+				AA983B1762A3843D4645D170 /* BigTwoApp */,
 				69E23FA008BEDC520EB4EF13 /* BigTwoUITests */,
 				2D466A22397134DD34D037F3 /* BigTwoWatch */,
 				CFC1E73611E04177154931CC /* BigTwoWatchUITests */,
 				C47E98700BE8F6BBA6FCA177 /* Configurations */,
 				635832212CE93223D4D8B082 /* Packages */,
-				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
 				17C9AF0B3B21FDAF0362F687 /* Resources */,
+				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
 				E3D485B5205684A1870C81B4 /* Shared */,
 				2F41931DDF09F9CC37F7A690 /* Products */,
 			);
@@ -358,6 +360,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				de,
 				en,
 				fil,
 				id,
@@ -474,6 +477,7 @@
 		55C6A95A29B45DFFA1118209 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
+				A77D9DE68DE9E5F0F44EEEF3 /* de */,
 				7B4CBE71995B006A318C6036 /* en */,
 				7BC559F37FE005507F7390B2 /* fil */,
 				5FA18003C81E57C532F3A2D0 /* id */,
@@ -488,6 +492,7 @@
 		A852571B0C89898A92734F29 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
+				15749F950B233E9B261FE7B1 /* de */,
 				C75174FA90F43FCC185C3263 /* en */,
 				D88D343B4B0C5056BCE9F7B0 /* fil */,
 				1405F58214DFE607A39E33E0 /* id */,

@@ -297,6 +297,85 @@ final class GameUITests: XCTestCase {
     waitFor(app.element("name_1"), label: "Mei, to play")
   }
 
+  /// Help is the second menu row. The text is one element, so the rules can be
+  /// read without scrolling. New Game stays first: the flush test measures that row.
+  func testHelp_explainsTheButtonsAndTheRules() {
+    app.launch()
+    openMenu()
+    let about = app.buttons["menu_about"]
+    XCTAssertTrue(about.waitForExistence(timeout: 5))
+    waitUntilSettled(about)
+    XCTAssertTrue(about.isHittable, "six menu rows do not fit in the square")
+    app.buttons["menu_help"].tap()
+    let text = app.element("help_text")
+    XCTAssertTrue(text.waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["help_ok"].isHittable, "Help's OK is outside the square")
+    if XCUIApplication.uiTestLanguage == "en" {
+      XCTAssertTrue(text.label.contains("Double-tap"))
+      XCTAssertTrue(text.label.contains("empty box"))
+      XCTAssertTrue(text.label.contains("JQKA2"))
+      XCTAssertTrue(text.label.contains("23456"))
+      XCTAssertTrue(text.label.contains("straight flush"))
+    }
+    attachScreen("help")
+    app.buttons["help_ok"].tap()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["help_ok"].exists)
+  }
+
+  /// First launch asks for a name, then the watch note. ⚠️ `UITestMode` suppresses
+  /// the name dialog — the same reason as the watch note — so `-askName YES` asks
+  /// for it back. The two never show at once.
+  func testNamePrompt_asksThenTheWatchNote() {
+    app.launchArguments += ["-askName", "YES", "-watchNotice", "YES"]
+    app.launch()
+    let intro = app.element("name_intro")
+    XCTAssertTrue(intro.waitForExistence(timeout: 10), "the name dialog never came up")
+    XCTAssertTrue(app.element("names_you").exists, "the dark row is the player")
+    XCTAssertFalse(app.buttons["watch_notice_ok"].exists, "the watch note stacked on the names")
+    XCTAssertTrue(app.buttons["names_ok"].isHittable, "Names' OK is outside the square")
+    if XCUIApplication.uiTestLanguage == "en" {
+      XCTAssertTrue(intro.label.contains("dark row"))
+    }
+    attachScreen("name_intro")
+    app.buttons["names_ok"].tap()
+    XCTAssertTrue(app.buttons["watch_notice_ok"].waitForExistence(timeout: 5),
+                  "the watch note did not follow the name dialog")
+    XCTAssertFalse(intro.exists)
+    app.buttons["watch_notice_ok"].tap()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+  }
+
+  /// A normal UI-test launch must not cover the table. Opening Names from the menu
+  /// does not repeat the first-launch line.
+  func testNamePrompt_staysAwayInTests() {
+    app.launch()
+    XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+    XCTAssertFalse(app.element("name_intro").exists)
+    XCTAssertFalse(app.buttons["names_ok"].exists)
+    XCTAssertFalse(app.buttons["watch_notice_ok"].exists)
+    openMenu()
+    app.buttons["menu_names"].tap()
+    XCTAssertTrue(app.buttons["names_ok"].waitForExistence(timeout: 5))
+    XCTAssertFalse(app.element("name_intro").exists)
+  }
+
+  /// The title tab is 22 units. The first tap often misses it.
+  private func openMenu() {
+    app.buttons["menu_button"].tap()
+    if !app.buttons["menu_new_game"].waitForExistence(timeout: 3) {
+      app.buttons["menu_button"].tap()
+    }
+    XCTAssertTrue(app.buttons["menu_new_game"].waitForExistence(timeout: 5))
+  }
+
+  private func attachScreen(_ name: String) {
+    let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+    attachment.name = name
+    attachment.lifetime = .keepAlways
+    add(attachment)
+  }
+
   /// Menu tap can lag the synthesized hit; wait for the item before tapping it.
   private func openPreferences() {
     app.buttons["menu_button"].tap()
