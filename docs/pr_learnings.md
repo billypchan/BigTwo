@@ -13,6 +13,17 @@ and the evidence.
 
 ---
 
+## testflight-what-to-test — 測試重點帶這次的 commit
+
+**Xcode Cloud 在發佈前讀 `TestFlight/WhatToTest.<locale>.txt`，所以可以在
+`ci_post_xcodebuild.sh` 現寫。** 只有 archive 會發佈；test workflow 要直接離開。
+檔案帶這次的 commit，提交進 git 會永遠是舊的，`/TestFlight/` 進 `.gitignore`。
+
+**不要寫分支名。** `palm-square-layout` 進過測試重點。這支 script 只寫 tag、PR 編號，
+或短 commit。寫完再去掉花色符號、`<` 和 Palm 這個字，commit 標題也蓋得到。
+超過 4000 字 TestFlight 會拒發佈，所以在 3900 bytes 切斷，再用 `iconv -c` 丟掉被
+切半的 UTF-8。
+
 ## admob-banner — 廣告條進 bezel，不動那個正方形
 
 **版面靠「先扣高度」而不是「疊上去」。** `GameView` 先把 `BannerAd.height` 從
