@@ -1,0 +1,112 @@
+/* Deutsch */
+"Big Two" = "Big Two";
+"Menu" = "Menü";
+"Deal %d/%d" = "Runde %d/%d";
+"left: %d" = "übrig: %d";
+"%@, to play" = "%@ ist dran";
+"PASS" = "PASSE";
+"Lead" = "Beginn";
+"Play" = "Legen";
+"Pass" = "Passen";
+"Clear selection" = "Auswahl löschen";
+"Sort by rank" = "Nach Wert sortieren";
+"Sort by suit" = "Nach Farbe sortieren";
+"Cards played" = "Gespielte Karten";
+
+"Lead with the 3♦" = "Mit 3♦ beginnen";
+"Your Lead" = "Du beginnst";
+"Your Play" = "Du bist dran";
+"%@ is thinking…" = "%@ überlegt…";
+
+"New Game" = "Neues Spiel";
+"Preferences" = "Einstellungen";
+"Game History" = "Spielverlauf";
+"This game" = "Dieses Spiel";
+"About" = "Info";
+"Help" = "Hilfe";
+
+"Adam" = "Adam";
+"Bill" = "Bill";
+"Carl" = "Carl";
+"Dean" = "Dean";
+"Names" = "Namen";
+"Player names" = "Spielernamen";
+"Player %d, you" = "Spieler %d, du";
+"Enter your name. The dark row is you. Leave a row blank to keep its name." = "Gib deinen Namen ein. Die dunkle Zeile bist du. Eine leere Zeile behält ihren Namen.";
+
+"Auto pass" = "Automatisch passen";
+"Enable autopass for 5-card turn" = "Auch bei 5 Karten passen";
+"Show card left in score dialog" = "Restkarten in der Wertung";
+"Use Hong Kong Rule Set" = "Hongkong-Regeln";
+"Bots:" = "Bots:";
+"Classic" = "Klassisch";
+"Strong" = "Stark";
+"Game speed:" = "Tempo:";
+"Sort cards by:" = "Sortieren nach:";
+"Slow" = "Langsam";
+"Medium" = "Mittel";
+"Fast" = "Schnell";
+"Rank" = "Wert";
+"Suit" = "Farbe";
+"OK" = "OK";
+"Source" = "Quelle";
+"SharedKit" = "SharedKit";
+"Buy Me a Coffee" = "Buy Me a Coffee";
+"Now on Apple Watch" = "Jetzt auf der Apple Watch";
+"The same game is on your watch" = "Dasselbe Spiel ist auf deiner Uhr — dieselben Regeln, dieselben Bots, dieselbe Wertung.";
+
+"Final Score" = "Endstand";
+"Score — Deal %d" = "Stand — Runde %d";
+"I will not play with real money" = "Ich spiele nicht um echtes Geld";
+"*WIN!*" = "*SIEG!*";
+"%d left" = "%d übrig";
+"DOUBLE!" = "DOPPELT!";
+
+"Copy" = "Kopieren";
+"Export" = "Export";
+"About Big Two" = "Über Big Two";
+"Big Two %@" = "Big Two %@";
+"Remade for iPhone by Bill Chan, 2026." = "Neu fürs iPhone von Bill Chan, 2026.";
+"After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "Nach dem Handheld-Spiel von 1999 von Woo Kok Tong und Bill Chan.";
+"Share this App" = "App teilen";
+"Rate this App" = "App bewerten";
+"Report an Issue" = "Fehler melden";
+"Follow on X" = "Auf X folgen";
+
+"Not your turn" = "Du bist nicht dran";
+"Not your cards" = "Nicht deine Karten";
+"Not a legal combination" = "Keine gültige Kombination";
+"First play must include 3♦" = "Der erste Zug muss 3♦ enthalten";
+"That does not beat %@" = "Das schlägt %@ nicht";
+
+"%@ of %@" = "%2$@ %1$@";
+"diamonds" = "Karo";
+"clubs" = "Kreuz";
+"hearts" = "Herz";
+"spades" = "Pik";
+"jack" = "Bube";
+"queen" = "Dame";
+"king" = "König";
+"ace" = "Ass";
+
+"Big Two on Apple Watch" = "Big Two auf der Apple Watch";
+"Play the full game on your wrist. One purchase, no subscription." = "Das ganze Spiel am Handgelenk. Einmal kaufen, kein Abo.";
+"Buy %@" = "%@ kaufen";
+"Buy" = "Kaufen";
+"The App Store could not be reached." = "Der App Store ist nicht erreichbar.";
+"Restore Purchase" = "Kauf wiederherstellen";
+
+"Tap a card to pick it. Tap it again to put it back." = "Tippe eine Karte an, um sie zu wählen. Noch einmal, um sie zurückzulegen.";
+"Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "Doppeltippen nimmt das Paar oder den Drilling, oder die ganze Farbe, wenn du fünf oder mehr davon hast.";
+"Hold a card to take every card of that rank." = "Halte eine Karte, um alle Karten dieses Werts zu nehmen.";
+"Lead and Play send the cards you picked. Pass stays out. You cannot pass a lead. The empty box clears the pick." = "Beginn und Legen spielen die gewählten Karten. Passen bleibt außen vor. Einen Beginn kann man nicht passen. Das leere Feld löscht die Wahl.";
+"The sort button shows ♠ or 2: that is the order a tap switches to." = "Die Sortiertaste zeigt ♠ oder 2: das ist die Ordnung, zu der ein Tipp wechselt.";
+"The player with the 3♦ leads the first deal. Match the play on the table with a higher one, or pass." = "Wer 3♦ hat, beginnt die erste Runde. Schlage die Karten auf dem Tisch mit höheren, oder passe.";
+"Two or three of a kind: higher rank wins, then the highest suit among them." = "Paar oder Drilling: der höhere Wert gewinnt, dann die höchste Farbe darunter.";
+"Five cards, from low to high: straight, flush, full house, four of a kind, straight flush." = "Fünf Karten, von niedrig nach hoch: Straße, Flush, Full House, Vierling, Straight Flush.";
+"A straight runs A2345, then 23456, up to TJQKA. JQKA2 is not a straight." = "Eine Straße geht von A2345 über 23456 bis TJQKA. JQKA2 ist keine Straße.";
+"A straight is ranked by its highest card, then that card's suit. In A2345 the high card is the 5." = "Eine Straße zählt nach ihrer höchsten Karte, dann deren Farbe. Bei A2345 ist die 5 die hohe Karte.";
+"A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Ein Flush zählt nach seiner höchsten Karte, dann deren Farbe. Ein Full House nach dem Drilling. Ein Vierling nach den vier Karten.";
+"Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Jede Restkarte zählt nach ihrem Wert: 3 ist 1, bis 2, das 13 ist. Zehn oder mehr Restkarten verdoppeln. Der Gewinner nimmt alle drei Summen.";
+"A game is ten deals." = "Ein Spiel hat zehn Runden.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Mit Hongkong-Regeln, ab der nächsten Runde: der letzte Gewinner beginnt, und 23456 ist die höchste Straße.";

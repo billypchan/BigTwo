@@ -95,3 +95,21 @@
 "Buy" = "Bilhin";
 "The App Store could not be reached." = "Hindi maabot ang App Store.";
 "Restore Purchase" = "Ibalik ang Binili";
+
+/* Help */
+"Help" = "Tulong";
+"Tap a card to pick it. Tap it again to put it back." = "Pindutin ang kard para piliin. Pindutin ulit para ibalik.";
+"Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "Dalawang pindot: ang pares o tatlo ng numerong iyon, o ang buong palo kung lima o higit ang hawak mo.";
+"Hold a card to take every card of that rank." = "Pindutin nang matagal para kunin ang bawat kard ng numerong iyon.";
+"Lead and Play send the cards you picked. Pass stays out. You cannot pass a lead. The empty box clears the pick." = "Laban ang nagpapadala ng napili. Pasa ay hindi sumasali. Hindi puwedeng pasa sa unang laban. Ang kahong walang laman ay nag-aalis ng pinili.";
+"The sort button shows ♠ or 2: that is the order a tap switches to." = "Ang ayos ay nagpapakita ng ♠ o 2: iyon ang ayos na lilipatan.";
+"The player with the 3♦ leads the first deal. Match the play on the table with a higher one, or pass." = "Ang may 3♦ ang unang laban sa unang ronda. Talunin ang nasa mesa, o pasa.";
+"Two or three of a kind: higher rank wins, then the highest suit among them." = "Dalawa o tatlo: mas mataas na numero ang panalo, saka ang pinakamataas na palo.";
+"Five cards, from low to high: straight, flush, full house, four of a kind, straight flush." = "Limang kard, mula mababa: sunod-sunod, parehong palo, full house, apat na magkakapareho, straight flush.";
+"A straight runs A2345, then 23456, up to TJQKA. JQKA2 is not a straight." = "Ang sunod ay A2345, tapos 23456, hanggang TJQKA. Ang JQKA2 ay hindi sunod.";
+"A straight is ranked by its highest card, then that card's suit. In A2345 the high card is the 5." = "Ang sunod ay inihahambing sa pinakamataas na kard, saka ang palo nito. Sa A2345 ang mataas ay 5.";
+"A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Ang parehong palo ay inihahambing sa pinakamataas na kard, saka ang palo nito. Ang full house sa tatlo. Ang apat sa apat.";
+"Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Bawat natitirang kard ay katumbas ng numero: ang 3 ay 1, hanggang ang 2 ay 13. Sampu o higit ay doble. Kinukuha ng panalo ang tatlong kabuuan.";
+"A game is ten deals." = "Sampung ronda ang isang laro.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Sa Hong Kong rules, sa susunod na ronda: ang huling panalo ang unang laban, at ang 23456 ang pinakamataas na sunod.";
+"Enter your name. The dark row is you. Leave a row blank to keep its name." = "Ilagay ang pangalan mo. Ang madilim na hanay ay ikaw. Ang blanko ay pananatilihin ang pangalan.";

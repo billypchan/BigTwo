@@ -2,7 +2,7 @@ name: BigTwo
 options:
   bundleIdPrefix: com.billchan
   developmentLanguage: en
-  knownRegions: [en, Base, zh-Hant, zh-Hans, id, fil, ms, vi]
+  knownRegions: [en, Base, zh-Hant, zh-Hans, id, fil, ms, vi, de]
   createIntermediateGroups: true
   groupSortPosition: top
 
@@ -69,6 +69,7 @@ targets:
           - fil
           - ms
           - vi
+          - de
         UILaunchScreen:
           UIColorName: LaunchBackground
         UIUserInterfaceStyle: Light
@@ -116,6 +117,7 @@ targets:
           - fil
           - ms
           - vi
+          - de
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.billchan.BigTwo.watchkitapp

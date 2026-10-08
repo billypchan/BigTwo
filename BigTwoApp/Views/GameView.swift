@@ -14,9 +14,11 @@ struct GameView: View {
   @State private var message: String?
   @State private var dialog: Dialog?
   @State private var nameDraft = ["", "", "", ""]
+  /// True only for the first-launch name dialog, so OK can chain the watch note.
+  @State private var nameIntro = false
   @StateObject private var consent = AdConsent()
 
-  enum Dialog { case menu, preferences, names, history, about, watchNotice }
+  enum Dialog { case menu, preferences, names, history, about, watchNotice, help }
 
   /// Palm units below the square for the tracker.
   private static let trackerHeight: CGFloat = 100
@@ -65,7 +67,12 @@ struct GameView: View {
     .onAppear {
       game.applyDisplayNames(PlayerNames.defaults)
       if LaunchOptions.showAds { consent.start() }
-      if WatchNotice.shouldShow { dialog = .watchNotice }
+      // One dialog at a time. Ask for a name first; the watch note follows OK.
+      if NamePrompt.shouldShow {
+        showNames(intro: true)
+      } else if WatchNotice.shouldShow {
+        dialog = .watchNotice
+      }
     }
     // Your hand only changes when you play (selection already cleared) or on a
     // redeal / new game — never carry a selection into a fresh hand.
@@ -181,11 +188,19 @@ struct GameView: View {
       case .names:
         modal(u) {
           NamesDialogView(names: $nameDraft, placeholders: PlayerNames.defaults,
-                          humanSeat: game.humanSeat) {
+                          humanSeat: game.humanSeat, intro: nameIntro) {
             game.applyNames(nameDraft, defaults: PlayerNames.defaults)
-            self.dialog = nil
+            if nameIntro {
+              NamePrompt.markShown()
+              nameIntro = false
+              self.dialog = WatchNotice.shouldShow ? .watchNotice : nil
+            } else {
+              self.dialog = nil
+            }
           }
         }
+      case .help:
+        modal(u) { HelpDialogView { self.dialog = nil } }
       case .history:
         modal(u) {
           HistoryDialogView(rounds: game.historyRounds) { self.dialog = nil }
@@ -216,19 +231,23 @@ struct GameView: View {
         game.startGame()
         dialog = nil
       },
+      .init(id: "help", title: L10n.string("Help")) { dialog = .help },
       .init(id: "preferences", title: L10n.string("Preferences")) { dialog = .preferences },
-      .init(id: "names", title: L10n.string("Names")) {
-        nameDraft = (0..<4).map { i in
-          i < game.preferences.playerNames.count ? game.preferences.playerNames[i] : ""
-        }
-        dialog = .names
-      },
+      .init(id: "names", title: L10n.string("Names")) { showNames(intro: false) },
       .init(id: "history", title: L10n.string("Game History")) { dialog = .history },
       .init(id: "about", title: L10n.string("About")) { dialog = .about },
     ]
   }
 
   // MARK: - Actions
+
+  private func showNames(intro: Bool) {
+    nameDraft = (0..<4).map { i in
+      i < game.preferences.playerNames.count ? game.preferences.playerNames[i] : ""
+    }
+    nameIntro = intro
+    dialog = .names
+  }
 
   private func toggle(_ card: Card) {
     if selection.contains(card) { selection.remove(card) } else { selection.insert(card) }

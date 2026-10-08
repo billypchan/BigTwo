@@ -11,6 +11,8 @@ struct NamesDialogView: View {
   /// Seat that belongs to the person holding the phone — its number is inverted,
   /// the same "this one is you" mark the table's name button uses.
   var humanSeat: Int?
+  /// First launch only. The menu's Names item leaves this off.
+  var intro: Bool = false
   let onOK: () -> Void
 
   @Environment(\.palmUnit) private var u
@@ -18,6 +20,12 @@ struct NamesDialogView: View {
   var body: some View {
     PalmDialogView(title: L10n.string("Player names")) {
       VStack(alignment: .leading, spacing: 4 * u) {
+        if intro {
+          Text(L10n.string("Enter your name. The dark row is you. Leave a row blank to keep its name."))
+            .font(.palm(12 * u))
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityIdentifier("name_intro")
+        }
         ForEach(0..<4, id: \.self) { i in
           HStack(spacing: 6 * u) {
             number(i)

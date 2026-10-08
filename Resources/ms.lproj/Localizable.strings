@@ -95,3 +95,21 @@
 "Buy" = "Beli";
 "The App Store could not be reached." = "App Store tidak dapat dihubungi.";
 "Restore Purchase" = "Pulihkan Belian";
+
+/* Help */
+"Help" = "Bantuan";
+"Tap a card to pick it. Tap it again to put it back." = "Ketik kad untuk pilih. Ketik lagi untuk batal.";
+"Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "Ketik dua kali untuk pasangan atau tiga kad senombor, atau satu jenis bila anda pegang lima atau lebih.";
+"Hold a card to take every card of that rank." = "Tahan kad untuk ambil semua kad senombor.";
+"Lead and Play send the cards you picked. Pass stays out. You cannot pass a lead. The empty box clears the pick." = "Main menghantar kad yang dipilih. Pas tidak sertai. Pusingan mula tidak boleh dipas. Kotak kosong membatalkan pilihan.";
+"The sort button shows ♠ or 2: that is the order a tap switches to." = "Butang susun menunjukkan ♠ atau 2: itu susunan selepas diketik.";
+"The player with the 3♦ leads the first deal. Match the play on the table with a higher one, or pass." = "Pemain yang pegang 3♦ main dahulu pada pusingan pertama. Kalahkan kad di meja, atau pas.";
+"Two or three of a kind: higher rank wins, then the highest suit among them." = "Dua atau tiga kad: nombor lebih besar menang, kemudian jenis tertinggi antaranya.";
+"Five cards, from low to high: straight, flush, full house, four of a kind, straight flush." = "Lima kad, dari kecil ke besar: straight, flush, full house, empat senombor, straight flush.";
+"A straight runs A2345, then 23456, up to TJQKA. JQKA2 is not a straight." = "Straight dari A2345, kemudian 23456, hingga TJQKA. JQKA2 bukan straight.";
+"A straight is ranked by its highest card, then that card's suit. In A2345 the high card is the 5." = "Straight dibandingkan kad tertingginya, kemudian jenis kad itu. Dalam A2345 kad tinggi ialah 5.";
+"A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Flush dibandingkan kad tertinggi, kemudian jenisnya. Full house pada tiga senombor. Empat senombor pada keempatnya.";
+"Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Setiap kad baki dikira nombornya: 3 bernilai 1, hingga 2 bernilai 13. Sepuluh kad atau lebih digandakan. Pemenang mengambil ketiga-tiga jumlah.";
+"A game is ten deals." = "Satu permainan sepuluh pusingan.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Peraturan Hong Kong, dari pusingan seterusnya: pemenang tadi main dahulu, dan 23456 ialah straight terbesar.";
+"Enter your name. The dark row is you. Leave a row blank to keep its name." = "Masukkan nama anda. Baris gelap ialah anda. Baris kosong mengekalkan namanya.";
