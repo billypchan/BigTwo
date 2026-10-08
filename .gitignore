@@ -38,3 +38,7 @@ private_keys/
 
 # Archives and exports
 *.xcarchive
+
+# TestFlight「測試重點」— generated per build by ci_scripts/ci_post_xcodebuild.sh
+# (it carries that build's commit hash, so a committed copy would always be stale)
+/TestFlight/

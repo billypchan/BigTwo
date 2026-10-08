@@ -43,6 +43,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 | `BigTwoUITests/` | `GameUITests`, `ScreenTourUITests`, `UITestSupport` |
 | `Resources/` | Asset catalog (AppIcon, AccentColor, LaunchBackground), `PrivacyInfo.xcprivacy`, `*.lproj` (en, zh-Hant, zh-Hans, id, fil, ms, vi) |
 | `scripts/` | `extract_screenshots.py`, `make_app_icon.swift` |
+| `ci_scripts/` | `ci_post_xcodebuild.sh` — writes the TestFlight What to Test note on archive |
 | `docs/` | `pr_learnings.md`, `test_runs.md` |
 | `screenshots/ios/` | Screen-tour captures — committed |
 | `screenshots/watchos/` | Watch screen-tour captures — committed |
@@ -627,6 +628,11 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
   leaked that way). Say "the 1999 handheld game" / "the classic look". Type names like
   `PalmButtonView`, comments, README and the GitHub repo are fine. Removed from 1.0 (3)
   after 1.0 (2) had gone to review with the credit in About.
+- **TestFlight「測試重點」is generated on the archive, not committed.**
+  `ci_scripts/ci_post_xcodebuild.sh` writes `TestFlight/WhatToTest.en-US.txt` (gitignored)
+  after an Xcode Cloud archive: version, build number, short commit, subject, and the
+  last eight commits. It does not write the branch name. Suit symbols, `<`, and the
+  word Palm are stripped from the finished note. A test-only action writes nothing.
 - **TestFlight**: internal groups mirror 周易占卜's ("App Store Connect Users", "testers")
   plus "me"; **"External Testers"** holds every 周易占卜 tester. Internal groups only
   accept people the API recognises as team members ("Tester(s) cannot be assigned"
