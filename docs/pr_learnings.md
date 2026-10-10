@@ -13,6 +13,55 @@ and the evidence.
 
 ---
 
+## stronger-strong-bot — Strong 太好打，修的是哪一處
+
+**一個布林的姿態判斷，是整個弱點的來源。** `Planner.weak(leading:)` 是
+`power + (leading ? 1 : 0) < dp`。十三張手牌 `dp` 大約 5，`power` 只有一兩點，
+所以**開局幾乎必定 weak**，而 weak 的 `casual()` 直接把所有 control 擋掉
+（`if choice.control { return false }`）。結果就是：人類出 K，bot 手上有 A 也不出，
+一路讓到底，最後抱著 A 和 2 結算。改成三檔（attack / contest / defend）之後，
+「要不要花掉這張 stopper」變成算得出來的問題 —— 剩下的 control 夠不夠蓋住剩下的手數
+（`Choice.affordsSpending`）。`Planner` 的 `dp[]` 和 `power[]` 本來就是對**每個子集**
+算好的，所以這個量是現成的，只是沒人拿來用。
+
+**計分是按點數的，但 `Planner` 最佳化的是手數。** 這兩件事不一樣，而 1.3 的 bot
+只知道後者。輸定的那一舖，它會把牌打得很整齊，然後抱著 2（13 分）和 A（12 分）結算。
+加一個 `losingRace` → 改成丟分，對上**強**對手多拿 +342。
+
+**但同一個改動對上弱對手是倒賠的。** 不丟分對 greedy 是 2798，丟分是 2018。
+原因是 greedy 會把 lead 還給你，太早放棄的那一舖其實還贏得回來。
+把觸發條件收緊（有人剩 ≤ 4 張、而且我落後 3 手）之後兩邊都贏：對 Legacy +2134，
+對 greedy +161。⚠️ **調參只看一個對手會調歪。** 每個變體都要對強、弱兩個對手各量一次。
+
+**對照組不是 0 分。** 第一版的 benchmark 寫成「seat 0 對三個舊 bot，分數要為正」，
+結果舊 bot 自己打自己是 **−1562** —— 座位本身就有價值，四個一樣的 policy 不是零和硬幣。
+對照組必須是**舊 policy 坐同一個位子**。
+
+**標尺只複製 policy，不複製基礎建設。** `LegacyStrongBot` 共用 `Planner` / `Reader` /
+`Choice`（把 `private` 拿掉，測試檔 `@testable import`），只抄會變的那九十行決策。
+整份複製 430 行會抄錯，而且會爛掉。代價是一條規則：**那三個型別只能加欄位，
+不能改既有輸出**，否則標尺就不是當初出貨的那個 bot 了。
+為了證明抄得對，先寫一條 `legacyStillMatchesTheLivePolicy` 逐手比對，過了再改
+`StrongBot`，改完就刪掉那條。
+
+**調完要在沒調過的種子上再量一次。** 1…16 調參，17…32 驗收：對 Legacy 1368 → 2590，
+對 greedy 2421 → 3134。沒有這一步，分不出「變強」和「過擬合八副牌」。
+
+**殘局取樣搜尋量出來是退步，所以沒進去。** 16 個取樣、依 `left: N` 把未見牌發下去、
+每個打到底 —— 四個數字全降。問題在 playout policy：「每個人都出打得過的最小牌」
+永遠不會為了留 control 而 pass，所以評估是偏的，偏到比 planner 還不準。
+**搜尋要有用，playout policy 得先夠好**，而夠好的 policy 要夠快，就得先有比
+`PlayFinder` 快得多的產生器。這是之後 Expert 的第一塊，不是附加品。
+
+**腳本化的「人類剋星」量不到東西。** 寫了一個 ExploiterBot（一直出中等單張、
+留 K/A/2），對新舊兩個 policy 都輸 3500 分上下，差距在雜訊裡 —— 因為那個習慣本身
+不是好打法。改用一條單元測試釘住那個缺陷（舊 policy 回 nil、新的回 Ad）反而精確。
+量不到東西的 benchmark 不如不要，它只會讓測試變慢又讓人誤以為有保障。
+
+**截圖的 churn 不只在狀態列。** `extract_screenshots.py` 會忽略上面的時鐘，但不會忽略
+**底部那條 home indicator**：`01_lead` 和 `02_selected` 只差第 2829–2843 列那 15 列，
+內容完全一樣。這次是人工 `git checkout` 擋掉的。
+
 ## testflight-what-to-test — 測試重點帶這次的 commit
 
 **Xcode Cloud 在發佈前讀 `TestFlight/WhatToTest.<locale>.txt`，所以可以在
