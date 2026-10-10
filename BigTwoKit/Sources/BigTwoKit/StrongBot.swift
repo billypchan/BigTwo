@@ -3,14 +3,30 @@
 //  BigTwoKit — fair opponent. Own hand, public `left: N`, and cards already
 //  played. Never another seat's hole cards (those are on `BotContext` for Classic).
 //
-//  Plans the fewest plays that empty the hand. A hand is strong when its control
-//  (twos, aces, bombs, and anything already unbeatable) covers those plays, and
-//  weak when it does not. Strong takes the lead back. Weak keeps its control and
-//  only answers a nearby card — spending a two to beat a two is how the long
-//  hands in the recorded games lost the deal.
+//  Plans the fewest plays that empty the hand, then picks a gear:
+//
+//    attack  — control covers the plan: take the lead and run it out.
+//    contest — one play short: fight for the lead whenever the hand can still
+//              afford the stopper it spends (`Choice.affordsSpending`).
+//    defend  — far short: keep the stoppers, answer only with spare cards.
+//
+//  ⚠️ `contest` is the gear the bot that shipped did not have. It was weak /
+//  not-weak, and nearly every hand is weak at thirteen cards, so a human could win
+//  every trick with a king while the bot sat on an ace it was "saving". Spending a
+//  stopper is now an affordability question, not a mood.
+//
+//  On top of that: when the deal is going away (`losingRace`) the objective changes
+//  from fewest plays to fewest *points*. A card left in hand costs its rank and ten
+//  cards double it, so a lost deal is about unloading twos and aces, not about
+//  tidy play. Nothing in the old bot knew that.
 //
 
 import Foundation
+
+/// How hard the hand can push. Replaces the old weak / not-weak pair.
+enum Stance {
+  case attack, contest, defend
+}
 
 public enum StrongBot {
 
@@ -23,22 +39,66 @@ public enum StrongBot {
     let options = planner.choices(beating: c.table, mustInclude: c.mustInclude)
     guard !options.isEmpty else { return nil }
     if let out = options.first(where: { $0.play.count == hand.count }) { return out.play }
-    let weak = planner.weak(leading: c.leading)
-    if c.leading { return lead(options, counts, weak: weak) }
-    guard let table = c.table else { return lead(options, counts, weak: weak) }
-    return follow(options, counts, table, handCount: hand.count, weak: weak)
+    let stance = planner.stance(leading: c.leading)
+    let dumping = losingRace(handPlays: planner.plays, counts: counts, handCount: hand.count)
+    guard let table = c.table else {
+      return lead(options, counts, stance: stance, dumping: dumping)
+    }
+    return follow(options, counts, table, handCount: hand.count,
+                  stance: stance, dumping: dumping)
+  }
+
+  // MARK: - Points
+
+  /// What this play would have cost if it had stayed in the hand at the end.
+  static func penalty(_ play: Play) -> Int {
+    play.cards.reduce(0) { $0 + $1.rank.penalty }
+  }
+
+  /// All `left: N` says about a seat, in plays. Three cards is about one play.
+  static func estimatedPlays(_ count: Int) -> Int { (count + 2) / 3 }
+
+  /// Somebody is close to out and the bot is further behind than it can catch up.
+  /// Nobody being short yet is not a lost deal, whatever the plan lengths say —
+  /// a thirteen-card hand of singles would otherwise start the deal in dumping mode.
+  /// ⚠️ Both numbers are tight on purpose. Giving up early is expensive against a
+  /// weak opponent, who hands the lead back and lets a bot that kept playing win the
+  /// deal after all: over 16 seeded games, four cards and three plays scores 2693
+  /// against greedy seats, six and two scores 2018, and never dumping scores 2798 —
+  /// but never dumping drops from 1622 to 1280 against a real opponent, which is the
+  /// one that matters. These two values beat the shipped policy on both.
+  static func losingRace(handPlays: Int, counts: [Int], handCount: Int) -> Bool {
+    guard let best = counts.min(), best <= 4 else { return false }
+    if best <= 2 && handCount >= 5 { return true }
+    return estimatedPlays(best) + 3 <= handPlays
+  }
+
+  /// Cheapest play — or, when the deal is going away, the one that unloads the most
+  /// points. Same candidates either way; only the objective changes.
+  static func pick(_ options: [Choice], dumping: Bool) -> Play? {
+    guard dumping else { return shed(options) }
+    return options.min { dumpsBetter($0, $1) }?.play
+  }
+
+  static func dumpsBetter(_ a: Choice, _ b: Choice) -> Bool {
+    let pa = penalty(a.play), pb = penalty(b.play)
+    if pa != pb { return pa > pb }
+    return weaker(a.play, b.play)
   }
 
   // MARK: - Lead
 
   /// A two is control even when nothing beats it — leading it first is how a
   /// "strong" bot got weaker than greedy.
-  static func lead(_ options: [Choice], _ counts: [Int], weak: Bool) -> Play? {
+  static func lead(_ options: [Choice], _ counts: [Int], stance: Stance, dumping: Bool) -> Play? {
     let short = counts.contains { $0 <= 2 }
-    return options.min { betterLead($0, $1, counts: counts, short: short, weak: weak) }?.play
+    return options.min {
+      betterLead($0, $1, counts: counts, short: short, stance: stance, dumping: dumping)
+    }?.play
   }
 
-  static func betterLead(_ a: Choice, _ b: Choice, counts: [Int], short: Bool, weak: Bool) -> Bool {
+  static func betterLead(_ a: Choice, _ b: Choice, counts: [Int], short: Bool,
+                         stance: Stance, dumping: Bool) -> Bool {
     if a.opensSweep != b.opensSweep { return a.opensSweep }
     if a.opensSweep && b.opensSweep {
       if a.play.count != b.play.count { return a.play.count > b.play.count }
@@ -50,15 +110,20 @@ public enum StrongBot {
       if a.control != b.control { return !a.control }
       if a.play.count != b.play.count { return a.play.count > b.play.count }
     }
+    // A seat on one card goes out the moment it gets a turn, and nothing they cannot
+    // answer costs anything to lead. `covers` only sees plays longer than their hand.
+    if counts.contains(1), a.unbeatable != b.unbeatable { return a.unbeatable }
     if a.damage != b.damage { return a.damage < b.damage }
     // Someone on one card wins the moment they play it. A low single hands them the deal.
     if counts.contains(1), a.play.count == 1, b.play.count == 1 {
       return stronger(a.play, b.play)
     }
-    if a.control != b.control { return !a.control }
-    // A weak hand keeps a king pair as a stopper and leads a dead single instead.
-    if weak, highGroup(a.play) != highGroup(b.play) { return !highGroup(a.play) }
+    // Holding control back is only worth it while the lead is still worth winning.
+    if !dumping, a.control != b.control { return !a.control }
+    // A hand short of control keeps a king pair as a stopper and leads a dead single.
+    if stance != .attack, highGroup(a.play) != highGroup(b.play) { return !highGroup(a.play) }
     if a.play.count != b.play.count { return a.play.count > b.play.count }
+    if dumping, penalty(a.play) != penalty(b.play) { return penalty(a.play) > penalty(b.play) }
     if short { return stronger(a.play, b.play) }
     return weaker(a.play, b.play)
   }
@@ -66,7 +131,7 @@ public enum StrongBot {
   // MARK: - Follow
 
   static func follow(_ options: [Choice], _ counts: [Int], _ table: Play,
-                     handCount: Int, weak: Bool) -> Play? {
+                     handCount: Int, stance: Stance, dumping: Bool) -> Play? {
     if let sweep = shed(options.filter(\.restSweeps)) { return sweep }
     let oneLeft = counts.contains(1)
     if counts.contains(table.count) || oneLeft {
@@ -78,38 +143,60 @@ public enum StrongBot {
     // A five that is already one play of the plan dumps five cards and takes the
     // lead. Passing on it, bomb included, is how a straight runs out.
     if table.count == 5,
-       let five = shed(options.filter { $0.play.count == 5 && $0.damage <= 0 }) {
+       let five = pick(options.filter { $0.play.count == 5 && $0.damage <= 0 }, dumping: dumping) {
       return five
     }
-    if let free = shed(options.filter { casual($0, table, weak: weak) && $0.damage == 0 }) {
-      return free
-    }
+    let spare = options.filter { spareCard($0, table, stance: stance, dumping: dumping) }
+    if let free = pick(spare.filter { $0.damage == 0 }, dumping: dumping) { return free }
     // Breaking one pair still sheds a card. Passing here is how a lead runs away.
-    if let cracked = shed(options.filter { casual($0, table, weak: weak) && $0.damage <= 1 }) {
-      return cracked
+    if let cracked = pick(spare.filter { $0.damage <= 1 }, dumping: dumping) { return cracked }
+
+    // ⚠️ The gear the shipped bot did not have. A stopper is worth spending when what
+    // is left still covers what is left to play — otherwise every trick goes to whoever
+    // holds a king, and the bot finishes with the expensive cards in its hand.
+    if (stance != .defend || dumping) && worthAStopper(table) {
+      let affordable = options.filter { ($0.control || $0.unbeatable) && $0.affordsSpending }
+      if let clean = pick(affordable.filter { $0.damage == 0 }, dumping: dumping) { return clean }
+      if let split = pick(affordable.filter { $0.damage <= 1 }, dumping: dumping) { return split }
     }
-    guard worthControl(table, counts, handCount: handCount, weak: weak) else { return nil }
-    if let clean = shed(options.filter { $0.damage == 0 }) { return clean }
+
+    guard worthControl(table, counts, handCount: handCount,
+                       stance: stance, dumping: dumping) else { return nil }
+    if let clean = pick(options.filter { $0.damage == 0 }, dumping: dumping) { return clean }
     // A strong hand will split one pair of twos to take a king back. The other two stays.
-    if !weak, let split = shed(options.filter { $0.damage <= 1 }) { return split }
-    if counts.contains(where: { $0 <= 2 }) || oneLeft || handCount <= 2 { return shed(options) }
+    if stance == .attack || dumping,
+       let split = pick(options.filter { $0.damage <= 1 }, dumping: dumping) { return split }
+    if counts.contains(where: { $0 <= 2 }) || oneLeft || handCount <= 2 {
+      return pick(options, dumping: dumping)
+    }
     return nil
   }
 
-  /// A weak hand answers a single only when the step is small. A king over a
-  /// four, or a two over a two, gives the trick away for nothing.
-  static func casual(_ choice: Choice, _ table: Play, weak: Bool) -> Bool {
+  /// A card the hand can throw at this trick without giving anything up: not control,
+  /// and — unless the hand is attacking or already unloading points — not a big jump.
+  /// A king over a four is a stopper spent on a cheap trick.
+  static func spareCard(_ choice: Choice, _ table: Play, stance: Stance, dumping: Bool) -> Bool {
     if choice.control { return false }
-    guard weak, choice.play.count == 1,
+    if stance == .attack || dumping { return true }
+    guard choice.play.count == 1,
           let card = choice.play.cards.first, let shown = table.cards.first else { return true }
     return card.rank.rawValue - shown.rank.rawValue <= 5
   }
 
-  /// Endgame, a short opponent, or a strong hand facing a king / bomb.
-  /// A long weak hand does not spend its two on a high card.
-  static func worthControl(_ table: Play, _ counts: [Int], handCount: Int, weak: Bool) -> Bool {
+  /// A low single is somebody else's problem — spending a stopper on it buys a trick
+  /// the next seat would have taken anyway, and the lead comes back either way.
+  static func worthAStopper(_ table: Play) -> Bool {
+    guard table.count == 1, let card = table.cards.first else { return true }
+    return card.rank >= .ten
+  }
+
+  /// Endgame, a short opponent, a lost deal, or a hand with the control to spare.
+  /// A hand that is far short of control does not spend its two on a high card.
+  static func worthControl(_ table: Play, _ counts: [Int], handCount: Int,
+                           stance: Stance, dumping: Bool) -> Bool {
     if handCount <= 3 || counts.contains(where: { $0 <= 2 }) { return true }
-    if weak { return false }
+    if dumping { return true }
+    if stance == .defend { return false }
     return tableIsHigh(table)
   }
 
@@ -192,6 +279,11 @@ public enum StrongBot {
 
 // MARK: - Plan
 
+// `Choice`, `Planner` and `Reader` are internal, not private: `LegacyStrongBot` in the
+// test target is the old *policy* measured against the new one, and it shares this
+// infrastructure. Keep what they already return stable — add fields, don't redefine —
+// or the yardstick stops being the bot that shipped.
+
 /// Fewest legal plays that partition the hand. 13 cards → 8192 subsets.
 struct Choice {
   let play: Play
@@ -199,11 +291,17 @@ struct Choice {
   let unbeatable: Bool
   let control: Bool
   let restSweeps: Bool
+  /// Control points left, and plays still needed, once this one is gone.
+  let restPower: Int
+  let restPlays: Int
   /// Unbeatable, and every play after it is too, so the lead empties the hand.
   var opensSweep: Bool { unbeatable && restSweeps }
+  /// Spending this stopper still leaves the rest of the hand covered. Winning the
+  /// trick hands the lead back, which is worth one play — that is the `+ 1`.
+  var affordsSpending: Bool { restPower + 1 >= restPlays }
 }
 
-private struct Planner {
+struct Planner {
   let full: Int
   let dp: [Int]
   let sweep: [Bool]
@@ -219,10 +317,29 @@ private struct Planner {
     let power: Int
   }
 
+  /// Plays in the shortest partition of the whole hand.
+  var plays: Int { dp[full] }
+
   /// Leading spends one play for free, so the same cards are less weak with the lead.
+  /// Kept for `LegacyStrongBot`, the yardstick in the test target.
   func weak(leading: Bool) -> Bool {
     let budget = power[full] + (leading ? 1 : 0)
     return budget < dp[full]
+  }
+
+  /// `attack` is the old `!weak`. `contest` is within two plays of covering the plan —
+  /// close enough to fight for the lead when the hand can afford the stopper it spends.
+  /// ⚠️ The two is measured, not chosen. Seat 0 over 16 seeded games, against three
+  /// of the shipped policy (which scores -512 there) and against three greedy seats
+  /// (2532): one short 1222 / 2954, two short 1622 / 2693, three short 1702 / 2416.
+  /// Two is the only one that beats the shipped policy on both — a wider gear keeps
+  /// buying tricks from an opponent who was going to give them away anyway.
+  func stance(leading: Bool) -> Stance {
+    let budget = power[full] + (leading ? 1 : 0)
+    let need = dp[full]
+    if budget >= need { return .attack }
+    if budget + 2 >= need { return .contest }
+    return .defend
   }
 
   init(hand: [Card], rules: RuleSet, unseen: [Card], maxHold: Int) {
@@ -280,7 +397,9 @@ private struct Planner {
                     damage: dp[rest] - (base - 1),
                     unbeatable: tag.unbeatable,
                     control: tag.control,
-                    restSweeps: sweep[rest])
+                    restSweeps: sweep[rest],
+                    restPower: power[rest],
+                    restPlays: dp[rest])
     }
   }
 }
@@ -288,7 +407,7 @@ private struct Planner {
 // MARK: - Cards still out
 
 /// Worst case: one opponent holds any subset of the unseen cards up to `maxHold`.
-private struct Reader {
+struct Reader {
   let cards: Set<Card>
   let rankCount: [Int]
   let maxHold: Int

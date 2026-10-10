@@ -121,6 +121,34 @@ struct StrongBotTests {
     #expect(choice(try context("3c 5d 7h 9s Kc Kd 2c")) == "3c")
   }
 
+  // MARK: - The contest gear
+
+  // ⚠️ These four are the whole point of the 1.4 bot. The policy that shipped was
+  // weak / not-weak, and nearly every hand is weak at six cards, so it passed here
+  // and a human won every trick with a king. Spending a stopper is an affordability
+  // question now: what is left has to cover what is left to play.
+
+  @Test func spendsAnAceOnAKingWhenTheRestOfTheHandIsStillCovered() throws {
+    let c = try context("3c 3d 4h 4s Ac Ad", table: "Ks")
+    #expect(LegacyStrongBot.choose(c) == nil)  // the shipped bot folded
+    #expect(choice(c) == "Ad")  // the cheaper of the two aces
+  }
+
+  @Test func leavesALowSingleAloneRatherThanSpendAnAceOnIt() throws {
+    #expect(choice(try context("3c 3d 4h 4s Ac Ad", table: "5d")) == nil)
+  }
+
+  // MARK: - Points
+
+  @Test func unloadsItsBiggestCardWhenTheDealIsGoingAway() throws {
+    let c = try context("3d 5c 7h 9s Qd 2c", others: [2, 13, 13])
+    #expect(choice(c) == "2c")
+  }
+
+  @Test func doesNotUnloadWhileEverybodyStillHoldsThirteen() throws {
+    #expect(choice(try context("3d 5c 7h 9s Qd 2c")) == "3d")
+  }
+
   /// One Strong seat against three greedy seats — they fight each other, so 3v1
   /// would let greedy win. Strong should still come out ahead on its own score.
   @MainActor @Test func oneStrongBotOutscoresThreeGreedyBots() {
