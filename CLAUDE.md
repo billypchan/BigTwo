@@ -96,7 +96,7 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   navy title bar, white body, pill buttons) — never iOS sheets. They are modal: a clear
   layer swallows taps outside them. Preferences keep the Palm wording ("Auto pass",
   "Enable autopass for 5-card turn", "Use Hong Kong Rule Set", "Game speed: Slow | Medium |
-  Fast", "Sort cards by: Rank | Suit", "Bots: Classic | Strong").
+  Fast", "Sort cards by: Rank | Suit", "Bots: Classic | Strong | Expert").
 - Table green is a **flat** `#00cc00`, as on the Palm screen. No shadows (the menu's hard
   2px offset is the one exception — it is the Palm's), no blur, no glass.
 - Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
@@ -161,7 +161,7 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
 - The bots keep the Palm habits on purpose, including the two cheats: they **see every
   hand** (`BotContext.hands`) and a bot **lets a fellow bot's K/A/2 single stand**. Both
   are in `BotPlayerTests`; turning either off changes the game's difficulty.
-- **Strong bots** (`StrongBot`, default on, Preferences → Bots: Classic | Strong) do
+- **Strong bots** (`StrongBot`, the default, Preferences → Bots: Classic | Strong | Expert) do
   **not** peek. They see their own hand, `left: N`, and cards already played
   (`BotContext.discarded` — `BigTwoGame` appends each play). Reading another seat's
   cards is the Classic peek; `ignoresOtherPlayersHoleCards` fails if Strong starts.
@@ -211,7 +211,49 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   it. A search here needs a playout policy good enough to be worth sampling, which needs
   a move generator far faster than `PlayFinder` — that is the first piece of any future
   Expert level, not an add-on.
-- `Game.botChoice` picks Strong or Classic from `preferences.strongBots`.
+- `Game.botChoice` picks the policy from `preferences.botLevel`
+  (`classic | strong | expert`). ⚠️ `strongBots` is still written and kept in step with
+  it — shipped user data, and an older build or an un-updated watch reads only that key.
+
+## Expert
+
+Preferences → Bots: **Expert** is Strong's policy with `Belief`: cards left, cards
+played and every pass this deal (`BotContext.history`), turned into "how likely is each
+seat to hold each unseen card". It never sees a hole card.
+
+It changes **one** decision, and that is not a simplification — it is the measured
+result. Strong decides whether a single is spare with the distance between the two
+cards: five ranks or less and it will spend it, otherwise it would rather pass. That
+rule throws tricks away (a nine over a three was never a stopper) and hoards cards that
+stopped being stoppers four tricks ago. Expert asks whether the card would actually
+hold the lead, and spends everything that would not.
+
+| seat 0, 24 seeds each | Strong | Expert |
+| --- | --- | --- |
+| vs three Strong | -829 | **-597** |
+| vs three Strong, held-out seeds | -601 | **+5** |
+| vs three greedy | 4496 | **4990** |
+| vs three greedy, held-out seeds | 3048 | **3502** |
+
+- ⚠️ **Three other uses of the belief were built and measured away.** Feeding it to
+  `Choice.unbeatable` changed **1 decision in 3552** — a single's survival is near 0 or
+  near 1, because every unseen card is in *somebody's* hand, so "can anyone beat this"
+  has almost no middle and `Reader`'s worst case was already the right answer. Feeding
+  it to `Planner.power` was slightly worse. Leading at a nearly-out seat by what that
+  seat probably cannot answer was worse on all four duels (-1237/-828/3655/2596). The
+  belief only earns its place where a *hard-coded rank distance* used to stand.
+- ⚠️ **Deleting that rank rule without the belief is not the same thing** — it scores
+  -799/-837/4990/3502, better against greedy but worse than Strong on held-out seeds.
+  What the reading adds is keeping the card that would have held the lead.
+- `Belief.worthKeeping` is 0.5 and the duels are identical anywhere from 0.25 to 0.80,
+  so there is nothing fitted in it.
+- Cost: `ExpertBot.choose` is 0.663 ms against Strong's 0.542 ms on a thirteen-card hand
+  (release), and the belief itself is 0.019 ms. No sampling anywhere — it is closed
+  form, so a position always gives the same answer and UI tests stay reproducible.
+- **Strong stays the default.** Expert is a third pill on the phone and the watch;
+  ⚠️ the watch's Bots row is below the fold and a watchOS test cannot scroll, so
+  `testPreferencesOKReturnsToTheTable` asserting `pref_bots_Expert` exists is the only
+  thing that says the pill reached the watch.
 
 ## The move generator
 
@@ -531,7 +573,7 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit                  # 90 tests, ~57s (Strong plans every turn)
+swift test --package-path BigTwoKit                  # 100 tests, ~99s (Strong plans every turn)
 swift test --package-path BigTwoKit --filter PlayTests
 ```
 
@@ -736,7 +778,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 90 kit tests
+Single-player against three bots is complete and runs on the simulator; 100 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is

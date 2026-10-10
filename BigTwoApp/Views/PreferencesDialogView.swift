@@ -27,8 +27,9 @@ struct PreferencesDialogView: View {
           .accessibilityIdentifier("pref_hongKong")
         HStack(spacing: 6 * u) {
           Text(L10n.string("Bots:")).font(.palm(13 * u))
-          PalmPushButtonsView(options: [(false, "Classic"), (true, "Strong")],
-                              selection: $preferences.strongBots, idPrefix: "pref_bots")
+          PalmPushButtonsView(
+            options: [(BotLevel.classic, "Classic"), (.strong, "Strong"), (.expert, "Expert")],
+            selection: $preferences.botLevel, idPrefix: "pref_bots")
         }
         HStack(spacing: 6 * u) {
           Text(L10n.string("Game speed:")).font(.palm(13 * u))

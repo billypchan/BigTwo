@@ -157,6 +157,12 @@ final class WatchGameUITests: XCTestCase {
     let autopass = app.descendants(matching: .any)["pref_autopass"]
     XCTAssertTrue(autopass.waitForExistence(timeout: 20), "the Preferences page never came up")
 
+    // ⚠️ The Bots row is below the fold and a watchOS test cannot scroll, so the
+    // screenshot can never show it — this is the only thing that says the third pill
+    // reached the watch at all. `exists` is true below the fold; tapping would not be.
+    XCTAssertTrue(app.descendants(matching: .any)["pref_bots_Expert"].exists,
+                  "the watch has the same three bot levels as the phone")
+
     let ok = app.buttons["pref_ok"]
     XCTAssertTrue(ok.waitForExistence(timeout: 10), "Preferences has no OK button")
     ok.tap()
