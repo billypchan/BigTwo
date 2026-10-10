@@ -53,8 +53,9 @@ struct WatchPreferencesView: View {
         check("Use Hong Kong Rule Set", isOn: $game.preferences.hongKong, id: "pref_hongKong")
 
         group("Bots:") {
-          WatchPushButtonsView(options: [(false, "Classic"), (true, "Strong")],
-                               selection: $game.preferences.strongBots, idPrefix: "pref_bots")
+          WatchPushButtonsView(
+            options: [(BotLevel.classic, "Classic"), (.strong, "Strong"), (.expert, "Expert")],
+            selection: $game.preferences.botLevel, idPrefix: "pref_bots")
         }
         group("Game speed:") {
           WatchPushButtonsView(

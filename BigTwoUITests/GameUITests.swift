@@ -270,6 +270,28 @@ final class GameUITests: XCTestCase {
     XCTAssertTrue(app.buttons["pref_bots_Classic"].isSelected)
   }
 
+  /// ⚠️ Expert is a third pill, not a replacement, and the setting it saves is a new
+  /// key — an old build only wrote Classic/Strong. If this ever fails after a relaunch,
+  /// check `Preferences.botLevel`'s migration before touching the view.
+  func testPreferences_expertIsAThirdBotLevelAndSticks() {
+    app.launch()
+    openPreferences()
+    let expert = app.buttons["pref_bots_Expert"]
+    XCTAssertTrue(expert.waitForExistence(timeout: 5))
+    XCTAssertFalse(expert.isSelected, "Strong stays the default")
+    expert.tap()
+    waitFor(expert, selected: true)
+    app.buttons["pref_ok"].tap()
+
+    app.terminate()
+    app = .bigTwo(["-keepPreferences", "YES"])
+    app.launch()
+    openPreferences()
+    XCTAssertTrue(app.buttons["pref_bots_Expert"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["pref_bots_Expert"].isSelected)
+    XCTAssertFalse(app.buttons["pref_bots_Strong"].isSelected)
+  }
+
   func testNames_customNameShowsOnTheTableAndSurvivesARelaunch() {
     app.launch()
     XCTAssertTrue(app.element("name_1").waitForExistence(timeout: 10))

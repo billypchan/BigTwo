@@ -194,7 +194,7 @@ struct PreferencesStoreTests {
     #expect(store.load() == Preferences())
     let changed = Preferences(hongKong: true, autopass: false, autopassFiveCard: true,
                               showCardsLeft: false, gameSpeed: .fast, sortBySuit: true,
-                              strongBots: false, playerNames: ["", "Mei", "", ""])
+                              botLevel: .classic, playerNames: ["", "Mei", "", ""])
     store.save(changed)
     #expect(store.load() == changed)
   }
@@ -207,7 +207,24 @@ struct PreferencesStoreTests {
     #expect(prefs.gameSpeed == .medium)
     #expect(prefs.autopass == Preferences().autopass)
     #expect(prefs.strongBots == Preferences().strongBots)
+    #expect(prefs.botLevel == Preferences().botLevel)
     #expect(prefs.playerNames.isEmpty, "old JSON without playerNames must not reset")
+  }
+
+  /// ⚠️ Shipped user data: 1.3 only wrote `strongBots`, and that setting has to survive
+  /// the update both ways — a phone that goes back still reads what Expert was set to.
+  @Test func anOldBotSettingBecomesABotLevel() throws {
+    let defaults = try freshDefaults()
+    defaults.set(Data(#"{"strongBots":false}"#.utf8), forKey: PreferencesStore.key)
+    #expect(PreferencesStore(defaults: defaults).load().botLevel == .classic)
+    defaults.set(Data(#"{"strongBots":true}"#.utf8), forKey: PreferencesStore.key)
+    #expect(PreferencesStore(defaults: defaults).load().botLevel == .strong)
+
+    var prefs = Preferences()
+    prefs.botLevel = .expert
+    #expect(prefs.strongBots, "an old build reads this and must not fall back to Classic")
+    prefs.botLevel = .classic
+    #expect(!prefs.strongBots)
   }
 
   @Test func corruptDataFallsBackToDefaults() throws {
