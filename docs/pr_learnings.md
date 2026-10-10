@@ -13,6 +13,31 @@ and the evidence.
 
 ---
 
+## chinese-help-copy — 中文說明重寫
+
+**八個語言的鍵都齊了，檔案照樣可以是壞的。** `L10n.string` 的防線只擋「鍵不見了」：
+`plutil -lint` 過、鍵集合跟 en 一模一樣、沒有空字串 —— 中文說明還是讀得很生硬。
+寫完翻譯要真的把那一頁看一次，不能只驗鍵。
+
+**同一個檔案裡的量詞要對得上。** zh-Hant 是 game = 局、deal = 舖（`This game` = 本局，
+`Deal %d/%d` = 第 %d/%d 舖），但說明寫成「一場打十舖」，憑空多一個「場」。
+zh-Hans 是 game = 盤、deal = 局。改字串前先把同檔案已經定下來的詞找出來。
+
+**原文的意思不能在中文裡掉。** `Match the play on the table with a higher one` 原本只
+譯成「要出更大的牌」，牌型要相同這一半不見了 —— 規則上最要緊的那一半。
+`Four of a kind by the four` 譯成「四條比那四張」，中文讀起來不知道在比什麼，是比點數。
+
+**按鈕名字在內文裡要看得出是按鈕。** 「出牌打出所選的牌」自己結巴；加了引號
+（zh-Hant 用「」，zh-Hans 用 “”）之後「出牌」「過」一眼就知道是螢幕上那兩顆。
+`.strings` 吃這兩種引號，只有 ASCII 的 `"` 要跳脫。
+
+**中英之間要有空格。** 「由Bill Chan改編」在兩個中文檔裡都是這樣，About 那兩行看起來
+像漏字。
+
+**換語言拍一張就看得到。** `-testLanguage zh-Hant` 加 `--force` 抽到暫存目錄，
+不會動到 repo 裡那套英文截圖。`testHelp_…` 的字串斷言本來就包在
+`uiTestLanguage == "en"` 裡，所以換語言跑不會假失敗。
+
 ## testflight-what-to-test — 測試重點帶這次的 commit
 
 **Xcode Cloud 在發佈前讀 `TestFlight/WhatToTest.<locale>.txt`，所以可以在
