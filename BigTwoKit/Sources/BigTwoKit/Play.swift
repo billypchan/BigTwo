@@ -87,6 +87,15 @@ public struct Play: Equatable, Sendable {
     cards = sorted
   }
 
+  /// Straight from `MoveGen`, which has already worked out the kind and the strength.
+  /// ⚠️ Nothing is checked here, and `cards` must already be ascending. The generator is
+  /// the only caller, and `MoveGenTests` checks every move it makes against `PlayFinder`.
+  init(trusted cards: [Card], kind: PlayKind, strength: Int) {
+    self.cards = cards
+    self.kind = kind
+    self.strength = strength
+  }
+
   public var count: Int { cards.count }
   public var label: String { cards.map(\.label).joined(separator: " ") }
 
@@ -173,12 +182,11 @@ public enum PlayFinder {
     }
   }
 
-  /// Stops at the first answer — autopass asks this for every seat on every turn.
+  /// Autopass asks this for every seat on every turn, so it goes through `MoveGen`
+  /// rather than building a `Play` for all C(13, 5) five-card combinations.
   public static func canBeat(_ target: Play?, with hand: [Card], rules: RuleSet) -> Bool {
     guard let target else { return !hand.isEmpty }
-    return combinations(hand, target.count).contains {
-      Play($0, rules: rules).map { $0.beats(target) } ?? false
-    }
+    return MoveGen.canBeat(MoveTarget(target), in: CardSet(hand), rules: rules)
   }
 
   /// All `k`-element combinations, in index order.

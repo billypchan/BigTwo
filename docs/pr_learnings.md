@@ -13,6 +13,42 @@ and the evidence.
 
 ---
 
+## bitmask-move-generator — 把牌型列舉換成 52 位元
+
+**`Card.id` 本來就是全域大小順序**（`rank * 4 + suit`），所以一手牌就是一個
+`UInt64`、最大張就是最高位元，不需要排序也不需要比較器。這件事在 `Card.swift`
+裡躺了很久沒被用到。
+
+**真正貴的不是列舉，是 `Play.init`。** `PlayFinder.plays` 會對 C(13,5)=1287 個五張組合
+各建一次 `Play` —— 每次都 `sorted()`、建 `Dictionary` 分組、建 `Set` 看同花。
+`MoveGen` 反過來做：先用位元找出**真的存在**的牌型（同點數的組、同花色的組、
+十個順子窗），kind 和 strength 當場算出來，一個 `Play` 都不建。
+release 量到 **2.0056 ms → 0.0023 ms**（約 870×）。
+
+⚠️ **`min(by:)` 會保留第一個最小值，所以列舉的順序會改變 bot 的選擇。**
+這是這個 PR 最容易踩的地雷：`Planner` 把列舉結果餵給 DP，再餵給
+`options.min { betterLead(...) }`，兩個一樣好的選擇誰先出現就選誰。
+`MoveGen` 是按牌型分段產生的，順序跟舊的 `combinations` 字典序不同，直接換上去
+benchmark 分數就會變，而且看起來像「改壞了」。解法是 `MoveGen.lexBefore`：
+比較兩個 mask **最低的相異位元**，誰有誰在前 —— 這正好等於索引序列的字典序。
+排回去之後三個 benchmark 分數一位數都沒變（-719 / +1050 / -1562 vs -481），
+那才是「等價重構」的證據。
+
+**對照測試要比到 kind 和 strength，而且要能讀。** 第一版用
+`Dictionary(uniqueKeysWithValues:)` 做比較，故意弄壞產生器（拿掉同花順的去重）
+之後它不是 fail 而是 **crash**（Duplicate values for key），整個 run 死掉也看不出是哪一條。
+改成「排序過的字串陣列」，同一個 bug 就變成一個看得懂的 diff。
+
+**順手補的**：`Reader.windows` / `Reader.top` 本來跟產生器各有一份順子表，
+現在都指向 `MoveGen.straightRanks`，一份表。
+
+**沒做的**：`PlayFinder.plays` 沒換。它的排序是 `(count, kind, strength)`，
+`sorted` 不穩定，而同 kind 同 strength 的五張牌不只一組（例如同樣三條的葫蘆配不同對子），
+換掉輸入順序就可能換掉 `BotPlayer` 的選擇，`palmBotsOutscoreTheGreedyBot` 會跟著動。
+這個 PR 的全部價值在於「分數完全沒變」，所以不碰。
+
+---
+
 ## stronger-strong-bot — Strong 太好打，修的是哪一處
 
 **一個布林的姿態判斷，是整個弱點的來源。** `Planner.weak(leading:)` 是
