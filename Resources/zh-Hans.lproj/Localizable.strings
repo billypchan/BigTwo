@@ -66,8 +66,8 @@
 "Export" = "导出";
 "About Big Two" = "关于大老二";
 "Big Two %@" = "大老二 %@";
-"Remade for iPhone by Bill Chan, 2026." = "2026 年由Bill Chan改编为 iPhone 版。";
-"After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "改编自 1999 年 Woo Kok Tong 与Bill Chan的掌上机游戏。";
+"Remade for iPhone by Bill Chan, 2026." = "2026 年由 Bill Chan 改编为 iPhone 版。";
+"After the 1999 handheld game by Woo Kok Tong and Bill Chan." = "改编自 1999 年 Woo Kok Tong 与 Bill Chan 的掌上机游戏。";
 "Share this App" = "分享此 App";
 "Rate this App" = "为此 App 评分";
 "Report an Issue" = "报告问题";
@@ -99,18 +99,18 @@
 
 /* Help */
 "Help" = "说明";
-"Tap a card to pick it. Tap it again to put it back." = "点一下选牌，再点一下取消。";
-"Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "点两下选出该点数的对子或三条；同一花色有五张或以上就全选。";
-"Hold a card to take every card of that rank." = "按住一张牌，选出该点数的全部。";
-"Lead and Play send the cards you picked. Pass stays out. You cannot pass a lead. The empty box clears the pick." = "出牌打出选中的牌。过就不出。先出时不能过。空格取消选择。";
-"The sort button shows ♠ or 2: that is the order a tap switches to." = "排序按钮显示 ♠ 或 2，那是点一下之后的排法。";
-"The player with the 3♦ leads the first deal. Match the play on the table with a higher one, or pass." = "持有 3♦ 的人先出第一局。要出更大的牌，或者过。";
-"Two or three of a kind: higher rank wins, then the highest suit among them." = "对子或三条：点数大的赢，再比其中最大的花色。";
-"Five cards, from low to high: straight, flush, full house, four of a kind, straight flush." = "五张由小到大：顺子、同花、葫芦、四条、同花顺。";
-"A straight runs A2345, then 23456, up to TJQKA. JQKA2 is not a straight." = "顺子由 A2345、23456 排到 TJQKA。JQKA2 不是顺子。";
-"A straight is ranked by its highest card, then that card's suit. In A2345 the high card is the 5." = "顺子比最大的那张，再比它的花色。A2345 的最大牌是 5。";
-"A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "同花比最大的一张，再比它的花色。葫芦比三条。四条比那四张。";
-"Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "剩牌按点数计：3 是 1，直到 2 是 13。剩十张或以上加倍。胜者取三家的总和。";
-"A game is ten deals." = "一盘打十局。";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "港式规则从下一局起：上一局胜者先出，23456 是最大的顺子。";
-"Enter your name. The dark row is you. Leave a row blank to keep its name." = "输入你的名字。深色那行是你。留空就用原来的名字。";
+"Tap a card to pick it. Tap it again to put it back." = "点一下选一张牌，再点一下就放回。";
+"Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "点两下选同点数的对子或三条；若同一花色手上有五张或以上，就选整个花色。";
+"Hold a card to take every card of that rank." = "长按一张牌，选出手上所有同点数的牌。";
+"Lead and Play send the cards you picked. Pass stays out. You cannot pass a lead. The empty box clears the pick." = "“出牌”送出已选的牌；“过”就是不跟，但先出时不能过。空白方格清除选择。";
+"The sort button shows ♠ or 2: that is the order a tap switches to." = "排序按钮上的 ♠ 或 2，是点一下之后会换成的排法。";
+"The player with the 3♦ leads the first deal. Match the play on the table with a higher one, or pass." = "拿到 3♦ 的人第一局先出。之后要用相同牌型、而且更大的牌压过桌面的牌，否则就过。";
+"Two or three of a kind: higher rank wins, then the highest suit among them." = "对子、三条：先比点数，点数相同再比其中最大的花色。";
+"Five cards, from low to high: straight, flush, full house, four of a kind, straight flush." = "五张牌由小到大：顺子、同花、葫芦、四条、同花顺。";
+"A straight runs A2345, then 23456, up to TJQKA. JQKA2 is not a straight." = "顺子由小到大是 A2345、23456，一直到 TJQKA；JQKA2 不算顺子。";
+"A straight is ranked by its highest card, then that card's suit. In A2345 the high card is the 5." = "顺子比最大的那一张，点数相同再比它的花色。A2345 的最大牌是 5。";
+"A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "同花比最大的一张，再比它的花色；葫芦比三条的点数；四条比那四张的点数。";
+"Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "手上每剩一张牌就按点数扣分：3 计 1 分，依次到 2 计 13 分；剩十张或以上双倍。赢家收齐其余三家的分数。";
+"A game is ten deals." = "一盘十局。";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "用港式规则，从下一局起：上一局的赢家先出，23456 成为最大的顺子。";
+"Enter your name. The dark row is you. Leave a row blank to keep its name." = "输入你的名字。深色那行是你。留空就保留原来的名字。";
