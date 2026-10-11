@@ -36,7 +36,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 
 | Path | Contents |
 | --- | --- |
-| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
+| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `CardSet` (a hand as 52 bits, `MoveGen`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `AdUnits.swift` + `AdConsent.swift` (AdMob), `Views/` |
 | `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
 | `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase), `PreferenceSync.swift` (phone ↔ watch settings) |
@@ -212,6 +212,35 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   a move generator far faster than `PlayFinder` — that is the first piece of any future
   Expert level, not an add-on.
 - `Game.botChoice` picks Strong or Classic from `preferences.strongBots`.
+
+## The move generator
+
+`Card.id` is `rank * 4 + suit`, which is both 0…51 **and** the one Big Two ordering, so
+a hand is a `UInt64` (`CardSet`) and the highest card is the highest set bit. `MoveGen`
+walks the groups that can actually make a play — the four cards of each rank, the
+thirteen of each suit, the ten straight windows — and works out the kind and strength
+itself, instead of building a `Play` for all C(13, 5) five-card combinations.
+Release: a full enumeration of a thirteen-card hand is **0.0023 ms**, against
+**2.0056 ms** for `PlayFinder.plays`; `StrongBot.choose` went 2.566 ms → **0.539 ms**.
+
+- ⚠️ **The rules live in `Play.swift` and only there.** `MoveGen` is a faster way to ask
+  the same question, never a second definition of the answer. `MoveGenTests` holds the
+  two against each other on random hands, both rule sets, with and without a target —
+  if they ever disagree, `PlayFinder` is right.
+- ⚠️ **Enumeration order changes which play a bot picks.** `Planner` feeds its moves to
+  a DP and then to `options.min { betterLead… }`, and `min(by:)` keeps the *first* of
+  several equal candidates. `MoveGen` emits by kind, which is not the lexicographic
+  order the old combination walk produced, so `Planner` sorts with `MoveGen.lexBefore`
+  (whoever owns the lowest differing card comes first — the same order). That is why
+  the benchmarks are unchanged to the digit, which is the only proof the swap was
+  behaviour-neutral.
+- `Play(trusted:kind:strength:)` is the generator's door into `Play`: no validation,
+  cards must already be ascending. `MoveGen` is the only caller.
+- **`PlayFinder.plays` is deliberately still the old walk.** It sorts by
+  `(count, kind, strength)` with an unstable sort, and two different five-card sets can
+  share all three (two full houses on the same triple), so changing its input order can
+  change what `BotPlayer` picks and move `palmBotsOutscoreTheGreedyBot`. Only
+  `PlayFinder.canBeat` and `Planner` were switched over.
 
 ## Ads
 
@@ -502,7 +531,7 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit                  # 67 tests, ~70s (Strong plans every turn)
+swift test --package-path BigTwoKit                  # 90 tests, ~57s (Strong plans every turn)
 swift test --package-path BigTwoKit --filter PlayTests
 ```
 
@@ -707,7 +736,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 79 kit tests
+Single-player against three bots is complete and runs on the simulator; 90 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is

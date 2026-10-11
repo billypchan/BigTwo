@@ -348,18 +348,25 @@ struct Planner {
     let full = n == 0 ? 0 : (1 << n) - 1
     self.full = full
     let reader = Reader(cards: unseen, maxHold: maxHold, rules: rules)
+    // The DP below indexes the *hand*, so each move's 52-bit card mask is folded down
+    // to a mask over the sorted hand. `lexBefore` puts the moves back in the order the
+    // old combination walk produced them — see its comment for why that matters.
+    var index = Array(repeating: 0, count: 52)
+    for (i, card) in cards.enumerated() { index[card.id] = i }
     var found: [Tagged] = []
-    for size in [1, 2, 3, 5] where size <= n {
-      for combo in PlayFinder.combinations(Array(0..<n), size) {
-        let taken = combo.map { cards[$0] }
-        guard let play = Play(taken, rules: rules) else { continue }
-        let mask = combo.reduce(0) { $0 | (1 << $1) }
-        let unbeatable = !reader.canBeat(play)
-        found.append(Tagged(mask: mask, play: play,
-                            unbeatable: unbeatable,
-                            control: StrongBot.isControl(play),
-                            power: StrongBot.power(of: play, unbeatable: unbeatable)))
+    for move in MoveGen.moves(in: CardSet(cards), rules: rules).sorted(by: MoveGen.lexBefore) {
+      var mask = 0
+      var rest = move.mask
+      while rest != 0 {
+        mask |= 1 << index[rest.trailingZeroBitCount]
+        rest &= rest - 1
       }
+      let play = move.play
+      let unbeatable = !reader.canBeat(play)
+      found.append(Tagged(mask: mask, play: play,
+                          unbeatable: unbeatable,
+                          control: StrongBot.isControl(play),
+                          power: StrongBot.power(of: play, unbeatable: unbeatable)))
     }
     tagged = found
 
@@ -527,22 +534,9 @@ struct Reader {
     return false
   }
 
-  static let windows: [[Rank]] = [
-    [.ace, .two, .three, .four, .five],
-    [.two, .three, .four, .five, .six],
-    [.three, .four, .five, .six, .seven],
-    [.four, .five, .six, .seven, .eight],
-    [.five, .six, .seven, .eight, .nine],
-    [.six, .seven, .eight, .nine, .ten],
-    [.seven, .eight, .nine, .ten, .jack],
-    [.eight, .nine, .ten, .jack, .queen],
-    [.nine, .ten, .jack, .queen, .king],
-    [.ten, .jack, .queen, .king, .ace],
-  ]
+  /// The same ten straights the generator walks — one table, not two.
+  static let windows: [[Rank]] = MoveGen.straightRanks
 
   /// A2345 is topped by the five. Every other window is topped by its last rank.
-  static func top(of window: [Rank]) -> Rank {
-    if window.first == .ace, window.dropFirst().first == .two { return .five }
-    return window.last ?? .ace
-  }
+  static func top(of window: [Rank]) -> Rank { MoveGen.topRank(of: window) }
 }
