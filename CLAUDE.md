@@ -36,7 +36,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 
 | Path | Contents |
 | --- | --- |
-| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
+| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `CardSet` (a hand as 52 bits, `MoveGen`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `AdUnits.swift` + `AdConsent.swift` (AdMob), `Views/` |
 | `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
 | `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase), `PreferenceSync.swift` (phone ↔ watch settings) |
@@ -166,21 +166,81 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   (`BotContext.discarded` — `BigTwoGame` appends each play). Reading another seat's
   cards is the Classic peek; `ignoresOtherPlayersHoleCards` fails if Strong starts.
   Classic still peeks and lets a fellow bot's K/A/2 stand. Strong fights every seat.
-- Strong plans the fewest plays that empty the hand. The hand is **strong** when
-  control covers that plan (a two, an ace single, an ace pair or triple, a bomb, or a
-  play nothing still out can beat; a king pair is half) and **weak** when it does not.
-  Holding the lead covers one extra play. A weak hand with more than three cards does
-  **not** spend a two on a king, ace or two, and does not jump a low card with a king —
-  that is how the recorded games lost the deal. A strong hand does, and will split a
-  pair of twos to take a king. A five that is already one play of the plan is played,
+- Strong plans the fewest plays that empty the hand, then picks one of three gears
+  (`Stance`). **attack**: control covers the plan (a two, an ace single, an ace pair or
+  triple, a bomb, or a play nothing still out can beat; a king pair is half) — take the
+  lead and run it out. **contest**: within two plays of covering it. **defend**: further
+  short than that. Holding the lead covers one extra play.
+  ⚠️ **`contest` is the gear 1.3 did not have**, and it is what made Strong easy: the
+  bot was weak / not-weak, nearly every hand is weak at thirteen cards, and a weak hand
+  never spent a stopper — so a human won every trick with a king while the bot sat on an
+  ace it was "saving". Spending a stopper is an affordability question now
+  (`Choice.affordsSpending`: what is left has to cover what is left to play), not a mood,
+  and it only reaches for one when the trick is worth it (`worthAStopper` — a single
+  below a ten is somebody else's problem).
+- ⚠️ **The score is points, not tricks**, and nothing in the 1.3 bot knew that. When the
+  deal is going away (`losingRace`: somebody is down to four cards and we are three plays
+  behind) the objective switches from fewest plays to **fewest points left** — unload the
+  twos and aces instead of tidying up. Both numbers are tight on purpose: giving up early
+  costs more against a weak opponent, who hands the lead back.
+- A weak hand with more than three cards still does **not** spend a two on a king, ace or
+  two it cannot afford, and does not jump a low card with a king — that is how the
+  recorded games lost the deal. A five that is already one play of the plan is played,
   bomb included. **Leading a two first, even when nothing beats it, made an earlier
   Strong weaker than greedy** — keep that test. It will break one pair to answer a low
-  card rather than pass the lead away. A weak hand leads a low single rather than a
-  king pair. Playing your last card wins immediately, so a
-  seat on one card must be stopped before their turn, not after. `oneStrongBotOutscoresThreeGreedyBots`
-  is one Strong seat vs three greedy (8 seeds, floor > 200; +867 on 2026-10-03, was +344).
-  Do not use 3 Strong vs 1 greedy. `Game.botChoice` picks Strong or Classic from
-  `preferences.strongBots`.
+  card rather than pass the lead away. A hand short of control leads a low single rather
+  than a king pair. Playing your last card wins immediately, so a seat on one card must be
+  stopped before their turn, not after — and nothing they cannot answer costs anything to
+  lead at them.
+- **Benchmarks.** `oneStrongBotOutscoresThreeGreedyBots` is one Strong seat vs three
+  greedy (8 seeds, floor > 200; **+1050 on 2026-10-10**, was +867). Do not use 3 Strong
+  vs 1 greedy. `StrongBotBenchmarkTests.strongBeatsLegacyStrong` is the one that matters:
+  `LegacyStrongBot` in the test target is the **policy that shipped in 1.3**, kept as a
+  yardstick the way `GreedyBot` is kept for the Palm bots, and seat 0 has to outscore it
+  playing the same seat. ⚠️ Seat 0 against three clones is not a zero-sum coin flip, so
+  the test measures against that control, not against zero. 2026-10-10: control -1562,
+  new -481 over 8 seeds; over a held-out 17…32 the control is 1368 and the new bot 2590.
+  ⚠️ `Choice`, `Planner` and `Reader` are internal rather than private so the yardstick
+  can share them — **add fields, never redefine what they return**, or it stops being
+  the bot that shipped.
+- ⚠️ **A playout search made it worse.** A 16-sample endgame search (deal the unseen
+  cards out by `left: N`, play each to the end, keep the best move) lost on all four
+  measures — 1622→1488 and 2590→2444 against the old policy, 2693→2374 and 3134→2867
+  against greedy. The playouts used "everybody takes the cheapest thing that works",
+  which never passes to keep control, so the evaluation was biased and the planner beat
+  it. A search here needs a playout policy good enough to be worth sampling, which needs
+  a move generator far faster than `PlayFinder` — that is the first piece of any future
+  Expert level, not an add-on.
+- `Game.botChoice` picks Strong or Classic from `preferences.strongBots`.
+
+## The move generator
+
+`Card.id` is `rank * 4 + suit`, which is both 0…51 **and** the one Big Two ordering, so
+a hand is a `UInt64` (`CardSet`) and the highest card is the highest set bit. `MoveGen`
+walks the groups that can actually make a play — the four cards of each rank, the
+thirteen of each suit, the ten straight windows — and works out the kind and strength
+itself, instead of building a `Play` for all C(13, 5) five-card combinations.
+Release: a full enumeration of a thirteen-card hand is **0.0023 ms**, against
+**2.0056 ms** for `PlayFinder.plays`; `StrongBot.choose` went 2.566 ms → **0.539 ms**.
+
+- ⚠️ **The rules live in `Play.swift` and only there.** `MoveGen` is a faster way to ask
+  the same question, never a second definition of the answer. `MoveGenTests` holds the
+  two against each other on random hands, both rule sets, with and without a target —
+  if they ever disagree, `PlayFinder` is right.
+- ⚠️ **Enumeration order changes which play a bot picks.** `Planner` feeds its moves to
+  a DP and then to `options.min { betterLead… }`, and `min(by:)` keeps the *first* of
+  several equal candidates. `MoveGen` emits by kind, which is not the lexicographic
+  order the old combination walk produced, so `Planner` sorts with `MoveGen.lexBefore`
+  (whoever owns the lowest differing card comes first — the same order). That is why
+  the benchmarks are unchanged to the digit, which is the only proof the swap was
+  behaviour-neutral.
+- `Play(trusted:kind:strength:)` is the generator's door into `Play`: no validation,
+  cards must already be ascending. `MoveGen` is the only caller.
+- **`PlayFinder.plays` is deliberately still the old walk.** It sorts by
+  `(count, kind, strength)` with an unstable sort, and two different five-card sets can
+  share all three (two full houses on the same triple), so changing its input order can
+  change what `BotPlayer` picks and move `palmBotsOutscoreTheGreedyBot`. Only
+  `PlayFinder.canBeat` and `Planner` were switched over.
 
 ## Ads
 
@@ -471,7 +531,7 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit                  # 67 tests, ~70s (Strong plans every turn)
+swift test --package-path BigTwoKit                  # 90 tests, ~57s (Strong plans every turn)
 swift test --package-path BigTwoKit --filter PlayTests
 ```
 
@@ -676,7 +736,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 79 kit tests
+Single-player against three bots is complete and runs on the simulator; 90 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is
