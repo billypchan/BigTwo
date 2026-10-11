@@ -49,6 +49,13 @@ enum Duel {
   @MainActor static let greedy: SeatPolicy = { game, seat in
     GreedyBot.choose(in: game, seat: seat)
   }
+  /// Expert with the reading but **without** the search — the control for what the
+  /// playouts are worth, exactly as `strong` is the control for what reading is worth.
+  @MainActor static let reading: SeatPolicy = { game, seat in
+    let c = game.botContext(for: seat)
+    guard !c.hand.isEmpty else { return nil }
+    return StrongBot.choose(c, reading: Belief(c))
+  }
 }
 
 struct StrongBotBenchmarkTests {
@@ -70,6 +77,17 @@ struct StrongBotBenchmarkTests {
     let total = Duel.run(Duel.expert, versus: Duel.strong, seeds: 1...8)
     print("seat 0 vs three Strong, 8 games — Strong: \(control), Expert: \(total)")
     #expect(total > control, "reading the deal should be worth something")
+  }
+
+  /// What the playouts are worth on top of the reading. ⚠️ This is the one that
+  /// justifies `ExpertSearch` existing at all: a search here was measured and thrown
+  /// away once (CLAUDE.md § Strong bots), so the control is the policy it replaces,
+  /// not Strong — beating Strong would only re-prove what `expertBeatsStrong` says.
+  @MainActor @Test func searchingBeatsReadingAlone() {
+    let control = Duel.run(Duel.reading, versus: Duel.strong, seeds: 1...8)
+    let total = Duel.run(Duel.expert, versus: Duel.strong, seeds: 1...8)
+    print("seat 0 vs three Strong, 8 games — reading only: \(control), with the search: \(total)")
+    #expect(total > control, "sampling the deal out has to be worth more than reading it")
   }
 
   /// And it must not have bought that by being weaker against a seat that gives the

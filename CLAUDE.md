@@ -36,7 +36,7 @@ the flat chrome, the green table, the button layout and the terse wording are th
 
 | Path | Contents |
 | --- | --- |
-| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `CardSet` (a hand as 52 bits, `MoveGen`), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
+| `BigTwoKit/` | Local package, **no SwiftUI/UIKit**: `Card` (ranks, suits, `SeededGenerator`), `Play` (validation, ranking, `RuleSet`, `PlayFinder`), `CardSet` (a hand as 52 bits, `MoveGen`), `Playout` + `ExpertSearch` (sampled deals played to the end), `Game` (`BigTwoGame` — dealing, 3♦ lead, passes, autopass, 10-deal scoring, history), `BotPlayer` (Palm-style bots, `BotContext`), `Preferences` + `PreferencesStore` |
 | `BigTwoApp/` | `BigTwoApp.swift`, `LaunchOptions.swift` (UI-test switches), `L10n.swift` (UI copy), `Palette.swift` (every color + `Font.palm`), `PalmMetrics.swift` (Palm units, `PalmPressStyle`), `AdUnits.swift` + `AdConsent.swift` (AdMob), `Views/` |
 | `BigTwoWatch/` | The Apple Watch app — `BigTwoWatchApp.swift`, `Views/` (`WatchGameView`, `WatchCardView`, `WatchScoreView`, `WatchStoreView`), its own `Assets.xcassets` |
 | `Shared/` | Code both apps compile: `WatchUnlock.swift` (the one in-app purchase), `PreferenceSync.swift` (phone ↔ watch settings) |
@@ -203,53 +203,82 @@ AI logic that is not in the makefile. Seat 0 is the human there (`HUMAN` in `Typ
   ⚠️ `Choice`, `Planner` and `Reader` are internal rather than private so the yardstick
   can share them — **add fields, never redefine what they return**, or it stops being
   the bot that shipped.
-- ⚠️ **A playout search made it worse.** A 16-sample endgame search (deal the unseen
-  cards out by `left: N`, play each to the end, keep the best move) lost on all four
-  measures — 1622→1488 and 2590→2444 against the old policy, 2693→2374 and 3134→2867
-  against greedy. The playouts used "everybody takes the cheapest thing that works",
-  which never passes to keep control, so the evaluation was biased and the planner beat
-  it. A search here needs a playout policy good enough to be worth sampling, which needs
-  a move generator far faster than `PlayFinder` — that is the first piece of any future
-  Expert level, not an add-on.
+- ⚠️ **A playout search made it worse — until the playouts stopped being a strawman.**
+  A 16-sample endgame search (deal the unseen cards out by `left: N`, play each to the
+  end, keep the best move) lost on all four measures — 1622→1488 and 2590→2444 against
+  the old policy, 2693→2374 and 3134→2867 against greedy. The playouts used "everybody
+  takes the cheapest thing that works", which never passes to keep control, so the
+  evaluation was biased and the planner beat it. The same idea with a policy that
+  passes, and with `MoveGen` underneath to make it cheap, is `ExpertSearch` and it is
+  worth hundreds of points a game — see § Expert. **Keep the lesson, not the verdict:
+  a search here is only as good as the policy it samples with.**
 - `Game.botChoice` picks the policy from `preferences.botLevel`
   (`classic | strong | expert`). ⚠️ `strongBots` is still written and kept in step with
   it — shipped user data, and an older build or an un-updated watch reads only that key.
 
 ## Expert
 
-Preferences → Bots: **Expert** is Strong's policy with `Belief`: cards left, cards
-played and every pass this deal (`BotContext.history`), turned into "how likely is each
-seat to hold each unseen card". It never sees a hole card.
+Preferences → Bots: **Expert** is Strong's policy with two layers on top. Neither
+of them ever sees a hole card: both read `left: N`, the cards already played, and
+every pass this deal (`BotContext.history`).
 
-It changes **one** decision, and that is not a simplification — it is the measured
-result. Strong decides whether a single is spare with the distance between the two
-cards: five ranks or less and it will spend it, otherwise it would rather pass. That
-rule throws tricks away (a nine over a three was never a stopper) and hoards cards that
-stopped being stoppers four tricks ago. Expert asks whether the card would actually
-hold the lead, and spends everything that would not.
+**`Belief`** turns that into "how likely is each seat to hold each unseen card" —
+closed form, no sampling: pass evidence weighted onto the cards that would have
+beaten what was passed on, then Sinkhorn-balanced so every card is in exactly one
+hand and every hand is the size the table says.
 
-| seat 0, 24 seeds each | Strong | Expert |
-| --- | --- | --- |
-| vs three Strong | -829 | **-597** |
-| vs three Strong, held-out seeds | -601 | **+5** |
-| vs three greedy | 4496 | **4990** |
-| vs three greedy, held-out seeds | 3048 | **3502** |
+**`ExpertSearch`** samples whole deals out of that belief, plays each candidate to
+the end with `PlayoutPolicy`, and keeps the one worth the most **points**. That is
+the layer that changed how the game feels.
 
-- ⚠️ **Three other uses of the belief were built and measured away.** Feeding it to
-  `Choice.unbeatable` changed **1 decision in 3552** — a single's survival is near 0 or
-  near 1, because every unseen card is in *somebody's* hand, so "can anyone beat this"
-  has almost no middle and `Reader`'s worst case was already the right answer. Feeding
-  it to `Planner.power` was slightly worse. Leading at a nearly-out seat by what that
-  seat probably cannot answer was worse on all four duels (-1237/-828/3655/2596). The
-  belief only earns its place where a *hard-coded rank distance* used to stand.
-- ⚠️ **Deleting that rank rule without the belief is not the same thing** — it scores
-  -799/-837/4990/3502, better against greedy but worse than Strong on held-out seeds.
-  What the reading adds is keeping the card that would have held the lead.
-- `Belief.worthKeeping` is 0.5 and the duels are identical anywhere from 0.25 to 0.80,
-  so there is nothing fitted in it.
-- Cost: `ExpertBot.choose` is 0.663 ms against Strong's 0.542 ms on a thirteen-card hand
-  (release), and the belief itself is 0.019 ms. No sampling anywhere — it is closed
-  form, so a position always gives the same answer and UI tests stay reproducible.
+| seat 0, 24 seeds each | Strong | + reading | + search |
+| --- | --- | --- | --- |
+| vs three Strong | -829 | -597 | **1074** |
+| vs three Strong, held-out seeds | -601 | 5 | **2139** |
+| vs three greedy | 4496 | 4990 | **7926** |
+| vs three greedy, held-out seeds | 3048 | 3502 | **6415** |
+
+- ⚠️ **The reading on its own changes one decision**, and that is the measured
+  result, not a simplification. Strong decides whether a single is spare with the
+  distance between the two cards: five ranks or less and it will spend it. That rule
+  throws tricks away (a nine over a three was never a stopper) and hoards cards that
+  stopped being stoppers four tricks ago; `Belief` asks whether the card would
+  actually hold the lead. Three other uses of it were built and measured away:
+  feeding it to `Choice.unbeatable` changed **1 decision in 3552** — a single's
+  survival is near 0 or near 1, because every unseen card is in *somebody's* hand, so
+  "can anyone beat this" has almost no middle and `Reader`'s worst case was already
+  the right answer; feeding it to `Planner.power` was slightly worse; leading at a
+  nearly-out seat by what that seat probably cannot answer was worse on all four
+  duels (-1237/-828/3655/2596). ⚠️ Deleting the rank rule *without* the belief is not
+  the same thing either — -799/-837/4990/3502, worse than Strong on held-out seeds.
+- ⚠️ **Why this search works where the 2026-10-10 one lost.** Same idea, three
+  differences, and the first is the whole of it: the playout policy. That one had
+  every seat take the cheapest thing that works and never pass, so no sampled line
+  ever kept a stopper and the evaluation was biased in a direction the planner
+  already beat. `PlayoutPolicy` passes — it holds control back while the trick is
+  cheap (`expensive`), spends it when a seat is nearly out, and goes out when it can.
+  Then: the candidates are sampled against **points**, not tricks; and `MoveGen` made
+  a playout cheap enough to run hundreds of (0.0023 ms an enumeration, so a whole
+  deal is about 0.06 ms).
+- ⚠️ **The policy keeps every tie.** The search only moves off
+  `StrongBot.decide` when a candidate is strictly better over all the samples. Its
+  estimate is noisy and the policy's decisions were measured deal by deal; letting
+  the search win ties gave away a large part of its edge.
+- **Sampling is flat above 24.** Seat 0 vs three Strong / held out / vs greedy held
+  out: 8 samples -1138/331/5903, 16 -595/2082/5331, 24 399/2342/6355,
+  48 **1074/2139/6415**, 96 1755/2305/6786. The tuned column keeps climbing and the
+  held-out ones do not, which is what "more samples only removes noise" looks like.
+  48 on the phone, **24 on the watch**.
+- **Cost**, release, this Mac, every seat-0 decision of three whole games: 48 samples
+  mean 1.59 ms / worst 9.19 ms; 24 samples 0.92 / 5.04; 96 samples 2.92 / 16.89.
+  Strong is 0.54 ms. ⚠️ Timing the *opening* measures nothing — with 3♦ forced there
+  is usually one legal play, and `ExpertSearch` hands back the policy's answer
+  untouched.
+- ⚠️ **Seeded off the position** (`ExpertSearch.seed`), never
+  `SystemRandomNumberGenerator`. A table has to give the same card twice or a
+  recorded game stops replaying and a UI test stops being reproducible.
+- `Belief.worthKeeping` is 0.5 and the duels are identical anywhere from 0.25 to
+  0.80, so there is nothing fitted in it.
 - **Strong stays the default.** Expert is a third pill on the phone and the watch;
   ⚠️ the watch's Bots row is below the fold and a watchOS test cannot scroll, so
   `testPreferencesOKReturnsToTheTable` asserting `pref_bots_Expert` exists is the only
@@ -573,9 +602,15 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit                  # 100 tests, ~99s (Strong plans every turn)
-swift test --package-path BigTwoKit --filter PlayTests
+swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 106 tests, ~9s
+swift test --package-path BigTwoKit --filter PlayTests                    # debug is fine for one file
 ```
+
+⚠️ **Run the kit in release.** `ExpertSearch` plays dozens of whole deals per decision,
+and a debug build makes the four duel benchmarks take over twenty minutes — the same
+run is **9 seconds** in release. `-Xswiftc -enable-testing` is what keeps
+`@testable import` working there. Debug still has every check release has, so nothing
+is being skipped; it is only the optimiser.
 
 **Pure logic belongs in `BigTwoKit` and its tests in `BigTwoKitTests`** (Swift Testing).
 The give-away that a type should move there: it imports only Foundation. Whole-game
@@ -778,7 +813,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 100 kit tests
+Single-player against three bots is complete and runs on the simulator; 106 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is

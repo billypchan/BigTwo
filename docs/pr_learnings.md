@@ -13,6 +13,42 @@ and the evidence.
 
 ---
 
+## expert-search — 搜尋重做一次，這次是贏的
+
+**上一次 playout 搜尋輸掉，輸的不是搜尋，是 playout policy。** 2026-10-10 那次
+每個座位都「出打得過的最小牌、永遠不 pass」，所以抽樣出來的每一條線都把主導權
+讓回去，估值整個偏掉，planner 當然打得贏它。這次 `PlayoutPolicy` 會 pass：牌面
+便宜就把 stopper 收著（`expensive`），有人快出完就花掉，能走就走。同一個想法、
+同樣的抽樣數，四個對局全部反過來。⚠️ **結論可以翻案，教訓不行**——這裡的搜尋
+只會跟它抽樣用的 policy 一樣強。
+
+**最便宜的診斷是先量天花板，不是先調參數。** 寫一個「看得到真牌」的 oracle
+rollout，拿 12 個種子跟現有 policy 對打，6 秒就知道有沒有搞頭：
+Expert -203 / Search 286 / Oracle -92。有趣的是抽樣版**比 oracle 還高**——
+oracle 用的 playout policy 跟真正的對手（Strong）不一樣，所以「看得到真牌」反而
+把一條錯的線算得很篤定；抽樣是在很多副牌上平均，反而穩。
+
+**debug build 量不出搜尋。** `swift test` 預設 debug，搜尋在那裡慢到一輪
+benchmark 跑十分鐘；加 `-c release -Xswiftc -enable-testing` 之後整個 gate 28 秒。
+調 bot 的時候一律用 release 跑，不然會以為是自己寫爆了。
+
+**開局不是一個決策，拿它量時間會量到 0。** 第一次量「Expert 一次決策多少 ms」
+得到 0.68 ms，跟 Strong 一樣——因為量的是開局：3♦ 強制出牌時通常只有一手合法牌，
+`ExpertSearch` 直接把 policy 的答案還回去，一次 rollout 都沒跑。要量就量一整局
+的每一個決策。
+
+**讓 policy 保留平手。** 搜尋的估值是有雜訊的，policy 的每一條規則卻都是一局一局
+量出來的。只有「嚴格贏過 policy 的那一手」才換掉，是這個設計裡最重要的一行。
+
+**加了一層就要把舊測試分層。** `ExpertBotTests` 本來用 `ExpertBot.choose` 釘
+`Belief` 改變的那兩個決定；搜尋上線之後那兩條變成同時在測兩層，搜尋動一下就假失敗。
+改成問 `StrongBot.choose(c, reading:)`，搜尋自己的行為另外寫 `ExpertSearchTests`。
+
+**抽樣一定要可重現。** 種子由局面（座位、手牌、已出牌數、history 長度、枱面）雜湊
+出來，不可以用系統 RNG：牌局紀錄要能重播，UI 測試要能重跑。
+
+---
+
 ## expert-bot — 「推測對手手牌」裡面只有一成是有用的
 
 **三個用法量出來是零，第四個才是全部。** 原本的設計是用 `Belief` 取代 `Reader`：
