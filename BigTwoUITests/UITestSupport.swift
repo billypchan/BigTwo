@@ -59,6 +59,15 @@ extension XCTestCase {
     XCTAssertEqual(outcome, .completed, "value never became '\(value)'", file: file, line: line)
   }
 
+  /// A push button marks itself with `.isSelected`, which lags the tap like everything
+  /// else here — never read it on the next line.
+  func waitFor(_ element: XCUIElement, selected: Bool, timeout: TimeInterval = 5,
+               file: StaticString = #filePath, line: UInt = #line) {
+    let deadline = Date().addingTimeInterval(timeout)
+    while element.isSelected != selected && Date() < deadline { usleep(100_000) }
+    XCTAssertEqual(element.isSelected, selected, file: file, line: line)
+  }
+
   func waitForCount(_ query: XCUIElementQuery, _ count: Int, timeout: TimeInterval = 10,
                     file: StaticString = #filePath, line: UInt = #line) {
     let deadline = Date().addingTimeInterval(timeout)

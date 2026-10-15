@@ -30,12 +30,18 @@ enum Stance {
 
 public enum StrongBot {
 
-  public static func choose(_ c: BotContext) -> Play? {
+  public static func choose(_ c: BotContext) -> Play? { choose(c, reading: nil) }
+
+  /// `reading` is what makes a seat Expert rather than Strong: the same policy, run
+  /// against what the table says the other three are holding instead of against the
+  /// worst case. Everything downstream — the plan, the gear, whether a stopper is
+  /// spare — reads it through `Choice`.
+  static func choose(_ c: BotContext, reading belief: Belief?) -> Play? {
     let hand = c.hand
     guard !hand.isEmpty else { return nil }
     let counts = opponentCounts(c)
-    let planner = Planner(hand: hand, rules: c.rules,
-                          unseen: unseenCards(c), maxHold: counts.max() ?? 0)
+    let planner = Planner(hand: hand, rules: c.rules, unseen: unseenCards(c),
+                          maxHold: counts.max() ?? 0, reading: belief)
     let options = planner.choices(beating: c.table, mustInclude: c.mustInclude)
     guard !options.isEmpty else { return nil }
     if let out = options.first(where: { $0.play.count == hand.count }) { return out.play }
@@ -45,7 +51,7 @@ public enum StrongBot {
       return lead(options, counts, stance: stance, dumping: dumping)
     }
     return follow(options, counts, table, handCount: hand.count,
-                  stance: stance, dumping: dumping)
+                  stance: stance, dumping: dumping, reading: belief != nil)
   }
 
   // MARK: - Points
@@ -131,7 +137,8 @@ public enum StrongBot {
   // MARK: - Follow
 
   static func follow(_ options: [Choice], _ counts: [Int], _ table: Play,
-                     handCount: Int, stance: Stance, dumping: Bool) -> Play? {
+                     handCount: Int, stance: Stance, dumping: Bool,
+                     reading: Bool = false) -> Play? {
     if let sweep = shed(options.filter(\.restSweeps)) { return sweep }
     let oneLeft = counts.contains(1)
     if counts.contains(table.count) || oneLeft {
@@ -146,7 +153,9 @@ public enum StrongBot {
        let five = pick(options.filter { $0.play.count == 5 && $0.damage <= 0 }, dumping: dumping) {
       return five
     }
-    let spare = options.filter { spareCard($0, table, stance: stance, dumping: dumping) }
+    let spare = options.filter {
+      spareCard($0, table, stance: stance, dumping: dumping, reading: reading)
+    }
     if let free = pick(spare.filter { $0.damage == 0 }, dumping: dumping) { return free }
     // Breaking one pair still sheds a card. Passing here is how a lead runs away.
     if let cracked = pick(spare.filter { $0.damage <= 1 }, dumping: dumping) { return cracked }
@@ -175,11 +184,22 @@ public enum StrongBot {
   /// A card the hand can throw at this trick without giving anything up: not control,
   /// and — unless the hand is attacking or already unloading points — not a big jump.
   /// A king over a four is a stopper spent on a cheap trick.
-  static func spareCard(_ choice: Choice, _ table: Play, stance: Stance, dumping: Bool) -> Bool {
+  static func spareCard(_ choice: Choice, _ table: Play, stance: Stance, dumping: Bool,
+                        reading: Bool = false) -> Bool {
     if choice.control { return false }
     if stance == .attack || dumping { return true }
     guard choice.play.count == 1,
           let card = choice.play.cards.first, let shown = table.cards.first else { return true }
+    // ⚠️ This is the one place the Expert reading pays, and it is worth knowing why.
+    // Strong has to guess with the distance between the two cards: five ranks or less
+    // and the card is spare, otherwise it would rather pass than spend it. That throws
+    // away tricks — a nine over a three is not a stopper, it is just a nine — and it
+    // keeps cards that stopped being stoppers four tricks ago. Expert asks whether the
+    // card would actually hold the lead and spends everything that would not.
+    // ⚠️ Measured: this is the whole of Expert. Feeding the belief to `unbeatable`,
+    // to `power` or to the lead ordering changed 1 decision in 3552 or made it worse —
+    // see CLAUDE.md § Expert.
+    if reading { return choice.survival < Belief.worthKeeping }
     return card.rank.rawValue - shown.rank.rawValue <= 5
   }
 
@@ -289,6 +309,9 @@ struct Choice {
   let play: Play
   let damage: Int
   let unbeatable: Bool
+  /// The chance this play is still on the table when the turn comes back. Strong only
+  /// ever knows 0 or 1 (`Reader` answers the worst case); Expert reads it off `Belief`.
+  let survival: Double
   let control: Bool
   let restSweeps: Bool
   /// Control points left, and plays still needed, once this one is gone.
@@ -313,6 +336,7 @@ struct Planner {
     let mask: Int
     let play: Play
     let unbeatable: Bool
+    let survival: Double
     let control: Bool
     let power: Int
   }
@@ -342,7 +366,9 @@ struct Planner {
     return .defend
   }
 
-  init(hand: [Card], rules: RuleSet, unseen: [Card], maxHold: Int) {
+  /// `reading` is Expert: the same plan, scored against what the table says the other
+  /// three can be holding instead of against every card nobody has seen.
+  init(hand: [Card], rules: RuleSet, unseen: [Card], maxHold: Int, reading: Belief? = nil) {
     let cards = hand.sorted()
     let n = cards.count
     let full = n == 0 ? 0 : (1 << n) - 1
@@ -363,8 +389,10 @@ struct Planner {
       }
       let play = move.play
       let unbeatable = !reader.canBeat(play)
+      let survival = reading.map { $0.survival(of: play) } ?? (unbeatable ? 1 : 0)
       found.append(Tagged(mask: mask, play: play,
                           unbeatable: unbeatable,
+                          survival: survival,
                           control: StrongBot.isControl(play),
                           power: StrongBot.power(of: play, unbeatable: unbeatable)))
     }
@@ -403,6 +431,7 @@ struct Planner {
       return Choice(play: tag.play,
                     damage: dp[rest] - (base - 1),
                     unbeatable: tag.unbeatable,
+                    survival: tag.survival,
                     control: tag.control,
                     restSweeps: sweep[rest],
                     restPower: power[rest],

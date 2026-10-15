@@ -43,6 +43,12 @@ enum Duel {
   @MainActor static let legacy: SeatPolicy = { game, seat in
     LegacyStrongBot.choose(game.botContext(for: seat))
   }
+  @MainActor static let expert: SeatPolicy = { game, seat in
+    ExpertBot.choose(game.botContext(for: seat))
+  }
+  @MainActor static let greedy: SeatPolicy = { game, seat in
+    GreedyBot.choose(in: game, seat: seat)
+  }
 }
 
 struct StrongBotBenchmarkTests {
@@ -54,5 +60,24 @@ struct StrongBotBenchmarkTests {
     let total = Duel.run(Duel.strong, versus: Duel.legacy, seeds: 1...8)
     print("seat 0 vs three Legacy, 8 games — Legacy: \(control), Strong: \(total)")
     #expect(total > control, "the new policy should outscore the one it replaces")
+  }
+
+  /// The same shape one level up: Expert has to outscore Strong in Strong's own seat,
+  /// against a table of Strong. Nothing else about the policy changed, so this measures
+  /// exactly what reading the deal is worth.
+  @MainActor @Test func expertBeatsStrong() {
+    let control = Duel.run(Duel.strong, versus: Duel.strong, seeds: 1...8)
+    let total = Duel.run(Duel.expert, versus: Duel.strong, seeds: 1...8)
+    print("seat 0 vs three Strong, 8 games — Strong: \(control), Expert: \(total)")
+    #expect(total > control, "reading the deal should be worth something")
+  }
+
+  /// And it must not have bought that by being weaker against a seat that gives the
+  /// lead away — the mistake the dumping thresholds were tightened to avoid.
+  @MainActor @Test func expertKeepsItsEdgeOverTheGreedyBot() {
+    let control = Duel.run(Duel.strong, versus: Duel.greedy, seeds: 1...8)
+    let total = Duel.run(Duel.expert, versus: Duel.greedy, seeds: 1...8)
+    print("seat 0 vs three greedy, 8 games — Strong: \(control), Expert: \(total)")
+    #expect(total > control, "Expert must not fold against a weak table")
   }
 }

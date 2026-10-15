@@ -13,6 +13,49 @@ and the evidence.
 
 ---
 
+## expert-bot — 「推測對手手牌」裡面只有一成是有用的
+
+**三個用法量出來是零，第四個才是全部。** 原本的設計是用 `Belief` 取代 `Reader`：
+`Choice.unbeatable` 改成「存活機率 ≥ 門檻」。量出來 **3552 個決策裡只有 1 個不一樣**。
+原因不是程式錯，是題目本身：**每一張未見的牌一定在某個人手上**，所以「有沒有人大得過
+這張單張」幾乎沒有中間地帶 —— 不是 0 就是 1，而 `Reader` 的最壞情況本來就已經是正確答案。
+餵給 `Planner.power` 稍微變差；拿去領牌（對快打完的那家領他接不到的牌）四個對局全輸
+（-1237/-828/3655/2596）。
+
+**唯一有用的地方，是原本寫死的那個數字。** `spareCard` 本來是
+`card.rank - shown.rank <= 5`：差五點以內就丟得起，否則寧願 pass。
+這條規則同時犯兩個錯 —— 三上面的九從來就不是 stopper（白白讓掉一墩），
+而四墩之前就已經不是 stopper 的牌它還留著。換成「這張牌還壓不壓得住場面」之後，
+24 個種子 × 兩組對手、四個數字全部變好（-829→-597、-601→+5、4496→4990、3048→3502）。
+
+⚠️ **「那不就等於把那條規則刪掉？」—— 不是，這個要分開量。** 純粹刪掉距離規則
+（不帶 belief）是 -799/-837/4990/3502：對 greedy 一樣好，但對 Strong 的保留種子更差。
+差別就在 belief 會**留下那張真的還壓得住的牌**。兩個都量過才知道哪一半有價值。
+
+**教訓：先量「這個資訊會改變幾個決策」，再量分數。** `divergence` 那段臨時測試
+（跑 12 局、對每個局面同時問 Strong 和 Expert）只花幾分鐘，卻一次就說清楚
+belief 當時是死的。先做這個，可以省掉後面一整輪的門檻掃描。
+
+**測試 fixture 要「加得起來」。** `StrongBotTests` 的 helper 從 spare 的**前綴**發牌，
+所以對手拿到的永遠是最小的那些牌，而且 `discarded` 跟那些手牌會重疊 ——
+對只看「有沒有人大得過」的 Strong 沒差，對要把機率攤在未見牌上的 Belief 就全錯：
+`unseen` 比三家手牌的總和還大，Sinkhorn 根本收斂不了。`ExpertBotTests` 自己的 helper
+會把剩下的牌全部發完，手牌大小因此不真實，但那不是這些測試在驗的東西。
+
+⚠️ **已出貨的設定要雙寫。** `Preferences.strongBots` 沒有刪，`botLevel` 的 `didSet`
+一直把它寫成 `botLevel != .classic`，所以裝回 1.3、或手錶還沒更新，設定都還在。
+decode 是 `botLevel ?? (strongBots ? .strong : .classic)`。
+
+**手錶的 Bots 那一列在摺線以下**，而 watchOS 測試不能捲動，所以**截圖永遠拍不到它**。
+唯一能證明第三顆 pill 有上手錶的，是在 `testPreferencesOKReturnsToTheTable` 裡斷言
+`pref_bots_Expert` 存在 —— 摺線以下 `exists` 是 true（`isHittable` 也是，但 tap 不到）。
+
+**八個語言的寬度量過了**：最長的菲律賓文 `Mga bot: Klasiko Malakas Eksperto` 在
+320 單位的對話框裡還剩約兩成空間，德文更寬鬆。`PalmPushButtonsView` 是按內容寬度排的，
+不是固定寬 pill，所以加第三顆只要量一次就好。
+
+---
+
 ## bitmask-move-generator — 把牌型列舉換成 52 位元
 
 **`Card.id` 本來就是全域大小順序**（`rank * 4 + suit`），所以一手牌就是一個

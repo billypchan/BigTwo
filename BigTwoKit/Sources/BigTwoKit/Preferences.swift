@@ -18,6 +18,16 @@ public enum GameSpeed: String, Codable, CaseIterable, Sendable {
   }
 }
 
+/// "Bots: Classic | Strong | Expert" — how the other three seats decide.
+public enum BotLevel: String, Codable, CaseIterable, Sendable {
+  /// The Palm bots: a fixed order of cheapest plays, and they peek at every hand.
+  case classic
+  /// Plans the fewest plays that empty the hand; sees only what the table shows.
+  case strong
+  /// Strong, plus what the passes and the played cards say about the other hands.
+  case expert
+}
+
 public struct Preferences: Codable, Equatable, Sendable {
   /// Takes effect from the next deal — a rule change mid-deal would re-rank the table.
   public var hongKong = false
@@ -29,7 +39,12 @@ public struct Preferences: Codable, Equatable, Sendable {
   public var gameSpeed = GameSpeed.medium
   /// "Sort cards by: Rank | Suit" — also flipped by the sort icon on the table.
   public var sortBySuit = false
-  /// Strong bots use every hand they can see to stop you and to go out.
+  public var botLevel = BotLevel.strong {
+    didSet { strongBots = botLevel != .classic }
+  }
+  /// ⚠️ Shipped user data, kept in step with `botLevel` and still written, so a phone
+  /// that goes back to 1.3 — or a watch that has not been updated — keeps the setting.
+  /// `botLevel` is what the game reads.
   public var strongBots = true
   /// Custom names for seats 0…3. Empty string / missing slot = use the localized default.
   /// Not written until the player edits a name, so a language change still updates defaults.
@@ -38,14 +53,15 @@ public struct Preferences: Codable, Equatable, Sendable {
   public init(hongKong: Bool = false, autopass: Bool = true,
               autopassFiveCard: Bool = false, showCardsLeft: Bool = true,
               gameSpeed: GameSpeed = .medium, sortBySuit: Bool = false,
-              strongBots: Bool = true, playerNames: [String] = []) {
+              botLevel: BotLevel = .strong, playerNames: [String] = []) {
     self.hongKong = hongKong
     self.autopass = autopass
     self.autopassFiveCard = autopassFiveCard
     self.showCardsLeft = showCardsLeft
     self.gameSpeed = gameSpeed
     self.sortBySuit = sortBySuit
-    self.strongBots = strongBots
+    self.botLevel = botLevel
+    self.strongBots = botLevel != .classic
     self.playerNames = playerNames
   }
 
@@ -61,6 +77,9 @@ public struct Preferences: Codable, Equatable, Sendable {
     gameSpeed = (try? c.decodeIfPresent(GameSpeed.self, forKey: .gameSpeed)) ?? d.gameSpeed
     sortBySuit = (try? c.decodeIfPresent(Bool.self, forKey: .sortBySuit)) ?? d.sortBySuit
     strongBots = (try? c.decodeIfPresent(Bool.self, forKey: .strongBots)) ?? d.strongBots
+    // Written since 1.4. Anything older only has the Classic/Strong switch.
+    botLevel = (try? c.decodeIfPresent(BotLevel.self, forKey: .botLevel))
+      ?? (strongBots ? .strong : .classic)
     playerNames = (try? c.decodeIfPresent([String].self, forKey: .playerNames)) ?? d.playerNames
   }
 }

@@ -96,6 +96,9 @@ public final class BigTwoGame: ObservableObject {
   private var prefersFiveCards = [true, false, true, false]
   /// Played this deal. StrongBot may read this; it still must not read other hands.
   private var discarded: [Card] = []
+  /// Every play and pass this deal — the same public record `historyText` renders,
+  /// kept in a form `Expert` can read (`BotContext.history`).
+  private var publicActions: [PublicAction] = []
   private var library = GameRecordLibrary()
   private var record = GameRecord()
   private let recordStore: GameRecordStore?
@@ -197,6 +200,7 @@ public final class BigTwoGame: ObservableObject {
     lastActions = [nil, nil, nil, nil]
     passes = 0
     discarded = []
+    publicActions = []
     result = nil
     record.deals.append(GameRecord.Deal(number: deal, names: seats.map(\.name),
                                         hands: seats.map(\.hand)))
@@ -249,6 +253,7 @@ public final class BigTwoGame: ObservableObject {
     table = play
     tableOwner = seat
     lastActions[seat] = .played(play)
+    publicActions.append(.played(seat: seat, play: play))
     passes = 0
     openingPlay = false
     log("\(seats[seat].name): \(play.label)")
@@ -265,6 +270,7 @@ public final class BigTwoGame: ObservableObject {
     guard result == nil, seat == turn, table != nil else { return }
     log("\(seats[seat].name): pass")
     lastActions[seat] = .passed
+    publicActions.append(.passed(seat: seat))
     passes += 1
     if passes >= 3 {  // everyone else folded — new trick
       turn = tableOwner ?? turn
@@ -318,13 +324,18 @@ public final class BigTwoGame: ObservableObject {
                mustInclude: openingPlay ? .threeOfDiamonds : nil,
                rules: rules,
                prefersFiveCards: prefersFiveCards[seat],
-               discarded: discarded)
+               discarded: discarded,
+               history: publicActions)
   }
 
   /// What the bot would play from `seat` right now; nil is a pass.
   public func botChoice(for seat: Int) -> Play? {
     let c = botContext(for: seat)
-    return preferences.strongBots ? StrongBot.choose(c) : BotPlayer.choose(c)
+    switch preferences.botLevel {
+    case .classic: return BotPlayer.choose(c)
+    case .strong: return StrongBot.choose(c)
+    case .expert: return ExpertBot.choose(c)
+    }
   }
 
   // MARK: - Scoring

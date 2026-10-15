@@ -9,6 +9,13 @@
 
 import Foundation
 
+/// A turn as the table saw it. The record `Expert` reads to work out what the other
+/// three can still be holding — who played what, and who could not answer.
+public enum PublicAction: Equatable, Sendable {
+  case played(seat: Int, play: Play)
+  case passed(seat: Int)
+}
+
 /// Everything a bot looks at. Like the Palm bots it sees every hand — they peeked.
 public struct BotContext: Sendable {
   public let seat: Int
@@ -22,10 +29,12 @@ public struct BotContext: Sendable {
   public let prefersFiveCards: Bool
   /// Cards already played this deal. Public — the tracker shows them. Not hole cards.
   public let discarded: [Card]
+  /// Every play and pass this deal, in order. Public too: it is what the table saw.
+  public let history: [PublicAction]
 
   public init(seat: Int, hands: [[Card]], isHuman: [Bool], table: Play?, tableOwner: Int?,
               mustInclude: Card?, rules: RuleSet, prefersFiveCards: Bool,
-              discarded: [Card] = []) {
+              discarded: [Card] = [], history: [PublicAction] = []) {
     self.seat = seat
     self.hands = hands
     self.isHuman = isHuman
@@ -35,6 +44,7 @@ public struct BotContext: Sendable {
     self.rules = rules
     self.prefersFiveCards = prefersFiveCards
     self.discarded = discarded
+    self.history = history
   }
 
   var hand: [Card] { hands[seat] }
