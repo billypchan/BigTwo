@@ -45,6 +45,14 @@ struct ExpertBotTests {
     ExpertBot.choose(c).map { $0.cards.map(\.code).joined(separator: " ") }
   }
 
+  /// The policy with the reading, *without* the search on top. The two tests at the
+  /// bottom pin what the belief itself changes; `ExpertSearchTests` covers the rest.
+  /// ⚠️ Asking the whole bot there would measure both layers at once, and a sampled
+  /// search moving one of those decisions is not the same bug as the reading breaking.
+  func reading(_ c: BotContext) -> String? {
+    StrongBot.choose(c, reading: Belief(c)).map { $0.cards.map(\.code).joined(separator: " ") }
+  }
+
   // MARK: - It still does not peek
 
   /// ⚠️ The Classic bots see every hand. Expert must not — move a card between two
@@ -135,7 +143,7 @@ struct ExpertBotTests {
   @Test func answersWithACardThatWasNeverAStopper() throws {
     let c = try context("9s 9d Jc Jd Qh Qs", table: "3d", owner: 3)
     #expect(StrongBot.choose(c) == nil, "five ranks is the rule it has")
-    #expect(choice(c) == "9d")
+    #expect(reading(c) == "9d")
   }
 
   /// And it does not simply answer everything: a card that would hold the lead stays
@@ -143,6 +151,6 @@ struct ExpertBotTests {
   @Test func stillKeepsTheCardThatWouldHoldTheLead() throws {
     let gone = "Kd Kc Kh Ks Ad Ac Ah As 2d 2c 2h 2s Qd Qc Qs"
     let c = try context("4c 6d 8h Qh", table: "3d", owner: 3, gone: gone)
-    #expect(choice(c) == "4c", "the queen is the only stopper left and it is not spare")
+    #expect(reading(c) == "4c", "the queen is the only stopper left and it is not spare")
   }
 }

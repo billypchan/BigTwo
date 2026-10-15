@@ -2,20 +2,30 @@
 //  ExpertBot.swift
 //  BigTwoKit — Preferences → Bots: Expert.
 //
-//  Strong's policy, reading the deal. Everything it decides — the plan, the gear, which
-//  cards are spare, whether a stopper is worth spending — goes through `Choice`, and
-//  `Belief` is what fills `Choice` in. So this is one line rather than a second bot:
-//  the difference between Strong and Expert is not what it wants, it is what it knows.
+//  Two things Strong does not have:
 //
-//  What it knows is still only what the table showed: `left: N`, the cards already
-//  played, and who passed on what. ⚠️ No hole cards —
-//  `expertIgnoresOtherPlayersHoleCards` is the test that keeps it that way.
+//    `Belief`       — what the table says the other three are holding: cards left,
+//                     cards played, and every pass this deal. Never a hole card.
+//    `ExpertSearch` — a few dozen whole deals sampled out of that belief, each
+//                     candidate played to the end, scored in points.
+//
+//  The hand-written policy is still underneath, and still decides most turns: the
+//  search only moves off it when a candidate is strictly better over every sample.
+//  ⚠️ That is deliberate. The policy is the thing that was measured deal by deal;
+//  the search is a second opinion with a noisy estimate behind it, and letting it
+//  win ties gave away most of its own edge.
 //
 
 import Foundation
 
 public enum ExpertBot {
   public static func choose(_ c: BotContext) -> Play? {
-    StrongBot.choose(c, reading: Belief(c))
+    guard !c.hand.isEmpty else { return nil }
+    let belief = Belief(c)
+    let planner = Planner(hand: c.hand, rules: c.rules,
+                          unseen: StrongBot.unseenCards(c),
+                          maxHold: StrongBot.opponentCounts(c).max() ?? 0,
+                          reading: belief)
+    return ExpertSearch.choose(c, belief: belief, planner: planner)
   }
 }

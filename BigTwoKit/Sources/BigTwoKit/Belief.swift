@@ -243,6 +243,42 @@ struct Belief {
     }
   }
 
+  // MARK: - One deal the table could be hiding
+
+  /// A whole deal consistent with everything that has been shown: every unseen card
+  /// in exactly one hand, every hand the size `left: N` says. The marginals steer it,
+  /// the capacities bound it.
+  ///
+  /// ⚠️ Seeded, never `SystemRandomNumberGenerator`. A position has to give the same
+  /// answer twice or the UI tests and the game record stop being reproducible — and
+  /// a bot that plays a different card on a replay is a bug report nobody can act on.
+  func sample(using rng: inout SeededGenerator) -> [UInt64] {
+    var hands = Array(repeating: UInt64(0), count: counts.count)
+    var room = counts
+    room[seat] = 0
+    var order = unseen
+    order.shuffle(using: &rng)
+    for card in order {
+      var total = 0.0
+      for o in others where room[o] > 0 { total += max(holds[o][card.id], 1e-9) }
+      guard total > 0 else { continue }
+      var pick = Double.random(in: 0..<total, using: &rng)
+      var chosen = -1
+      for o in others where room[o] > 0 {
+        let w = max(holds[o][card.id], 1e-9)
+        if pick < w { chosen = o; break }
+        pick -= w
+      }
+      // Floating point can walk off the end of the wheel; the last live seat is the
+      // one the loop would have landed on.
+      if chosen < 0 { chosen = others.last { room[$0] > 0 } ?? -1 }
+      guard chosen >= 0 else { continue }
+      hands[chosen] |= CardSet.bit(card.id)
+      room[chosen] -= 1
+    }
+    return hands
+  }
+
   /// For the tests: how likely `seat` is to be holding this card.
   func chance(_ card: Card, at seat: Int) -> Double { holds[seat][card.id] }
 }

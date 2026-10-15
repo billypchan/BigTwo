@@ -37,11 +37,18 @@ public enum StrongBot {
   /// worst case. Everything downstream — the plan, the gear, whether a stopper is
   /// spare — reads it through `Choice`.
   static func choose(_ c: BotContext, reading belief: Belief?) -> Play? {
+    guard !c.hand.isEmpty else { return nil }
+    let planner = Planner(hand: c.hand, rules: c.rules, unseen: unseenCards(c),
+                          maxHold: opponentCounts(c).max() ?? 0, reading: belief)
+    return decide(c, planner: planner, reading: belief != nil)
+  }
+
+  /// The policy itself, with the plan already built. ⚠️ `ExpertBot` needs the same
+  /// `Planner` for its candidate list and its answer, and building one twice is most
+  /// of a decision's cost — so the split is not cosmetic.
+  static func decide(_ c: BotContext, planner: Planner, reading: Bool) -> Play? {
     let hand = c.hand
-    guard !hand.isEmpty else { return nil }
     let counts = opponentCounts(c)
-    let planner = Planner(hand: hand, rules: c.rules, unseen: unseenCards(c),
-                          maxHold: counts.max() ?? 0, reading: belief)
     let options = planner.choices(beating: c.table, mustInclude: c.mustInclude)
     guard !options.isEmpty else { return nil }
     if let out = options.first(where: { $0.play.count == hand.count }) { return out.play }
@@ -51,7 +58,7 @@ public enum StrongBot {
       return lead(options, counts, stance: stance, dumping: dumping)
     }
     return follow(options, counts, table, handCount: hand.count,
-                  stance: stance, dumping: dumping, reading: belief != nil)
+                  stance: stance, dumping: dumping, reading: reading)
   }
 
   // MARK: - Points
