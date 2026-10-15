@@ -129,10 +129,8 @@ What that would then unblock, all of which was manual in that session:
 
 ### Other open items from that session
 
-- PR #19 — AdMob banner. CI green. Ad ids are still Google's public **test** ids, in
-  `BigTwoApp/AdUnits.swift` and `GADApplicationIdentifier` in `project.yml`; both must be
-  swapped before ads ship. The App Store "App Privacy" answers still say *Data Not
-  Collected*, which stops being true with AdMob — web-only to change.
+- PR #19 — AdMob banner. Removed again on 2026-10-15 while the ids were still Google's
+  public test ids. The App Store privacy answers stay *Data Not Collected*.
 - PR #20 — the watch app, this purchase, the gestures and the preference sync. CI green
   after registering the App ID `com.billchan.BigTwo.watchkitapp` ("Big Two Watch") on
   2026-09-30 — cloud signing creates profiles but never identifiers, which is why the

@@ -7,14 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27CD21131E80B53019135646 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = FADC921B7FE2D0F7E89E4087 /* GoogleMobileAds */; };
 		2A1D9E518801EC86590EF4BC /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1E9AED8F0018997AF033D4F /* BigTwoKit */; };
 		4AFAC60F773A48A92D16FF96 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A852571B0C89898A92734F29 /* InfoPlist.strings */; };
 		7F0ED94B42DF2A63BCA961D9 /* BigTwoWatch.app in Embed Dependencies */ = {isa = PBXBuildFile; fileRef = EB7E40368D51FB10F526D6BD /* BigTwoWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		89D534DEB3B883290D7C921C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55C6A95A29B45DFFA1118209 /* Localizable.strings */; };
 		A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 986DEBFCCDA0844CFA741BF5 /* BigTwoKit */; };
 		B7352E8AEB3975AD94BD06E9 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3CD85A8542B9E2E7A1D7657 /* L10n.swift */; };
-		E2572E164590372F0894CC83 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = 06206BC369383315183ACC01 /* GoogleUserMessagingPlatform */; };
 		F42C7A0603DBD506BC6DABC0 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924D892FDC322C4628399167 /* Palette.swift */; };
 /* End PBXBuildFile section */
 
@@ -147,8 +145,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A41B49323B6F77BE0F3924F8 /* BigTwoKit in Frameworks */,
-				27CD21131E80B53019135646 /* GoogleMobileAds in Frameworks */,
-				E2572E164590372F0894CC83 /* GoogleUserMessagingPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,8 +189,8 @@
 				CFC1E73611E04177154931CC /* BigTwoWatchUITests */,
 				C47E98700BE8F6BBA6FCA177 /* Configurations */,
 				635832212CE93223D4D8B082 /* Packages */,
-				17C9AF0B3B21FDAF0362F687 /* Resources */,
 				05C8A9CCC6DE5B5EA808AFBD /* Resources */,
+				17C9AF0B3B21FDAF0362F687 /* Resources */,
 				E3D485B5205684A1870C81B4 /* Shared */,
 				2F41931DDF09F9CC37F7A690 /* Products */,
 			);
@@ -319,8 +315,6 @@
 			name = BigTwo;
 			packageProductDependencies = (
 				986DEBFCCDA0844CFA741BF5 /* BigTwoKit */,
-				FADC921B7FE2D0F7E89E4087 /* GoogleMobileAds */,
-				06206BC369383315183ACC01 /* GoogleUserMessagingPlatform */,
 			);
 			productName = BigTwo;
 			productReference = D1E6F54E90EA2E4F84F4B732 /* BigTwo.app */;
@@ -372,8 +366,6 @@
 			mainGroup = 5E67529F69D4DCCF9405F8B3;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				03919DA10DC06817C072B67F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
-				7D5FD29849A8A43DDDF4B6C5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
 				611E27EB4DF749BA5655C5CD /* XCLocalSwiftPackageReference "BigTwoKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -813,31 +805,7 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		03919DA10DC06817C072B67F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 13.10.0;
-			};
-		};
-		7D5FD29849A8A43DDDF4B6C5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-user-messaging-platform";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		06206BC369383315183ACC01 /* GoogleUserMessagingPlatform */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7D5FD29849A8A43DDDF4B6C5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
-			productName = GoogleUserMessagingPlatform;
-		};
 		986DEBFCCDA0844CFA741BF5 /* BigTwoKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BigTwoKit;
@@ -845,11 +813,6 @@
 		F1E9AED8F0018997AF033D4F /* BigTwoKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BigTwoKit;
-		};
-		FADC921B7FE2D0F7E89E4087 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03919DA10DC06817C072B67F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
