@@ -13,6 +13,23 @@ and the evidence.
 
 ---
 
+## drop-admob — 測試 id 還在，整段拿掉
+
+**正式版跟 Debug 要的是同一個公開測試 unit。** `releaseBanner` 從來沒換成真的
+ad unit，`GADApplicationIdentifier` 也還是 Google 的 sample app id。留著等於
+上架後只出 Test Ad，而且隱私政策已經在講 AdMob 會送資料。
+
+**UI 測試本來就沒有那 50pt。** `LaunchOptions.showAds` 在 `UITestMode` 下是
+false，導覽截圖是照「沒有廣告條」排的。拿掉之後，玩家看到的版面才跟截圖一樣；
+正方形在寬螢幕上仍由寬度決定，不會因為少了預留高度而變大。
+
+**plist 的 key 只活在 `project.yml`。** 刪 `BigTwo-Info.plist` 裡的
+`GADApplicationIdentifier` 不夠，下次 `xcodegen generate` 會從
+`info.properties` 寫回來。套件引用也在 `project.yml`，`Package.resolved`
+要一起清，不然 Xcode 還是會去抓 GoogleMobileAds。
+
+---
+
 ## expert-search — 搜尋重做一次，這次是贏的
 
 **上一次 playout 搜尋輸掉，輸的不是搜尋，是 playout policy。** 2026-10-10 那次

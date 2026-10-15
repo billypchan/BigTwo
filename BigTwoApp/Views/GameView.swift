@@ -16,7 +16,6 @@ struct GameView: View {
   @State private var nameDraft = ["", "", "", ""]
   /// True only for the first-launch name dialog, so OK can chain the watch note.
   @State private var nameIntro = false
-  @StateObject private var consent = AdConsent()
 
   enum Dialog { case menu, preferences, names, history, about, watchNotice, help }
 
@@ -33,40 +32,21 @@ struct GameView: View {
   private var rowOrder: [Int] { (0..<4).map { (seat + $0) % 4 } }
   private var played: Set<Card> { Set(Card.deck).subtracting(game.seats.flatMap(\.hand)) }
 
-  /// The banner sits in the bezel under the tracker, and the square is sized against
-  /// what is left — it never moves once the banner is up, whether or not an ad fills.
-  private var adHeight: CGFloat { LaunchOptions.showAds ? BannerAd.height : 0 }
-
   var body: some View {
     GeometryReader { geo in
-      let board = geo.size.height - adHeight
       let side = min(geo.size.width,
-                     (board - Self.trackerGap) / (1 + Self.trackerHeight / 320))
+                     (geo.size.height - Self.trackerGap) / (1 + Self.trackerHeight / 320))
       let u = side / 320
-      VStack(spacing: 0) {
-        VStack(spacing: Self.trackerGap) {
-          screen(u).frame(width: side, height: side)
-          CardTrackerView(played: played).frame(width: side, height: Self.trackerHeight * u)
-        }
-        .environment(\.palmUnit, u)
-        .frame(width: geo.size.width, height: board)
-        if LaunchOptions.showAds {
-          Group {
-            // Nothing is requested before UMP has answered, so the strip stays empty
-            // rather than serving an ad without consent.
-            if consent.isReady {
-              BannerAdView(width: geo.size.width)
-            }
-          }
-          .frame(width: geo.size.width, height: BannerAd.height)
-        }
+      VStack(spacing: Self.trackerGap) {
+        screen(u).frame(width: side, height: side)
+        CardTrackerView(played: played).frame(width: side, height: Self.trackerHeight * u)
       }
+      .environment(\.palmUnit, u)
       .frame(width: geo.size.width, height: geo.size.height)
     }
     .background(Color.bezel.ignoresSafeArea())
     .onAppear {
       game.applyDisplayNames(PlayerNames.defaults)
-      if LaunchOptions.showAds { consent.start() }
       // One dialog at a time. Ask for a name first; the watch note follows OK.
       if NamePrompt.shouldShow {
         showNames(intro: true)
