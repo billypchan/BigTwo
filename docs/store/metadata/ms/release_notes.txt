@@ -1,6 +1,8 @@
-Versi 1.3
+Versi 1.4
 
-• Main permainan penuh pada Apple Watch — peraturan, bot dan mata yang sama
-• Satu pembelian membuka jam tangan. Apl jam dipasang bersama telefon; beli atau pulihkan pada jam
-• Bot Kuat kini membezakan kad lemah dan kuat sebelum menggunakan kad 2
-• Tetapan dan nama pemain kekal seiring antara telefon dan jam tangan
+• Bantuan menerangkan butang dan peraturan
+• Kali pertama dibuka, permainan meminta nama anda. Baris gelap ialah anda
+• Bahasa Jerman ialah bahasa baharu
+• Bot Kuat bermain lebih kuat, dan Kuat kekal lalai
+• Pakar ialah tahap bot baharu. Ia membaca kad yang sudah dimainkan. Pilih di Bot
+• Perihal menambah Belanja Saya Kopi, serta satu pemberitahuan: Kini di Apple Watch

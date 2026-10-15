@@ -1,6 +1,8 @@
-Phiên bản 1.3
+Phiên bản 1.4
 
-• Chơi trọn ván trên Apple Watch — cùng luật, cùng máy, cùng cách tính điểm
-• Một lần mua để mở khóa đồng hồ. Ứng dụng đồng hồ cài cùng điện thoại; mua hoặc khôi phục trên đồng hồ
-• Máy Mạnh nay phân biệt bài yếu và bài mạnh trước khi đánh lá 2
-• Cài đặt và tên người chơi giữ đồng bộ giữa điện thoại và đồng hồ
+• Trợ giúp giải thích các nút và luật chơi
+• Lần đầu mở game sẽ hỏi tên bạn. Hàng đậm là bạn
+• Thêm tiếng Đức
+• Máy Mạnh chơi khá hơn, và Mạnh vẫn là mặc định
+• Cao thủ là mức máy mới. Nó đọc các lá đã đánh. Chọn trong Máy
+• Giới thiệu thêm Mời tôi ly cà phê, và một lần báo rằng giờ có trên Apple Watch

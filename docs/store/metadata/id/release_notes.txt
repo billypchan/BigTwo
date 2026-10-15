@@ -1,6 +1,8 @@
-Versi 1.3
+Versi 1.4
 
-• Main permainan penuh di Apple Watch — aturan, bot, dan skor yang sama
-• Satu pembelian membuka kunci jam tangan. Aplikasi jam terpasang bersama ponsel; beli atau pulihkan di jam
-• Bot Kuat kini membedakan kartu lemah dan kuat sebelum memakai kartu 2
-• Pengaturan dan nama pemain tetap selaras di ponsel dan jam tangan
+• Bantuan menjelaskan tombol dan aturan
+• Pertama kali dibuka, game meminta nama Anda. Baris gelap adalah Anda
+• Bahasa Jerman adalah bahasa baru
+• Bot Kuat bermain lebih kuat, dan Kuat tetap bawaan
+• Ahli adalah tingkat bot baru. Ia membaca kartu yang sudah dimainkan. Pilih di Bot
+• Tentang menambah Traktir Saya Kopi, plus satu kali pemberitahuan: Kini di Apple Watch

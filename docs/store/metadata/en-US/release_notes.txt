@@ -1,6 +1,8 @@
-Version 1.3
+Version 1.4
 
-• Play the full game on Apple Watch — the same rules, the same bots, the same scoring
-• One purchase unlocks the watch. The watch app installs with the phone app; buy or restore on the watch
-• Strong bots now tell a weak hand from a strong one before they spend a two
-• Settings and player names stay in step between the phone and the watch
+• Help explains the buttons and the rules
+• The first launch asks you to enter a name. The dark row is you
+• German is a new language
+• Strong bots play a stronger game, and Strong stays the default
+• Expert is a new bot level. It reads the cards already played. Choose it under Bots
+• About adds Buy Me a Coffee, and a one-time note that the game is on Apple Watch
