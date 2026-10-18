@@ -13,6 +13,20 @@ and the evidence.
 
 ---
 
+## real-admob-ids — 正式 id 換上，Debug 仍用測試 unit
+
+**帳號裡本來沒有 Big Two。** AdMob 的 app 清單沒有這支。新 app 是 iOS、已上架、
+App Store id `6811548119`，出來的 app id 是
+`ca-app-pub-4810336293797836~4616455246`。Banner unit 名叫 Banner，
+`ca-app-pub-4810336293797836/6353715341`。
+
+**Debug 不能要正式 unit。** Google 的測試 banner 可以跟正式 app id 一起用，所以
+`#if DEBUG` 仍是 `ca-app-pub-3940256099942544/2934735716`。點到正式廣告會停權。
+
+**app-ads.txt 還沒通過。** 建立流程停在 Verify app：「We couldn't verify Big Two
+鋤大弟 (iOS)」。支援網址是 GitHub Issues，根目錄放不了那個檔。廣告可以先請求，
+審核完成前供量是受限的。
+
 ## expert-search — 搜尋重做一次，這次是贏的
 
 **上一次 playout 搜尋輸掉，輸的不是搜尋，是 playout policy。** 2026-10-10 那次

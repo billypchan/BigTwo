@@ -325,10 +325,11 @@ the square, so the game is laid out against what is left.
 - **A fixed `AdSizeBanner`, never an anchored adaptive one.** Adaptive returns a height
   that follows the screen (up to 15% of it); the 50pt strip would clip it.
   `updateUIView` must not reload — every load is an impression.
-- `AdUnits.swift` holds Google's **public test ids**, and `GADApplicationIdentifier`
-  in `project.yml` is the test app id. ⚠️ Both must be swapped before ads ship, and the
-  plist one lives in `project.yml` — editing `BigTwo-Info.plist` by hand is lost on the
-  next generate. **Never tap a real ad in a debug build**; the account gets suspended.
+- `GADApplicationIdentifier` in `project.yml` is the real app id
+  (`ca-app-pub-4810336293797836~4616455246`). Debug requests Google's public test
+  banner; Release requests `AdUnits.releaseBanner`. Editing the plist by hand is
+  lost on the next generate. **Never tap a real ad in a debug build**; the account
+  gets suspended. A Release build is the one that asks for the real unit.
 - UMP consent runs first (`AdConsent`): nothing is requested until it answers. In DEBUG
   the geography is forced to `.EEA` so the form can be seen. ⚠️ `.disabled` does **not**
   hide the form on a Mac that is physically in the EEA, and UMP stores its answer in the
