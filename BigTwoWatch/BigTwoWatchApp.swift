@@ -22,6 +22,15 @@ struct BigTwoWatchApp: App {
     UserDefaults.standard.string(forKey: "seed").flatMap(UInt64.init)
   }
 
+  /// `-autoplay YES` gives the human seat to a bot, so a deal can finish itself.
+  private static var autoplay: Bool { UserDefaults.standard.bool(forKey: "autoplay") }
+
+  /// `-dealsPerGame 1` ends on Final Score after one deal.
+  private static var dealsPerGame: Int? {
+    UserDefaults.standard.object(forKey: "dealsPerGame") as? Int
+      ?? UserDefaults.standard.string(forKey: "dealsPerGame").flatMap(Int.init)
+  }
+
   /// The watch keeps its own preferences, so the sort order survives a relaunch the way
   /// it does on the phone. Nothing is shared with the phone's copy — they are separate
   /// devices running separate games.
@@ -45,8 +54,14 @@ struct BigTwoWatchApp: App {
   init() {
     let store = Self.makeStore()
     self.store = store
-    _game = StateObject(wrappedValue: BigTwoGame(preferences: store.load(), seed: Self.seed,
-                                                 humanSeats: [1]))
+    let game = BigTwoGame(preferences: store.load(), seed: Self.seed,
+                          humanSeats: Self.autoplay ? [] : [1])
+    // The same 150ms the phone uses, or a one-deal UI test waits on the real speed.
+    if ProcessInfo.processInfo.arguments.contains("UITestMode") {
+      game.botDelayOverride = 0.15
+    }
+    if let deals = Self.dealsPerGame { game.dealsPerGameOverride = deals }
+    _game = StateObject(wrappedValue: game)
   }
 
   var body: some Scene {

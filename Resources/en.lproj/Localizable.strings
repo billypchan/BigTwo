@@ -44,6 +44,9 @@
 "Classic" = "Classic";
 "Strong" = "Strong";
 "Expert" = "Expert";
+"Set bots to Expert?" = "Set bots to Expert?";
+"You beat Strong." = "You beat Strong.";
+"Not now" = "Not now";
 "Game speed:" = "Game speed:";
 "Sort cards by:" = "Sort cards by:";
 "Slow" = "Slow";

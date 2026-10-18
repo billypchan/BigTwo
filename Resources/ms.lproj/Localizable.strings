@@ -41,6 +41,9 @@
 "Classic" = "Klasik";
 "Strong" = "Kuat";
 "Expert" = "Pakar";
+"Set bots to Expert?" = "Tukar bot ke Pakar?";
+"You beat Strong." = "Anda mengalahkan Kuat.";
+"Not now" = "Nanti";
 "Game speed:" = "Kelajuan:";
 "Sort cards by:" = "Susun kad:";
 "Slow" = "Perlahan";

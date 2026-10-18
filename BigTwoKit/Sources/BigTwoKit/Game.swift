@@ -126,6 +126,14 @@ public final class BigTwoGame: ObservableObject {
 
   public var humanSeat: Int? { seats.firstIndex { $0.isHuman } }
   public var isHumanTurn: Bool { seats[turn].isHuman }
+
+  /// Final Score should ask about Expert. A deal's *WIN!* is not a game, and autoplay
+  /// has no human seat, so it never asks on its own.
+  public var offerExpert: Bool {
+    ExpertOffer.shouldAsk(botLevel: preferences.botLevel, gameOver: gameOver,
+                          scores: seats.map(\.score), humanSeat: humanSeat)
+  }
+
   public var mustPlayThreeOfDiamonds: Bool { openingPlay }
 
   /// True once the player has typed at least one custom name.

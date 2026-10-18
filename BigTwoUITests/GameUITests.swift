@@ -224,6 +224,55 @@ final class GameUITests: XCTestCase {
     XCTAssertEqual(XCTWaiter().wait(for: [expectation], timeout: 5), .completed, "by suit: 3d Jd …")
   }
 
+  /// Final Score's New Game asks, and Expert is what the next game is played with.
+  /// `-offerExpert YES` stands in for a real win: autoplay has no human seat.
+  func testExpertOffer_setsTheBots() {
+    app = .bigTwo(["-autoplay", "YES", "-dealsPerGame", "1", "-offerExpert", "YES"])
+    app.launch()
+    let score = app.buttons["score_ok"]
+    XCTAssertTrue(score.waitForExistence(timeout: 120), "the bots never finished the game")
+    score.tap()
+    let yes = app.buttons["expert_yes"]
+    XCTAssertTrue(yes.waitForExistence(timeout: 10), "Final Score did not ask about Expert")
+    XCTAssertTrue(app.buttons["expert_no"].exists)
+    attachScreen("expert_offer")
+    yes.tap()
+    XCTAssertTrue(yes.waitForNonExistence(timeout: 10))
+    // The next game is already dealing. Reading Preferences in that process races
+    // the score sheet, which covers the dialog when the deal ends.
+    app.terminate()
+    app = .bigTwo(["-keepPreferences", "YES"])
+    app.launch()
+
+    openPreferences()
+    let expert = app.buttons["pref_bots_Expert"]
+    XCTAssertTrue(expert.waitForExistence(timeout: 5))
+    waitFor(expert, selected: true)
+    XCTAssertFalse(app.buttons["pref_bots_Strong"].isSelected)
+  }
+
+  /// Declining leaves Strong. Both buttons continuing is what this catches.
+  func testExpertOffer_notNowLeavesStrong() {
+    app = .bigTwo(["-autoplay", "YES", "-dealsPerGame", "1", "-offerExpert", "YES"])
+    app.launch()
+    let score = app.buttons["score_ok"]
+    XCTAssertTrue(score.waitForExistence(timeout: 120), "the bots never finished the game")
+    score.tap()
+    let no = app.buttons["expert_no"]
+    XCTAssertTrue(no.waitForExistence(timeout: 10))
+    no.tap()
+    XCTAssertTrue(no.waitForNonExistence(timeout: 10))
+    app.terminate()
+    app = .bigTwo(["-keepPreferences", "YES"])
+    app.launch()
+
+    openPreferences()
+    let strong = app.buttons["pref_bots_Strong"]
+    XCTAssertTrue(strong.waitForExistence(timeout: 5))
+    waitFor(strong, selected: true)
+    XCTAssertFalse(app.buttons["pref_bots_Expert"].isSelected)
+  }
+
   func testScoreDialog_isModal() {
     app = .bigTwo(["-autoplay", "YES"])
     app.launch()

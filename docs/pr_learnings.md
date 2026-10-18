@@ -13,6 +13,45 @@ and the evidence.
 
 ---
 
+## expert-after-win — 贏了強，才問要不要換高手
+
+**問的是整局，不是一墩。** `*WIN!*` 只是一墩打完。要等十墩結束、最終分數的
+New Game 被按下去，而且人類那一席的分數**嚴格最高**。平手不問（0–0 也不問）；
+負分但仍然最高算贏。Classic 和 Expert 都不問。autoplay 沒有人類座位，
+`offerExpert` 永遠是 false，所以現有的最終分數巡覽不會突然彈出這個對話。
+UI 測試要看到它，得另外帶 `-offerExpert YES`，而且這個旗標也只在 `gameOver`
+時生效。
+
+**等級要在發下一局之前寫進去。** `continueAfterScore()` 在整局結束時會立刻
+`startGame()`。先設 `botLevel = .expert`，再繼續。
+
+**兩個對話不要疊。** 問題蓋在分數表上面時，分數表的 New Game 從兩顆藥丸底下
+露出來。手機改成二選一：`expertOffer` 為真就只畫問題。
+
+**手錶的 `.sheet` 閉包不會因為外面的旗標翻轉而重畫。** 在 `WatchGameView` 上
+切 `@State`、在 `.sheet` 裡分支，畫面停在分數表。交換必須住在 sheet 自己的
+view（`WatchScoreSheetView` 的 `@State asking`）。
+
+**手錶上，容器的 accessibility identifier 會吃掉子按鈕的 id。** `expert_offer`
+加在 VStack 上之後，畫面上明明是問題和兩顆按鈕，階層裡每一個的 identifier 都
+變成 `expert_offer`，測試點 `expert_yes` 點不到。拿掉容器 id，改
+`.accessibilityElement(children: .contain)`。
+
+**同一進程裡去讀 Preferences，會跟下一局的自動打牌搶畫面。** `-dealsPerGame 1`
+的 autoplay 一結束就再蓋上最終分數；Expert 沒設成功時 `-offerExpert YES` 會再
+問一次，`waitFor` 等到的是「找不到 `pref_bots_Expert`」，不是
+`isSelected == false`。測試改成結束後 terminate，用 `-keepPreferences YES`
+重開再進 Preferences。故意拿掉賦值之後，失敗變成乾淨的 `false != true`
+（`GameUITests.swift:250`）。手錶那條不用重開：滑到 Preferences 頁讀
+`isSelected`，拿掉賦值時的失敗是「Expert was not the bot level after the offer」
+（`WatchExpertOfferUITests.swift:31`）。
+
+**不要把「不要再問」放進 `Preferences`。** 這次根本沒有持久的抑制旗標——先不要
+只代表這一局，下一局再贏還會問。如果以後要加，跟 `watchNoticeShown.v1` 一樣放
+UserDefaults，不要放會同步到手錶的 `Preferences`。
+
+---
+
 ## expert-search — 搜尋重做一次，這次是贏的
 
 **上一次 playout 搜尋輸掉，輸的不是搜尋，是 playout policy。** 2026-10-10 那次

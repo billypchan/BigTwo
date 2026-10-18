@@ -41,6 +41,9 @@
 "Classic" = "Cổ điển";
 "Strong" = "Mạnh";
 "Expert" = "Cao thủ";
+"Set bots to Expert?" = "Đổi máy sang Cao thủ?";
+"You beat Strong." = "Bạn đã thắng Mạnh.";
+"Not now" = "Để sau";
 "Game speed:" = "Tốc độ:";
 "Sort cards by:" = "Xếp bài:";
 "Slow" = "Chậm";

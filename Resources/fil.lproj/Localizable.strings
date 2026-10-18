@@ -41,6 +41,9 @@
 "Classic" = "Klasiko";
 "Strong" = "Malakas";
 "Expert" = "Eksperto";
+"Set bots to Expert?" = "Palitan ng Eksperto?";
+"You beat Strong." = "Nanalo ka sa Malakas.";
+"Not now" = "Huwag muna";
 "Game speed:" = "Bilis:";
 "Sort cards by:" = "Ayusin:";
 "Slow" = "Mabagal";

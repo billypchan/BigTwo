@@ -77,9 +77,7 @@ struct WatchGameView: View {
       message = nil
     }
     .sheet(item: Binding(get: { game.result }, set: { _ in })) { result in
-      WatchScoreView(result: result, seats: game.seats, gameOver: game.gameOver) {
-        game.continueAfterScore()
-      }
+      WatchScoreSheetView(game: game, result: result)
     }
   }
 

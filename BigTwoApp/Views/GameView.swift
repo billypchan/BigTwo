@@ -16,6 +16,8 @@ struct GameView: View {
   @State private var nameDraft = ["", "", "", ""]
   /// True only for the first-launch name dialog, so OK can chain the watch note.
   @State private var nameIntro = false
+  /// Final Score is still up; New Game asked whether to leave Strong.
+  @State private var expertOffer = false
   @StateObject private var consent = AdConsent()
 
   enum Dialog { case menu, preferences, names, history, about, watchNotice, help }
@@ -165,8 +167,23 @@ struct GameView: View {
 
   @ViewBuilder
   private func overlay(_ u: CGFloat) -> some View {
+    // The question replaces the score sheet. Drawing it on top left New Game
+    // sticking out under the two pills.
+    if expertOffer {
+      modal(u) {
+        ExpertOfferDialogView(onExpert: acceptExpert, onDecline: declineExpert)
+      }
+    } else {
+      scoreOrDialog(u)
+    }
+  }
+
+  @ViewBuilder
+  private func scoreOrDialog(_ u: CGFloat) -> some View {
     if let result = game.result {
-      modal(u) { ScoreDialogView(game: game, result: result) }
+      modal(u) {
+        ScoreDialogView(game: game, result: result, onContinue: continueFromScore)
+      }
     } else if let dialog {
       switch dialog {
       case .menu:
@@ -216,6 +233,27 @@ struct GameView: View {
         }
       }
     }
+  }
+
+  /// New Game on a won Strong game asks first. The level has to change before the
+  /// next game is dealt, or that game is still Strong.
+  private func continueFromScore() {
+    if game.gameOver && (game.offerExpert || LaunchOptions.offerExpert) {
+      expertOffer = true
+    } else {
+      game.continueAfterScore()
+    }
+  }
+
+  private func acceptExpert() {
+    game.preferences.botLevel = .expert
+    expertOffer = false
+    game.continueAfterScore()
+  }
+
+  private func declineExpert() {
+    expertOffer = false
+    game.continueAfterScore()
   }
 
   private func modal<Content: View>(_ u: CGFloat, @ViewBuilder _ content: () -> Content) -> some View {

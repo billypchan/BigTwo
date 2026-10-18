@@ -282,7 +282,10 @@ the layer that changed how the game feels.
 - **Strong stays the default.** Expert is a third pill on the phone and the watch;
   ⚠️ the watch's Bots row is below the fold and a watchOS test cannot scroll, so
   `testPreferencesOKReturnsToTheTable` asserting `pref_bots_Expert` exists is the only
-  thing that says the pill reached the watch.
+  thing that says the pill reached the watch. Winning a Strong game — the human's
+  score strictly the highest when Final Score's New Game is tapped — asks to set
+  Expert. A tie does not ask. Not now leaves Strong and asks again next win. The
+  level is set before the next game is dealt.
 
 ## The move generator
 
@@ -447,7 +450,9 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   That switch is `#if DEBUG` only.
 - **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
   and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
-  (`-seed 2` gives it the same fixed deal the phone suite uses):
+  (`-seed 2` gives it the same fixed deal the phone suite uses). Under `UITestMode`
+  the bots wait 0.15s, and `-autoplay` / `-dealsPerGame` mean the same thing they do
+  on the phone.
 
   ```bash
   xcodebuild test -project BigTwo.xcodeproj -scheme BigTwoWatch \
@@ -602,7 +607,7 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 106 tests, ~9s
+swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 107 tests, ~9s
 swift test --package-path BigTwoKit --filter PlayTests                    # debug is fine for one file
 ```
 
@@ -639,6 +644,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-showAds YES` | Put the banner back in a UI test — it is off in `UITestMode` by default |
 | `-watchNotice YES` | Show the one-time Apple Watch note, which `UITestMode` otherwise suppresses |
 | `-askName YES` | Open the first-launch name dialog, which `UITestMode` otherwise suppresses. It is shown before the watch note |
+| `-offerExpert YES` | On Final Score, tapping New Game asks to set the bots to Expert even when the human did not win. Autoplay has no human seat, so a UI test cannot reach the real condition. The watch reads the same flag |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
@@ -813,7 +819,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 106 kit tests
+Single-player against three bots is complete and runs on the simulator; 107 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is
