@@ -13,6 +13,21 @@ and the evidence.
 
 ---
 
+## watch-one-game-trial — 試玩一局，計的是打完的墩
+
+**遊戲物件在付費牆後面就存在。** `BigTwoWatchApp` 一啟動就 `BigTwoGame()`，機器人
+會自己走。不先 `startPaused`，試玩的那一局會在玩家按 Try 之前打完，1-deal 的
+autoplay 測試也會在商店畫面後面結束。桌子出現時才 `resumeBots()`。
+
+**最後一墩的計分表要留著。** 墩結束就累計，但 `canPlay` 仍為真，按掉計分表才
+`requirePurchase()`。故意讓那個按鈕永遠 `continueAfterScore` 時，
+`testOneGameThenThePurchase` 停在 “the paywall did not come back”：計分表有出現，
+付費牆沒有回來。
+
+**計數不進 `Preferences`。** 那個會同步到手機，手錶的試玩不該被手機蓋掉。
+`UITestMode` 每次清掉，不然花掉試玩的測試會讓下一輪開在沒有 Try 的付費牆。
+中途殺掉 App 不會把已打完的墩還回來；牌面沒有存檔，所以沒打完的那一墩可以再打一次。
+
 ## expert-search — 搜尋重做一次，這次是贏的
 
 **上一次 playout 搜尋輸掉，輸的不是搜尋，是 playout policy。** 2026-10-10 那次

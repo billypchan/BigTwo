@@ -96,6 +96,9 @@
 "Buy" = "Mua";
 "The App Store could not be reached." = "Không kết nối được App Store.";
 "Restore Purchase" = "Khôi phục";
+"Try one game" = "Chơi thử một ván";
+"One game is free. Then one purchase, no subscription." = "Một ván miễn phí. Sau đó mua một lần, không thuê bao.";
+"Your free game is over. One purchase, no subscription." = "Ván miễn phí đã hết. Mua một lần, không thuê bao.";
 
 /* Help */
 "Help" = "Trợ giúp";

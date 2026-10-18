@@ -443,8 +443,19 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   carried `WKApplication`, `WKCompanionAppBundleIdentifier` and device family 4.
 - ⚠️ **The paywall is on** (`BigTwoWatchApp.paywallEnabled`). The product exists, and the
   binary that goes to review has to show it — a build that plays for free gives the
-  reviewer nothing to buy. Watch UI tests pass `-unlocked YES` so they open on the game.
-  That switch is `#if DEBUG` only.
+  reviewer nothing to buy. The first screen is that paywall: Buy, Restore, and
+  **Try one game**. The free game is `dealsPerGame` finished deals (10, or
+  `-dealsPerGame`). The count is `watchTrial.dealsFinished` in the watch's own
+  UserDefaults — ⚠️ not `Preferences`, which syncs to the phone. `UITestMode` wipes it
+  unless `-keepPreferences YES`, same trap as the sort order. The score sheet of the
+  last deal stays up; dismissing it is what brings the paywall back, with no Try.
+  Killing the app mid-deal does not refund the deals already finished. The table is
+  not restored, so that one unfinished deal can be played again.
+  `-unlocked YES` (debug) skips the paywall. `-trialUsed YES` (debug) opens the spent
+  one. Both are `#if DEBUG` only.
+- ⚠️ **The game object exists behind the paywall.** It is created `startPaused`, and
+  `WatchGameView.onAppear` calls `resumeBots()`. An unpaused game would play the free
+  trial out before Try.
 - **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
   and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
   (`-seed 2` gives it the same fixed deal the phone suite uses):
@@ -464,8 +475,8 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   shot (width ≤ 600) instead of the phone's 8%, because a 46mm clock sits at rows 39–63
   of 496 — measured, not guessed — while the app's title bar starts at ~22%. A change one
   row below that band is still treated as a real change.
-- `-unlocked YES` skips the paywall in a debug build; it is `#if DEBUG` only and a Release
-  build does not compile it.
+- `-unlocked YES` skips the paywall in a debug build; `-trialUsed YES` opens the paywall
+  after the free game. Both are `#if DEBUG` only and a Release build does not compile them.
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.

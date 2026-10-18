@@ -97,6 +97,9 @@
 "Buy" = "购买";
 "The App Store could not be reached." = "无法连接 App Store。";
 "Restore Purchase" = "恢复购买";
+"Try one game" = "试玩一局";
+"One game is free. Then one purchase, no subscription." = "可免费打一局。之后一次购买，不是订阅。";
+"Your free game is over. One purchase, no subscription." = "免费的一局已完。一次购买，不是订阅。";
 
 /* Help */
 "Help" = "说明";

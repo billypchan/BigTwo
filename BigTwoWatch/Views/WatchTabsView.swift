@@ -15,7 +15,10 @@ import SwiftUI
 struct WatchTabsView: View {
   @ObservedObject var game: BigTwoGame
   @ObservedObject var sync: PreferenceSync
+  @ObservedObject var trial: WatchTrial
   let store: PreferencesStore
+  /// False once the purchase is owned, so a bought game is not counted as the trial.
+  let trialActive: Bool
 
   @State private var page = Page.table
 
@@ -25,7 +28,7 @@ struct WatchTabsView: View {
     // Horizontal paging, not vertical: the table scrolls under the Digital Crown, and a
     // vertically paged TabView would take the Crown away from it.
     TabView(selection: $page) {
-      WatchGameView(game: game).tag(Page.table)
+      WatchGameView(game: game, trial: trial, trialActive: trialActive).tag(Page.table)
       WatchPreferencesView(game: game) { page = .table }.tag(Page.preferences)
       WatchAboutView().tag(Page.about)
     }
@@ -46,5 +49,8 @@ struct WatchTabsView: View {
 }
 
 #Preview {
-  WatchTabsView(game: BigTwoGame(seed: 2), sync: PreferenceSync(), store: PreferencesStore())
+  WatchTabsView(game: BigTwoGame(seed: 2), sync: PreferenceSync(),
+                trial: WatchTrial(defaults: UserDefaults(suiteName: "WatchTrialPreview") ?? .standard,
+                                  resetsForUITest: false),
+                store: PreferencesStore(), trialActive: false)
 }
