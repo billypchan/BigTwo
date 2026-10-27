@@ -75,7 +75,9 @@ enum ExpertSearch {
                       owner: c.tableOwner ?? c.seat, rules: c.rules)
     if let play {
       let move = Move(mask: CardSet(play.cards).bits, kind: play.kind, strength: play.strength)
-      if let winner = sim.apply(move) { return Playout.points(sim.hands, winner: winner)[c.seat] }
+      if let winner = sim.apply(move) {
+        return Playout.points(sim.hands, winner: winner, rules: c.rules)[c.seat]
+      }
     } else {
       sim.applyPass()
     }

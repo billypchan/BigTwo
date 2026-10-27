@@ -101,7 +101,7 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   2px offset is the one exception — it is the Palm's), no blur, no glass.
 - Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
   green; Palm greys the text and keeps the white pill.
-- Prompt strings stay terse: "Your Play", "Your Lead", "*WIN!*", "DOUBLE!", "PASS".
+- Prompt strings stay terse: "Your Play", "Your Lead", "*WIN!*", "DOUBLE!", "TRIPLE!", "ALL!", "PASS".
   Visible copy goes through `L10n.string`; keys are the English UI text.
   `PalmButtonView.title` is `String`, so a `Text("literal")` lookup never runs there.
   Identifiers stay English (`pref_bots_Classic`). UI tests launch with
@@ -139,8 +139,9 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   left; the winner collects all three penalties.
 - 10 deals per game, then the score goes to the high-score list and the cycle restarts.
 - Hong Kong rule set (preference): last deal's winner leads, and 23456 becomes the largest
-  straight. **Takes effect from the next deal** — `BigTwoGame.rules` is fixed at each
-  deal, since a mid-deal change would re-rank the play on the table.
+  straight. Each card left costs 1, times 1 (up to 7), 2 (8–9), 3 (10–12) or 4 (13).
+  **Takes effect from the next deal** — `BigTwoGame.rules` is fixed at each
+  deal, since a mid-deal change would re-rank the play on the table and re-price the score.
 
 Every one of these has a test in `BigTwoKit/Tests` — change a rule, change its test.
 

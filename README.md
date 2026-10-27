@@ -32,7 +32,7 @@ Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
   kind on the quad.
 - Scoring: 3 costs 1 … 2 costs 13, doubled at 10+ cards left, winner collects the other three.
 - 10 deals per game, then reset.
-- Hong Kong rule set: last deal's winner leads, and 23456 becomes the largest straight.
+- Hong Kong rule set: last deal's winner leads, 23456 becomes the largest straight, and each card left costs 1, times 1 (up to 7), 2 (8 or 9), 3 (10 to 12) or 4 (13).
 - Autopass, separately toggleable for 5-card turns.
 - "I will not play with real money" when every score is zero.
 

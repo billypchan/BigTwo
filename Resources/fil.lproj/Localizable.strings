@@ -61,6 +61,8 @@
 "*WIN!*" = "*PANALO!*";
 "%d left" = "tira %d";
 "DOUBLE!" = "DOBLE!";
+"TRIPLE!" = "TRIPLE!";
+"ALL!" = "LAHAT!";
 
 "Copy" = "Kopyahin";
 "Export" = "I-export";
@@ -112,5 +114,5 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Ang parehong palo ay inihahambing sa pinakamataas na kard, saka ang palo nito. Ang full house sa tatlo. Ang apat sa apat.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Bawat natitirang kard ay katumbas ng numero: ang 3 ay 1, hanggang ang 2 ay 13. Sampu o higit ay doble. Kinukuha ng panalo ang tatlong kabuuan.";
 "A game is ten deals." = "Sampung ronda ang isang laro.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Sa Hong Kong rules, sa susunod na ronda: ang huling panalo ang unang laban, at ang 23456 ang pinakamataas na sunod.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four." = "Sa Hong Kong rules, sa susunod na ronda: ang huling panalo ang unang laban, at ang 23456 ang pinakamataas na sunod. Bawat natitirang kard ay 1: hanggang 7 ay isa, 8 o 9 ay dalawa, 10 hanggang 12 ay tatlo, at 13 ay apat.";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Ilagay ang pangalan mo. Ang madilim na hanay ay ikaw. Ang blanko ay pananatilihin ang pangalan.";

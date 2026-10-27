@@ -61,6 +61,8 @@
 "*WIN!*" = "*THẮNG!*";
 "%d left" = "còn %d";
 "DOUBLE!" = "GẤP ĐÔI!";
+"TRIPLE!" = "GẤP BA!";
+"ALL!" = "GẤP TƯ!";
 
 "Copy" = "Sao chép";
 "Export" = "Xuất";
@@ -112,5 +114,5 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Thùng so lá cao nhất, rồi chất lá đó. Cù lũ so bộ ba. Tứ quý so bốn lá.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Mỗi lá còn lại tính theo số: 3 là 1, đến 2 là 13. Từ mười lá thì nhân đôi. Người thắng lấy cả ba tổng.";
 "A game is ten deals." = "Một trận mười ván.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Luật Hồng Kông, từ ván sau: người thắng ván trước đi trước, và 23456 là sảnh lớn nhất.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four." = "Luật Hồng Kông, từ ván sau: người thắng ván trước đi trước, và 23456 là sảnh lớn nhất. Mỗi lá còn lại tính 1: đến 7 là một lần, 8 hoặc 9 là hai, 10 đến 12 là ba, và 13 là bốn.";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Nhập tên của bạn. Hàng đậm là bạn. Để trống thì giữ tên cũ.";

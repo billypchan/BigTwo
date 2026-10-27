@@ -13,6 +13,19 @@ and the evidence.
 
 ---
 
+## hk-scoring — 港式按張數炒，不按點數
+
+**每一張都是 1 分，倍數只看還剩幾張。** 0–7 張 ×1、8–9 ×2、10–12 ×3、13 ×4。
+2 和 3 一樣貴。公式只放在 `RuleSet.handPenalty`，`BigTwoGame.endDeal` 和
+`Playout.points` 都叫它；Expert 在港式下比的是這個分數。Strong 甩牌仍按點數，
+這次沒有改，否則標準規則的基準會跟著動。
+
+**分數表的 DOUBLE! 在港式不是「十張」。** 標準規則 10 張才雙倍。港式 8–9 才是
+DOUBLE!，10–12 是 TRIPLE!，13 是 ALL!。沿用 `>= 10` 會把炒三標成雙倍。
+
+**中途改偏好，這一舖的分數也不變。** `rules` 在發牌時固定。中途勾港式會連牌面
+上的組合一起重排，所以倍數也等到下一舖。
+
 ## real-admob-ids — 正式 id 換上，Debug 仍用測試 unit
 
 **帳號裡本來沒有 Big Two。** AdMob 的 app 清單沒有這支。新 app 是 iOS、已上架、

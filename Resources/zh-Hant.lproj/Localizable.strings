@@ -62,6 +62,8 @@
 "*WIN!*" = "*贏!*";
 "%d left" = "剩 %d";
 "DOUBLE!" = "加倍！";
+"TRIPLE!" = "炒三！";
+"ALL!" = "全炒！";
 
 "Copy" = "複製";
 "Export" = "匯出";
@@ -113,5 +115,5 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "同花比最大的一張，再比它的花色；葫蘆比三條的點數；四條比那四張的點數。";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "手上每剩一張牌就按點數扣分：3 計 1 分，順序到 2 計 13 分；剩十張或以上雙倍。贏家收齊其餘三家的分數。";
 "A game is ten deals." = "一局十舖。";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "用港式規則，由下一舖起：上一舖的贏家先出，23456 成為最大的順子。";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four." = "用港式規則，由下一舖起：上一舖的贏家先出，23456 成為最大的順子。剩牌每張 1 分：7 張或以下一倍，8 至 9 張兩倍，10 至 12 張三倍，13 張四倍。";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "輸入你的名字。深色那一列是你。留空就保留原來的名字。";

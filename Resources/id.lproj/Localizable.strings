@@ -61,6 +61,8 @@
 "*WIN!*" = "*MENANG!*";
 "%d left" = "sisa %d";
 "DOUBLE!" = "DOBEL!";
+"TRIPLE!" = "TRIPLE!";
+"ALL!" = "SEMUA!";
 
 "Copy" = "Salin";
 "Export" = "Ekspor";
@@ -112,5 +114,5 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Flush dibanding kartu tertinggi, lalu jenisnya. Full house dibanding tiga seangkanya. Empat seangka dibanding keempatnya.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Setiap kartu sisa dihitung angkanya: 3 bernilai 1, sampai 2 bernilai 13. Sepuluh kartu atau lebih digandakan. Pemenang mengambil ketiga jumlah itu.";
 "A game is ten deals." = "Satu permainan sepuluh ronde.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Aturan Hong Kong, mulai ronde berikut: pemenang tadi turun duluan, dan 23456 adalah straight terbesar.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four." = "Aturan Hong Kong, mulai ronde berikut: pemenang tadi turun duluan, dan 23456 adalah straight terbesar. Setiap kartu sisa bernilai 1: sampai 7 satu kali, 8 atau 9 dua kali, 10 sampai 12 tiga kali, dan 13 empat kali.";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Masukkan nama Anda. Baris gelap adalah Anda. Baris kosong mempertahankan namanya.";
