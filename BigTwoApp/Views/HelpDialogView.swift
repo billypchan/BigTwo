@@ -26,7 +26,7 @@ struct HelpDialogView: View {
     "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four.",
     "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals.",
     "A game is ten deals.",
-    "With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight.",
+    "With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again.",
   ]
 
   var body: some View {

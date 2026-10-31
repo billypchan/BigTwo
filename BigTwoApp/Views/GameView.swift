@@ -156,6 +156,7 @@ struct GameView: View {
   }
 
   private var prompt: String {
+    if game.offersRedeal { return "" }
     if let message { return message }
     if game.mustPlayThreeOfDiamonds && isYourTurn { return L10n.string("Lead with the 3♦") }
     if isYourTurn { return L10n.string(game.table == nil ? "Your Lead" : "Your Play") }
@@ -232,28 +233,40 @@ struct GameView: View {
           }
         }
       }
+    } else if game.offersRedeal {
+      // After the name prompt and the watch note. The deal stays put until then.
+      modal(u) {
+        RedealDialogView(onDealAgain: { game.redeal() }, onPlay: { game.declineRedeal() })
+      }
     }
   }
 
   /// New Game on a won Strong game asks first. The level has to change before the
-  /// next game is dealt, or that game is still Strong.
+  /// next game is dealt, or that game is still Strong. The review prompt waits until
+  /// the score is actually dismissed: asking while the Expert question is up stacks
+  /// a system dialog on the two pills.
   private func continueFromScore() {
     if game.gameOver && (game.offerExpert || LaunchOptions.offerExpert) {
       expertOffer = true
     } else {
-      game.continueAfterScore()
+      leaveScore()
     }
   }
 
   private func acceptExpert() {
     game.preferences.botLevel = .expert
     expertOffer = false
-    game.continueAfterScore()
+    leaveScore()
   }
 
   private func declineExpert() {
     expertOffer = false
+    leaveScore()
+  }
+
+  private func leaveScore() {
     game.continueAfterScore()
+    ReviewPrompt.askAfterDealIfNeeded()
   }
 
   private func modal<Content: View>(_ u: CGFloat, @ViewBuilder _ content: () -> Content) -> some View {

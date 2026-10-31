@@ -99,6 +99,9 @@
 "Buy" = "Kaufen";
 "The App Store could not be reached." = "Der App Store ist nicht erreichbar.";
 "Restore Purchase" = "Kauf wiederherstellen";
+"Try one game" = "Ein Spiel testen";
+"One game is free. Then one purchase, no subscription." = "Ein Spiel ist gratis. Danach einmal kaufen, kein Abo.";
+"Your free game is over. One purchase, no subscription." = "Das Gratisspiel ist vorbei. Einmal kaufen, kein Abo.";
 
 "Tap a card to pick it. Tap it again to put it back." = "Tippe eine Karte an, um sie zu wählen. Noch einmal, um sie zurückzulegen.";
 "Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "Doppeltippen nimmt das Paar oder den Drilling, oder die ganze Farbe, wenn du fünf oder mehr davon hast.";
@@ -113,4 +116,7 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Ein Flush zählt nach seiner höchsten Karte, dann deren Farbe. Ein Full House nach dem Drilling. Ein Vierling nach den vier Karten.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Jede Restkarte zählt nach ihrem Wert: 3 ist 1, bis 2, das 13 ist. Zehn oder mehr Restkarten verdoppeln. Der Gewinner nimmt alle drei Summen.";
 "A game is ten deals." = "Ein Spiel hat zehn Runden.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Mit Hongkong-Regeln, ab der nächsten Runde: der letzte Gewinner beginnt, und 23456 ist die höchste Straße.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Mit Hongkong-Regeln, ab der nächsten Runde: der letzte Gewinner beginnt, und 23456 ist die höchste Straße. Eine Hand mit zwei oder weniger Bildkarten, ohne Ass und ohne 2, darf neu gegeben werden.";
+"Bad hand" = "Schlechte Hand";
+"Two or fewer face cards, and no ace or two." = "Zwei oder weniger Bildkarten, und kein Ass und keine 2.";
+"Deal again" = "Neu geben";

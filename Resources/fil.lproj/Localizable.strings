@@ -99,6 +99,9 @@
 "Buy" = "Bilhin";
 "The App Store could not be reached." = "Hindi maabot ang App Store.";
 "Restore Purchase" = "Ibalik ang Binili";
+"Try one game" = "Subukan ang isang laro";
+"One game is free. Then one purchase, no subscription." = "Isang libreng laro. Pagkatapos, isang bili, hindi subscription.";
+"Your free game is over. One purchase, no subscription." = "Tapos na ang libreng laro. Isang bili, hindi subscription.";
 
 /* Help */
 "Help" = "Tulong";
@@ -115,5 +118,8 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Ang parehong palo ay inihahambing sa pinakamataas na kard, saka ang palo nito. Ang full house sa tatlo. Ang apat sa apat.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Bawat natitirang kard ay katumbas ng numero: ang 3 ay 1, hanggang ang 2 ay 13. Sampu o higit ay doble. Kinukuha ng panalo ang tatlong kabuuan.";
 "A game is ten deals." = "Sampung ronda ang isang laro.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Sa Hong Kong rules, sa susunod na ronda: ang huling panalo ang unang laban, at ang 23456 ang pinakamataas na sunod.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Sa Hong Kong rules, sa susunod na ronda: ang huling panalo ang unang laban, at ang 23456 ang pinakamataas na sunod. Ang kamay na may dalawa o mas kaunting J, Q o K, at walang ace o 2, ay maaaring i-deal muli.";
+"Bad hand" = "Masamang kamay";
+"Two or fewer face cards, and no ace or two." = "Dalawa o mas kaunting J, Q o K, at walang ace o 2.";
+"Deal again" = "Deal muli";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Ilagay ang pangalan mo. Ang madilim na hanay ay ikaw. Ang blanko ay pananatilihin ang pangalan.";

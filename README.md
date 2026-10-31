@@ -33,6 +33,7 @@ Project layout, conventions and the test workflow are in [CLAUDE.md](CLAUDE.md).
 - Scoring: 3 costs 1 … 2 costs 13, doubled at 10+ cards left, winner collects the other three.
 - 10 deals per game, then reset.
 - Hong Kong rule set: last deal's winner leads, and 23456 becomes the largest straight.
+  A hand with two or fewer face cards and neither an ace nor a two may be dealt again.
 - Autopass, separately toggleable for 5-card turns.
 - "I will not play with real money" when every score is zero.
 

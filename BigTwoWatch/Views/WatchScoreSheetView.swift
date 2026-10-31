@@ -13,6 +13,9 @@ import SwiftUI
 struct WatchScoreSheetView: View {
   @ObservedObject var game: BigTwoGame
   let result: DealResult
+  /// What OK does once the Expert question is out of the way. The table passes the
+  /// trial gate, so a spent free game does not start the next one behind the paywall.
+  let onContinue: () -> Void
   @State private var asking = false
 
   /// `-offerExpert YES` — autoplay has no human seat, so a test cannot win for real.
@@ -26,27 +29,28 @@ struct WatchScoreSheetView: View {
         if game.gameOver && (game.offerExpert || forceOffer) {
           asking = true
         } else {
-          game.continueAfterScore()
+          onContinue()
         }
       }
     }
   }
 
-  /// Set the level before the next game is dealt.
+  /// Set the level before the next game is dealt. `onContinue` may still refuse to deal.
   private func accept() {
     game.preferences.botLevel = .expert
     asking = false
-    game.continueAfterScore()
+    onContinue()
   }
 
   private func decline() {
     asking = false
-    game.continueAfterScore()
+    onContinue()
   }
 }
 
 #Preview {
   WatchScoreSheetView(game: BigTwoGame(seed: 2),
                       result: DealResult(deal: 10, winner: 1, cardsLeft: [3, 0, 5, 8],
-                                         points: [-3, 16, -5, -8]))
+                                         points: [-3, 16, -5, -8]),
+                      onContinue: {})
 }
