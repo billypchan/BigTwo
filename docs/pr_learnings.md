@@ -26,6 +26,86 @@ DOUBLE!，10–12 是 TRIPLE!，13 是 ALL!。沿用 `>= 10` 會把炒三標成�
 **中途改偏好，這一舖的分數也不變。** `rules` 在發牌時固定。中途勾港式會連牌面
 上的組合一起重排，所以倍數也等到下一舖。
 
+**說明要同時寫計分和爛牌。** 港式那一句已經有「可以重發」。合併時把「每張 1 分、
+13 是四倍」接在同一句，不要蓋掉重發。八個語系的 key 都是那句英文。
+
+---
+
+## expert-after-win — 贏了強，才問要不要換高手
+
+**問的是整局，不是一墩。** `*WIN!*` 只是一墩打完。要等十墩結束、最終分數的
+New Game 被按下去，而且人類那一席的分數**嚴格最高**。平手不問（0–0 也不問）；
+負分但仍然最高算贏。Classic 和 Expert 都不問。autoplay 沒有人類座位，
+`offerExpert` 永遠是 false，所以現有的最終分數巡覽不會突然彈出這個對話。
+UI 測試要看到它，得另外帶 `-offerExpert YES`，而且這個旗標也只在 `gameOver`
+時生效。
+
+**等級要在發下一局之前寫進去。** `continueAfterScore()` 在整局結束時會立刻
+`startGame()`。先設 `botLevel = .expert`，再繼續。
+
+**兩個對話不要疊。** 問題蓋在分數表上面時，分數表的 New Game 從兩顆藥丸底下
+露出來。手機改成二選一：`expertOffer` 為真就只畫問題。評分框也一樣：分數表的
+OK 若只是換成 Expert 問題，`ReviewPrompt` 要等真正 `continueAfterScore()` 才問。
+
+**手錶的 `.sheet` 閉包不會因為外面的旗標翻轉而重畫。** 在 `WatchGameView` 上
+切 `@State`、在 `.sheet` 裡分支，畫面停在分數表。交換必須住在 sheet 自己的
+view（`WatchScoreSheetView` 的 `@State asking`）。
+
+**手錶計分表要同時做兩件事。** sheet 負責換成 Expert 問題；試玩花完時 OK 要
+`pauseBots()` 加 `requirePurchase()`，不能 `continueAfterScore()`。花完又剛好
+要問 Expert 時，先問，接受或拒絕都走試玩那條，不要在付費牆後面發下一局。
+
+**手錶上，容器的 accessibility identifier 會吃掉子按鈕的 id。** `expert_offer`
+加在 VStack 上之後，畫面上明明是問題和兩顆按鈕，階層裡每一個的 identifier 都
+變成 `expert_offer`，測試點 `expert_yes` 點不到。拿掉容器 id，改
+`.accessibilityElement(children: .contain)`。
+
+**同一進程裡去讀 Preferences，會跟下一局的自動打牌搶畫面。** `-dealsPerGame 1`
+的 autoplay 一結束就再蓋上最終分數；Expert 沒設成功時 `-offerExpert YES` 會再
+問一次，`waitFor` 等到的是「找不到 `pref_bots_Expert`」，不是
+`isSelected == false`。測試改成結束後 terminate，用 `-keepPreferences YES`
+重開再進 Preferences。故意拿掉賦值之後，失敗變成乾淨的 `false != true`
+（`GameUITests.swift:250`）。手錶那條不用重開：滑到 Preferences 頁讀
+`isSelected`，拿掉賦值時的失敗是「Expert was not the bot level after the offer」
+（`WatchExpertOfferUITests.swift:31`）。
+
+**不要把「不要再問」放進 `Preferences`。** 這次根本沒有持久的抑制旗標——先不要
+只代表這一局，下一局再贏還會問。如果以後要加，跟 `watchNoticeShown.v1` 一樣放
+UserDefaults，不要放會同步到手錶的 `Preferences`。
+
+---
+
+## hk-redeal — 港式爛牌可以重發同一舖
+
+**問的是人，不是機器人。** 公仔牌（J、Q、K）兩張或以下，而且沒有 A、沒有 2，才算爛牌。只有人手牌符合才升起 `offersRedeal`。沒有人的自動打牌不問。同一副牌在標準規則下也不問。機器人在問答之前不會動。
+
+**一張公仔也算。** 2026-10-31 回報的第 2 舖是 `3d 4d 4c 4h 5d 5s 6h 6s 7c 7h 9s Ts Jd`：只有 J♦。`reportedOneJackHandMayBeDealtAgain` 釘住這 13 張。畫面上沒有對話，不代表這手不算——這一舖發牌時若不是港式，就不會問。
+
+**重發不進下一舖。** `deal` 不變。還沒有人出過牌的那一筆記錄要先拿掉再 `newDeal()`，否則歷史多一舖空的。下一手還是爛牌就再問。Decline 才把牌打下去。
+
+**勾選港式不會重發這一手。** 規則在發牌時固定。UI 測試要 `-hongKong YES`，而且要在 `BigTwoGame` 建立之前設上。手錶讀同一個 flag。種子 100 的人手牌是爛牌，重發後不是。
+
+**提問還開著時，提示不能寫某人正在想。** 那一回合被按住了。手機那一行改成空白。
+
+**延遲 0 要同步出牌。** 丟進 `Task.sleep` 的話，跟一場長 benchmark 搶 main actor，測試會先醒、以為機器人沒有動。`botDelayOverride == 0` 就在 `scheduleBot` 裡直接走。
+
+**手錶 alert 的 setter 不能 decline。** 重發會先清掉這次提問，新牌若又是爛牌會再升起；dismiss 時 decline 會把第二次問掉。電話用方塊裡的 Palm form，手錶沒有那個方塊，才用系統 alert。
+
+## watch-one-game-trial — 試玩一局，計的是打完的墩
+
+**遊戲物件在付費牆後面就存在。** `BigTwoWatchApp` 一啟動就 `BigTwoGame()`，機器人
+會自己走。不先 `startPaused`，試玩的那一局會在玩家按 Try 之前打完，1-deal 的
+autoplay 測試也會在商店畫面後面結束。桌子出現時才 `resumeBots()`。
+
+**最後一墩的計分表要留著。** 墩結束就累計，但 `canPlay` 仍為真，按掉計分表才
+`requirePurchase()`。故意讓那個按鈕永遠 `continueAfterScore` 時，
+`testOneGameThenThePurchase` 停在 “the paywall did not come back”：計分表有出現，
+付費牆沒有回來。
+
+**計數不進 `Preferences`。** 那個會同步到手機，手錶的試玩不該被手機蓋掉。
+`UITestMode` 每次清掉，不然花掉試玩的測試會讓下一輪開在沒有 Try 的付費牆。
+中途殺掉 App 不會把已打完的墩還回來；牌面沒有存檔，所以沒打完的那一墩可以再打一次。
+
 ## real-admob-ids — 正式 id 換上，Debug 仍用測試 unit
 
 **帳號裡本來沒有 Big Two。** AdMob 的 app 清單沒有這支。新 app 是 iOS、已上架、

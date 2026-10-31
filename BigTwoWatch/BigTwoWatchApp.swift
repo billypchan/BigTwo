@@ -11,8 +11,9 @@ import SwiftUI
 @main
 struct BigTwoWatchApp: App {
   /// On for the build that goes to review with `com.billchan.BigTwo.watch`. A binary
-  /// that plays for free gives the reviewer nothing to buy. UI tests pass `-unlocked YES`
-  /// (debug only) so they open on the game.
+  /// that plays for free gives the reviewer nothing to buy. The paywall is the first
+  /// screen, with Buy and Try one game. UI tests pass `-unlocked YES` (debug only) so
+  /// they open on the game.
   private static let paywallEnabled = true
 
   private static let uiTestSuite = "WatchUITestPreferences"
@@ -20,6 +21,16 @@ struct BigTwoWatchApp: App {
   /// `-seed 2` deals the same hands every launch, so a UI test can assert on cards.
   private static var seed: UInt64? {
     UserDefaults.standard.string(forKey: "seed").flatMap(UInt64.init)
+  }
+
+  /// `-autoplay YES` gives the human seat to a bot, so a deal can finish itself.
+  private static var autoplay: Bool { UserDefaults.standard.bool(forKey: "autoplay") }
+
+  /// `-dealsPerGame 1` is the phone's flag. The argument domain may hand back a string.
+  private static var dealsPerGame: Int? {
+    let defaults = UserDefaults.standard
+    if let n = defaults.object(forKey: "dealsPerGame") as? Int { return n }
+    return defaults.string(forKey: "dealsPerGame").flatMap(Int.init)
   }
 
   /// The watch keeps its own preferences, so the sort order survives a relaunch the way
@@ -40,30 +51,45 @@ struct BigTwoWatchApp: App {
   private let store: PreferencesStore
   @StateObject private var unlock = WatchUnlock()
   @StateObject private var sync = PreferenceSync()
+  @StateObject private var trial: WatchTrial
   @StateObject private var game: BigTwoGame
 
   init() {
     let store = Self.makeStore()
     self.store = store
-    _game = StateObject(wrappedValue: BigTwoGame(preferences: store.load(), seed: Self.seed,
-                                                 humanSeats: [1]))
+    var preferences = store.load()
+    // `-hongKong YES`, same as the phone. The checkbox does not redeal.
+    if UserDefaults.standard.bool(forKey: "hongKong") { preferences.hongKong = true }
+    let deals = Self.dealsPerGame
+    // Paused until the table is on screen. The object exists behind the paywall, and
+    // the bots would otherwise play the free game before Try.
+    let game = BigTwoGame(preferences: preferences, seed: Self.seed,
+                          humanSeats: Self.autoplay ? [] : [1], startPaused: true)
+    if ProcessInfo.processInfo.arguments.contains("UITestMode") {
+      game.botDelayOverride = 0.15
+    }
+    if let deals { game.dealsPerGameOverride = deals }
+    _game = StateObject(wrappedValue: game)
+    _trial = StateObject(wrappedValue: WatchTrial(allowance: deals ?? 10))
   }
 
   var body: some Scene {
     WindowGroup {
       Group {
-        if !Self.paywallEnabled {
+        if showsGame {
           tabs
+        } else if Self.paywallEnabled, case .loading = unlock.state {
+          ProgressView()
         } else {
-          switch unlock.state {
-          case .unlocked:
-            tabs
-          case .loading:
-            ProgressView()
-          case .locked, .unavailable:
-            WatchStoreView(unlock: unlock)
-          }
+          WatchStoreView(unlock: unlock, trial: trial)
         }
+      }
+      .onChange(of: unlock.state) { previous, new in
+        // Bought from the spent paywall. The free game is still the one on the table;
+        // start the one they just paid for. Loading → unlocked is a launch, and that
+        // game was already dealt.
+        guard case .unlocked = new, trial.isSpent, previous != .loading else { return }
+        game.startGame()
       }
       .task {
         guard Self.paywallEnabled else { return }
@@ -72,10 +98,21 @@ struct BigTwoWatchApp: App {
     }
   }
 
+  /// Purchased, or still inside the one free game (the finishing score sheet included).
+  private var showsGame: Bool {
+    if !Self.paywallEnabled { return true }
+    if case .unlocked = unlock.state { return true }
+    return trial.canPlay
+  }
+
+  private var trialActive: Bool {
+    Self.paywallEnabled && unlock.state != .unlocked
+  }
+
   // ⚠️ Saving and syncing the preferences are `WatchTabsView`'s, not this scene's: an
   // `App` body is not a reliable place to watch a `@StateObject` it owns, and a setting
   // changed on the watch was applied to the game and never written to the store.
   private var tabs: some View {
-    WatchTabsView(game: game, sync: sync, store: store)
+    WatchTabsView(game: game, sync: sync, trial: trial, store: store, trialActive: trialActive)
   }
 }

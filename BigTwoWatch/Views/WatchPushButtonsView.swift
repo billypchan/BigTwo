@@ -31,6 +31,7 @@ struct WatchPushButtonsView<Value: Hashable>: View {
         }
         .buttonStyle(WatchPalmPressStyle())
         .accessibilityIdentifier("\(idPrefix)_\(option.label)")
+        .accessibilityAddTraits(chosen ? .isSelected : [])
       }
     }
   }

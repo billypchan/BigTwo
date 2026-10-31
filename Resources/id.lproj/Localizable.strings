@@ -41,6 +41,9 @@
 "Classic" = "Klasik";
 "Strong" = "Kuat";
 "Expert" = "Ahli";
+"Set bots to Expert?" = "Ganti bot ke Ahli?";
+"You beat Strong." = "Kamu mengalahkan Kuat.";
+"Not now" = "Nanti";
 "Game speed:" = "Kecepatan:";
 "Sort cards by:" = "Urut kartu:";
 "Slow" = "Lambat";
@@ -98,6 +101,9 @@
 "Buy" = "Beli";
 "The App Store could not be reached." = "App Store tidak dapat dihubungi.";
 "Restore Purchase" = "Pulihkan Pembelian";
+"Try one game" = "Coba satu permainan";
+"One game is free. Then one purchase, no subscription." = "Satu permainan gratis. Lalu beli sekali, bukan langganan.";
+"Your free game is over. One purchase, no subscription." = "Permainan gratis sudah habis. Beli sekali, bukan langganan.";
 
 /* Help */
 "Help" = "Bantuan";
@@ -114,5 +120,8 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Flush dibanding kartu tertinggi, lalu jenisnya. Full house dibanding tiga seangkanya. Empat seangka dibanding keempatnya.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Setiap kartu sisa dihitung angkanya: 3 bernilai 1, sampai 2 bernilai 13. Sepuluh kartu atau lebih digandakan. Pemenang mengambil ketiga jumlah itu.";
 "A game is ten deals." = "Satu permainan sepuluh ronde.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four." = "Aturan Hong Kong, mulai ronde berikut: pemenang tadi turun duluan, dan 23456 adalah straight terbesar. Setiap kartu sisa bernilai 1: sampai 7 satu kali, 8 atau 9 dua kali, 10 sampai 12 tiga kali, dan 13 empat kali.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Aturan Hong Kong, mulai ronde berikut: pemenang tadi turun duluan, dan 23456 adalah straight terbesar. Setiap kartu sisa bernilai 1: sampai 7 satu kali, 8 atau 9 dua kali, 10 sampai 12 tiga kali, dan 13 empat kali. Kartu bergambar dua atau kurang, tanpa as dan tanpa 2, boleh dibagikan lagi.";
+"Bad hand" = "Kartu buruk";
+"Two or fewer face cards, and no ace or two." = "Dua kartu gambar atau kurang, tanpa as dan tanpa 2.";
+"Deal again" = "Bagi lagi";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Masukkan nama Anda. Baris gelap adalah Anda. Baris kosong mempertahankan namanya.";

@@ -142,6 +142,10 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   straight. Each card left costs 1, times 1 (up to 7), 2 (8–9), 3 (10–12) or 4 (13).
   **Takes effect from the next deal** — `BigTwoGame.rules` is fixed at each
   deal, since a mid-deal change would re-rank the play on the table and re-price the score.
+  A hand with two or fewer face cards (J, Q, K) and neither an ace nor a two may be
+  dealt again. Only a human is asked (`offersRedeal`); Play keeps the hand, Deal again
+  reshuffles this same deal and drops the unplayed record. Bots are not asked, and they
+  do not move while the question is up.
 
 Every one of these has a test in `BigTwoKit/Tests` — change a rule, change its test.
 
@@ -283,7 +287,10 @@ the layer that changed how the game feels.
 - **Strong stays the default.** Expert is a third pill on the phone and the watch;
   ⚠️ the watch's Bots row is below the fold and a watchOS test cannot scroll, so
   `testPreferencesOKReturnsToTheTable` asserting `pref_bots_Expert` exists is the only
-  thing that says the pill reached the watch.
+  thing that says the pill reached the watch. Winning a Strong game — the human's
+  score strictly the highest when Final Score's New Game is tapped — asks to set
+  Expert. A tie does not ask. Not now leaves Strong and asks again next win. The
+  level is set before the next game is dealt.
 
 ## The move generator
 
@@ -445,11 +452,24 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   carried `WKApplication`, `WKCompanionAppBundleIdentifier` and device family 4.
 - ⚠️ **The paywall is on** (`BigTwoWatchApp.paywallEnabled`). The product exists, and the
   binary that goes to review has to show it — a build that plays for free gives the
-  reviewer nothing to buy. Watch UI tests pass `-unlocked YES` so they open on the game.
-  That switch is `#if DEBUG` only.
+  reviewer nothing to buy. The first screen is that paywall: Buy, Restore, and
+  **Try one game**. The free game is `dealsPerGame` finished deals (10, or
+  `-dealsPerGame`). The count is `watchTrial.dealsFinished` in the watch's own
+  UserDefaults — ⚠️ not `Preferences`, which syncs to the phone. `UITestMode` wipes it
+  unless `-keepPreferences YES`, same trap as the sort order. The score sheet of the
+  last deal stays up; dismissing it is what brings the paywall back, with no Try.
+  Killing the app mid-deal does not refund the deals already finished. The table is
+  not restored, so that one unfinished deal can be played again.
+  `-unlocked YES` (debug) skips the paywall. `-trialUsed YES` (debug) opens the spent
+  one. Both are `#if DEBUG` only.
+- ⚠️ **The game object exists behind the paywall.** It is created `startPaused`, and
+  `WatchGameView.onAppear` calls `resumeBots()`. An unpaused game would play the free
+  trial out before Try.
 - **watchOS UI tests do run** — Xcode 27's WatchOS platform ships `XCUIAutomation.framework`,
   and `BigTwoWatchUITests` drives the watch app on the simulator like any other suite
-  (`-seed 2` gives it the same fixed deal the phone suite uses):
+  (`-seed 2` gives it the same fixed deal the phone suite uses). Under `UITestMode`
+  the bots wait 0.15s, and `-autoplay` / `-dealsPerGame` mean the same thing they do
+  on the phone.
 
   ```bash
   xcodebuild test -project BigTwo.xcodeproj -scheme BigTwoWatch \
@@ -466,8 +486,8 @@ runs the same `BigTwoKit` — same rules, same bots, same scoring. The kit decla
   shot (width ≤ 600) instead of the phone's 8%, because a 46mm clock sits at rows 39–63
   of 496 — measured, not guessed — while the app's title bar starts at ~22%. A change one
   row below that band is still treated as a real change.
-- `-unlocked YES` skips the paywall in a debug build; it is `#if DEBUG` only and a Release
-  build does not compile it.
+- `-unlocked YES` skips the paywall in a debug build; `-trialUsed YES` opens the paywall
+  after the free game. Both are `#if DEBUG` only and a Release build does not compile them.
 - `Configurations/BigTwo.storekit` is the local product, wired to the `BigTwoWatch`
   scheme's `storeKitConfiguration`. ⚠️ **`simctl launch` does not apply it** — only a run
   from Xcode does, so a command-line launch shows the paywall with no price.
@@ -604,13 +624,13 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 106 tests, ~9s
+swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 115 tests, ~18s
 swift test --package-path BigTwoKit --filter PlayTests                    # debug is fine for one file
 ```
 
 ⚠️ **Run the kit in release.** `ExpertSearch` plays dozens of whole deals per decision,
 and a debug build makes the four duel benchmarks take over twenty minutes — the same
-run is **9 seconds** in release. `-Xswiftc -enable-testing` is what keeps
+run is **18 seconds** in release. `-Xswiftc -enable-testing` is what keeps
 `@testable import` working there. Debug still has every check release has, so nothing
 is being skipped; it is only the optimiser.
 
@@ -641,6 +661,8 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-showAds YES` | Put the banner back in a UI test — it is off in `UITestMode` by default |
 | `-watchNotice YES` | Show the one-time Apple Watch note, which `UITestMode` otherwise suppresses |
 | `-askName YES` | Open the first-launch name dialog, which `UITestMode` otherwise suppresses. It is shown before the watch note |
+| `-offerExpert YES` | On Final Score, tapping New Game asks to set the bots to Expert even when the human did not win. Autoplay has no human seat, so a UI test cannot reach the real condition. The watch reads the same flag |
+| `-hongKong YES` | Deal the opening hand under Hong Kong rules. The checkbox does not redeal, so a test of the bad-hand offer has to set this before `BigTwoGame` is created. The watch reads the same flag |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
@@ -815,7 +837,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 106 kit tests
+Single-player against three bots is complete and runs on the simulator; 115 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is

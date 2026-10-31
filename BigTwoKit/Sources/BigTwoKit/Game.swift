@@ -63,6 +63,22 @@ public struct DealResult: Identifiable, Sendable {
   public var id: Int { deal }
 }
 
+/// Hong Kong folk deal: two or fewer face cards (J, Q, K), and neither an ace nor a two.
+/// The game asks only at the deal; the shape itself is not limited to thirteen cards.
+public enum Redeal {
+  public static func isBadHand(_ hand: [Card]) -> Bool {
+    var faces = 0
+    for card in hand {
+      switch card.rank {
+      case .jack, .queen, .king: faces += 1
+      case .ace, .two: return false
+      default: break
+      }
+    }
+    return faces <= 2
+  }
+}
+
 @MainActor
 public final class BigTwoGame: ObservableObject {
 
@@ -80,6 +96,9 @@ public final class BigTwoGame: ObservableObject {
   @Published public private(set) var lastActions: [SeatAction?] = [nil, nil, nil, nil]
   @Published public private(set) var deal = 1
   @Published public private(set) var result: DealResult?  // non-nil while the score sheet is up
+  /// Hong Kong, and a human was dealt a bad hand. The table waits until they play it
+  /// or ask for another shuffle of this same deal. Bots are not offered it.
+  @Published public private(set) var offersRedeal = false
   @Published public private(set) var gameOver = false
 
   /// Replaces `preferences.gameSpeed` — UI tests run the bots fast.
@@ -90,6 +109,8 @@ public final class BigTwoGame: ObservableObject {
   }
 
   private var passes = 0
+  /// The watch paywall holds a live game. Bots stay stopped until the table is on screen.
+  public private(set) var botsPaused: Bool
   private var lastWinner: Int?
   private var openingPlay = false  // the 3♦ must be in the first play of a deal
   private var botTask: Task<Void, Never>?
@@ -109,14 +130,20 @@ public final class BigTwoGame: ObservableObject {
   /// `botsMoveThemselves: false` leaves every move to the caller — tests step the bots
   /// with `botChoice(for:)` instead of waiting on timers.
   /// `recordStore` keeps the transcript on device. Tests omit it.
+  /// `startPaused` deals the cards and does not move: the watch creates the game while
+  /// the paywall is up, and an unpaused game would finish the free trial unseen.
   public init(preferences: Preferences = Preferences(), seed: UInt64? = nil,
               humanSeats: Set<Int> = [1], botsMoveThemselves: Bool = true,
-              recordStore: GameRecordStore? = nil) {
+              recordStore: GameRecordStore? = nil,
+              botDelayOverride: TimeInterval? = nil,
+              startPaused: Bool = false) {
     self.preferences = preferences
     self.rules = RuleSet(hongKong: preferences.hongKong)
     self.rng = seed.map(SeededGenerator.init(seed:))
     self.botsMoveThemselves = botsMoveThemselves
     self.recordStore = recordStore
+    self.botDelayOverride = botDelayOverride
+    self.botsPaused = startPaused
     self.library = recordStore?.load() ?? GameRecordLibrary()
     self.record = library.current
     self.seats = Self.resolvedNames(preferences.playerNames).enumerated().map {
@@ -127,6 +154,14 @@ public final class BigTwoGame: ObservableObject {
 
   public var humanSeat: Int? { seats.firstIndex { $0.isHuman } }
   public var isHumanTurn: Bool { seats[turn].isHuman }
+
+  /// Final Score should ask about Expert. A deal's *WIN!* is not a game, and autoplay
+  /// has no human seat, so it never asks on its own.
+  public var offerExpert: Bool {
+    ExpertOffer.shouldAsk(botLevel: preferences.botLevel, gameOver: gameOver,
+                          scores: seats.map(\.score), humanSeat: humanSeat)
+  }
+
   public var mustPlayThreeOfDiamonds: Bool { openingPlay }
 
   /// True once the player has typed at least one custom name.
@@ -216,7 +251,28 @@ public final class BigTwoGame: ObservableObject {
       turn = seats.firstIndex { $0.hand.contains(.threeOfDiamonds) } ?? 0
       openingPlay = true
     }
+    offersRedeal = rules.hongKong && seats.contains { $0.isHuman && Redeal.isBadHand($0.hand) }
+    if offersRedeal {
+      botTask?.cancel()  // a bot may hold the lead; nothing moves until the human answers
+    } else {
+      scheduleBot()
+    }
+  }
+
+  /// Keep the hand. Bots that were waiting may move.
+  public func declineRedeal() {
+    guard offersRedeal else { return }
+    offersRedeal = false
     scheduleBot()
+  }
+
+  /// Shuffle this deal again. The deal number stays; the unplayed hand is not a record.
+  public func redeal() {
+    guard offersRedeal else { return }
+    if let last = record.deals.last, last.steps.isEmpty {
+      record.deals.removeLast()
+    }
+    newDeal()
   }
 
   private func shuffledDeck() -> [Card] {
@@ -243,6 +299,7 @@ public final class BigTwoGame: ObservableObject {
   /// Returns nil on success, or why the play was rejected.
   @discardableResult
   public func submit(_ cards: [Card], from seat: Int) -> String? {
+    guard !offersRedeal else { return "Deal again or play" }
     guard result == nil, seat == turn else { return "Not your turn" }
     guard cards.allSatisfy({ seats[seat].hand.contains($0) }) else { return "Not your cards" }
     guard let play = Play(cards, rules: rules) else { return "Not a legal combination" }
@@ -268,6 +325,7 @@ public final class BigTwoGame: ObservableObject {
   }
 
   public func pass(from seat: Int) {
+    guard !offersRedeal else { return }
     guard result == nil, seat == turn, table != nil else { return }
     log("\(seats[seat].name): pass")
     lastActions[seat] = .passed
@@ -296,13 +354,33 @@ public final class BigTwoGame: ObservableObject {
     scheduleBot()
   }
 
+  public func pauseBots() {
+    botsPaused = true
+    botTask?.cancel()
+  }
+
+  /// The next bot move, if it is a bot's turn. A second call does nothing.
+  public func resumeBots() {
+    guard botsPaused else { return }
+    botsPaused = false
+    scheduleBot()
+  }
+
   private func scheduleBot() {
     botTask?.cancel()
-    guard botsMoveThemselves, !seats[turn].isHuman, result == nil, !gameOver else { return }
+    guard !botsPaused else { return }
+    guard botsMoveThemselves, !seats[turn].isHuman, result == nil, !gameOver, !offersRedeal else { return }
     let seat = turn
-    let delay = UInt64((botDelayOverride ?? preferences.gameSpeed.botDelay) * 1_000_000_000)
+    let delay = botDelayOverride ?? preferences.gameSpeed.botDelay
+    // Zero plays inline. A sleeping task resumes after whatever else holds the
+    // main actor, so a test next to a long benchmark never sees the move.
+    if delay == 0 {
+      playBotTurn(seat)
+      return
+    }
+    let nanos = UInt64(delay * 1_000_000_000)
     botTask = Task { [weak self] in
-      try? await Task.sleep(nanoseconds: delay)
+      try? await Task.sleep(nanoseconds: nanos)
       guard !Task.isCancelled, let self, self.turn == seat else { return }
       self.playBotTurn(seat)
     }

@@ -44,6 +44,9 @@
 "Classic" = "Classic";
 "Strong" = "Strong";
 "Expert" = "Expert";
+"Set bots to Expert?" = "Set bots to Expert?";
+"You beat Strong." = "You beat Strong.";
+"Not now" = "Not now";
 "Game speed:" = "Game speed:";
 "Sort cards by:" = "Sort cards by:";
 "Slow" = "Slow";
@@ -105,6 +108,9 @@
 "Buy" = "Buy";
 "The App Store could not be reached." = "The App Store could not be reached.";
 "Restore Purchase" = "Restore Purchase";
+"Try one game" = "Try one game";
+"One game is free. Then one purchase, no subscription." = "One game is free. Then one purchase, no subscription.";
+"Your free game is over. One purchase, no subscription." = "Your free game is over. One purchase, no subscription.";
 
 /* Help */
 "Help" = "Help";
@@ -121,5 +127,8 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals.";
 "A game is ten deals." = "A game is ten deals.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four." = "With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four. A hand with two or fewer face cards, and no ace or two, may be dealt again.";
+"Bad hand" = "Bad hand";
+"Two or fewer face cards, and no ace or two." = "Two or fewer face cards, and no ace or two.";
+"Deal again" = "Deal again";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Enter your name. The dark row is you. Leave a row blank to keep its name.";

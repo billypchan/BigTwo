@@ -14,6 +14,9 @@ struct GameTests {
   /// One bot move for whoever's turn it is. Returns false if the bot tried to pass a lead.
   @discardableResult
   func step(_ game: BigTwoGame) -> Bool {
+    // These tests play the hand that was dealt. A bad-hand offer is the human's
+    // choice; declining here is that choice, so a Hong Kong game still finishes.
+    if game.offersRedeal { game.declineRedeal() }
     let seat = game.turn
     if let choice = game.botChoice(for: seat) {
       #expect(game.legalPlays(for: seat).contains(choice))
@@ -178,6 +181,23 @@ struct GameTests {
     }
   }
 
+  /// Fast bots move inside a second. A paused game must still be on the opening lead
+  /// after that, and resume has to be what starts them.
+  @Test func pausedBotsWaitUntilResumed() async throws {
+    var prefs = Preferences()
+    prefs.gameSpeed = .fast
+    let game = BigTwoGame(preferences: prefs, seed: 2, humanSeats: [], startPaused: true)
+    try await Task.sleep(nanoseconds: 600_000_000)
+    #expect(game.table == nil && game.result == nil)
+    game.botDelayOverride = 0
+    game.resumeBots()
+    let deadline = Date().addingTimeInterval(3)
+    while game.table == nil && game.result == nil && Date() < deadline {
+      try await Task.sleep(nanoseconds: 20_000_000)
+    }
+    #expect(game.table != nil || game.result != nil)
+  }
+
   @Test func oneDealOverrideOpensTheFinalScore() {
     let game = driven(seed: 2)
     game.dealsPerGameOverride = 1
@@ -208,6 +228,30 @@ struct GameTests {
       step(game)
     }
     Issue.record("the 2♠ holder never got a lead")
+  }
+
+  /// Asked only when the human finished strictly ahead of a Strong table.
+  /// A tie, a deal still in progress, and a table that is not Strong stay quiet.
+  @Test func expertOfferOnlyAfterTheHumanBeatsStrong() {
+    #expect(ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                  scores: [-5, 12, -3, -4], humanSeat: 1))
+    // Ahead on points even when the number itself is negative.
+    #expect(ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                  scores: [-8, -1, -4, -3], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [0, 0, 0, 0], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [3, 3, -6, 0], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [9, 1, -5, -5], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .expert, gameOver: true,
+                                   scores: [-5, 12, -3, -4], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .classic, gameOver: true,
+                                   scores: [-5, 12, -3, -4], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: false,
+                                   scores: [-5, 12, -3, -4], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [-5, 12, -3, -4], humanSeat: nil))
   }
 }
 
