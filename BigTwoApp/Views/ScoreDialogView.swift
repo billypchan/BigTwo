@@ -30,6 +30,7 @@ struct ScoreDialogView: View {
       PalmButtonView(title: L10n.string(game.gameOver ? "New Game" : "OK"),
                      width: game.gameOver ? 80 : 40) {
         game.continueAfterScore()
+        ReviewPrompt.askAfterDealIfNeeded()
       }
       .accessibilityIdentifier("score_ok")
     }
