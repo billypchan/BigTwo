@@ -42,6 +42,9 @@
 "Classic" = "Klassisch";
 "Strong" = "Stark";
 "Expert" = "Experte";
+"Set bots to Expert?" = "Bots auf Experte?";
+"You beat Strong." = "Du hast Stark geschlagen.";
+"Not now" = "Nicht jetzt";
 "Game speed:" = "Tempo:";
 "Sort cards by:" = "Sortieren nach:";
 "Slow" = "Langsam";

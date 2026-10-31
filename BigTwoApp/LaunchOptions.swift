@@ -42,6 +42,10 @@ enum LaunchOptions {
   /// `-askName YES` opens the first-launch name dialog even under `UITestMode`.
   static var forceNamePrompt: Bool { UserDefaults.standard.bool(forKey: "askName") }
 
+  /// `-offerExpert YES` asks to set the bots to Expert when New Game is tapped on
+  /// Final Score. Autoplay has no human seat, so a UI test cannot win for real.
+  static var offerExpert: Bool { UserDefaults.standard.bool(forKey: "offerExpert") }
+
   /// `-hongKong YES` deals the opening hand under Hong Kong rules. Turning the
   /// checkbox on does not redeal the hand already on the table.
   static var forceHongKong: Bool { UserDefaults.standard.bool(forKey: "hongKong") }

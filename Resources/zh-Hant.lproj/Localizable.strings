@@ -42,6 +42,9 @@
 "Classic" = "經典";
 "Strong" = "強";
 "Expert" = "高手";
+"Set bots to Expert?" = "把電腦換成高手？";
+"You beat Strong." = "你贏了「強」。";
+"Not now" = "先不要";
 "Game speed:" = "速度：";
 "Sort cards by:" = "排序：";
 "Slow" = "慢";

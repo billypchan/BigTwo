@@ -87,10 +87,10 @@ struct WatchGameView: View {
       trial.noteDealFinished()
     }
     .sheet(item: Binding(get: { game.result }, set: { _ in })) { result in
-      WatchScoreView(result: result, seats: game.seats, gameOver: game.gameOver) {
+      WatchScoreSheetView(game: game, result: result) {
         if trialActive, trial.isSpent {
           // Leave the finished game where it is. Starting the next one here would
-          // play it behind the paywall.
+          // play it behind the paywall. Accepting Expert still must not deal.
           game.pauseBots()
           trial.requirePurchase()
         } else {

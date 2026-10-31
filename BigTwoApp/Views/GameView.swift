@@ -16,6 +16,8 @@ struct GameView: View {
   @State private var nameDraft = ["", "", "", ""]
   /// True only for the first-launch name dialog, so OK can chain the watch note.
   @State private var nameIntro = false
+  /// Final Score is still up; New Game asked whether to leave Strong.
+  @State private var expertOffer = false
   @StateObject private var consent = AdConsent()
 
   enum Dialog { case menu, preferences, names, history, about, watchNotice, help }
@@ -166,8 +168,23 @@ struct GameView: View {
 
   @ViewBuilder
   private func overlay(_ u: CGFloat) -> some View {
+    // The question replaces the score sheet. Drawing it on top left New Game
+    // sticking out under the two pills.
+    if expertOffer {
+      modal(u) {
+        ExpertOfferDialogView(onExpert: acceptExpert, onDecline: declineExpert)
+      }
+    } else {
+      scoreOrDialog(u)
+    }
+  }
+
+  @ViewBuilder
+  private func scoreOrDialog(_ u: CGFloat) -> some View {
     if let result = game.result {
-      modal(u) { ScoreDialogView(game: game, result: result) }
+      modal(u) {
+        ScoreDialogView(game: game, result: result, onContinue: continueFromScore)
+      }
     } else if let dialog {
       switch dialog {
       case .menu:
@@ -222,6 +239,34 @@ struct GameView: View {
         RedealDialogView(onDealAgain: { game.redeal() }, onPlay: { game.declineRedeal() })
       }
     }
+  }
+
+  /// New Game on a won Strong game asks first. The level has to change before the
+  /// next game is dealt, or that game is still Strong. The review prompt waits until
+  /// the score is actually dismissed: asking while the Expert question is up stacks
+  /// a system dialog on the two pills.
+  private func continueFromScore() {
+    if game.gameOver && (game.offerExpert || LaunchOptions.offerExpert) {
+      expertOffer = true
+    } else {
+      leaveScore()
+    }
+  }
+
+  private func acceptExpert() {
+    game.preferences.botLevel = .expert
+    expertOffer = false
+    leaveScore()
+  }
+
+  private func declineExpert() {
+    expertOffer = false
+    leaveScore()
+  }
+
+  private func leaveScore() {
+    game.continueAfterScore()
+    ReviewPrompt.askAfterDealIfNeeded()
   }
 
   private func modal<Content: View>(_ u: CGFloat, @ViewBuilder _ content: () -> Content) -> some View {

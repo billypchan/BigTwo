@@ -199,6 +199,30 @@ struct GameTests {
     }
     Issue.record("the 2♠ holder never got a lead")
   }
+
+  /// Asked only when the human finished strictly ahead of a Strong table.
+  /// A tie, a deal still in progress, and a table that is not Strong stay quiet.
+  @Test func expertOfferOnlyAfterTheHumanBeatsStrong() {
+    #expect(ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                  scores: [-5, 12, -3, -4], humanSeat: 1))
+    // Ahead on points even when the number itself is negative.
+    #expect(ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                  scores: [-8, -1, -4, -3], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [0, 0, 0, 0], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [3, 3, -6, 0], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [9, 1, -5, -5], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .expert, gameOver: true,
+                                   scores: [-5, 12, -3, -4], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .classic, gameOver: true,
+                                   scores: [-5, 12, -3, -4], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: false,
+                                   scores: [-5, 12, -3, -4], humanSeat: 1))
+    #expect(!ExpertOffer.shouldAsk(botLevel: .strong, gameOver: true,
+                                   scores: [-5, 12, -3, -4], humanSeat: nil))
+  }
 }
 
 struct PreferencesStoreTests {

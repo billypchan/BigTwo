@@ -9,6 +9,8 @@ import SwiftUI
 struct ScoreDialogView: View {
   @ObservedObject var game: BigTwoGame
   let result: DealResult
+  /// New Game / OK. The table decides whether to ask about Expert first.
+  let onContinue: () -> Void
 
   @Environment(\.palmUnit) private var u
 
@@ -28,10 +30,7 @@ struct ScoreDialogView: View {
       }
     } buttons: {
       PalmButtonView(title: L10n.string(game.gameOver ? "New Game" : "OK"),
-                     width: game.gameOver ? 80 : 40) {
-        game.continueAfterScore()
-        ReviewPrompt.askAfterDealIfNeeded()
-      }
+                     width: game.gameOver ? 80 : 40, action: onContinue)
       .accessibilityIdentifier("score_ok")
     }
     .accessibilityIdentifier("score_sheet")
@@ -64,7 +63,8 @@ struct ScoreDialogView: View {
 #Preview {
   ScoreDialogView(game: BigTwoGame(seed: 2),
                   result: DealResult(deal: 1, winner: 1, cardsLeft: [4, 0, 11, 7],
-                                     points: [-20, 128, -90, -18]))
+                                     points: [-20, 128, -90, -18]),
+                  onContinue: {})
     .padding()
     .background(Color.felt)
 }

@@ -23,6 +23,9 @@ struct BigTwoWatchApp: App {
     UserDefaults.standard.string(forKey: "seed").flatMap(UInt64.init)
   }
 
+  /// `-autoplay YES` gives the human seat to a bot, so a deal can finish itself.
+  private static var autoplay: Bool { UserDefaults.standard.bool(forKey: "autoplay") }
+
   /// `-dealsPerGame 1` is the phone's flag. The argument domain may hand back a string.
   private static var dealsPerGame: Int? {
     let defaults = UserDefaults.standard
@@ -60,9 +63,8 @@ struct BigTwoWatchApp: App {
     let deals = Self.dealsPerGame
     // Paused until the table is on screen. The object exists behind the paywall, and
     // the bots would otherwise play the free game before Try.
-    let autoplay = UserDefaults.standard.bool(forKey: "autoplay")
     let game = BigTwoGame(preferences: preferences, seed: Self.seed,
-                          humanSeats: autoplay ? [] : [1], startPaused: true)
+                          humanSeats: Self.autoplay ? [] : [1], startPaused: true)
     if ProcessInfo.processInfo.arguments.contains("UITestMode") {
       game.botDelayOverride = 0.15
     }
