@@ -58,9 +58,9 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
         ITSAppUsesNonExemptEncryption: false
-        # Google's public test app id. Swap for the real one before the ads ship —
-        # AdUnits.swift holds the matching unit id and says the same thing.
-        GADApplicationIdentifier: ca-app-pub-3940256099942544~1458002511
+        # The AdMob app id for Big Two. Debug still requests Google's test banner
+        # unit (AdUnits.testBanner); a Release build requests the real one.
+        GADApplicationIdentifier: ca-app-pub-4810336293797836~4616455246
         CFBundleLocalizations:
           - en
           - zh-Hant
