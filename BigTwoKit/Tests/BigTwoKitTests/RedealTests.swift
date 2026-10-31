@@ -26,6 +26,13 @@ struct RedealTests {
     #expect(!Redeal.isBadHand(try cards("2s 3d 4d")))
   }
 
+  /// Deal 2 on 2026-10-31. One jack, and neither an ace nor a two.
+  @Test func reportedOneJackHandMayBeDealtAgain() throws {
+    let hand = try cards("3d 4d 4c 4h 5d 5s 6h 6s 7c 7h 9s Ts Jd")
+    #expect(hand.count == 13)
+    #expect(Redeal.isBadHand(hand))
+  }
+
   @Test func hongKongAsksOnlyTheHuman() throws {
     let game = dealt()
     #expect(game.offersRedeal)

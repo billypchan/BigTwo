@@ -607,7 +607,7 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 111 tests, ~16s
+swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 112 tests, ~17s
 swift test --package-path BigTwoKit --filter PlayTests                    # debug is fine for one file
 ```
 
@@ -819,7 +819,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 111 kit tests
+Single-player against three bots is complete and runs on the simulator; 112 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is
