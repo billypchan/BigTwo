@@ -12,6 +12,7 @@ public struct RuleSet: Equatable, Codable, Sendable {
   /// Preferences → "Hong Kong Rule Set":
   ///   1. other than the first deal, the winner of the last deal leads
   ///   2. 23456 is the largest straight
+  ///   3. a card left costs 1, times 1 / 2 / 3 / 4 by how many remain
   public var hongKong: Bool
   public var dealsPerGame: Int
 
@@ -22,6 +23,27 @@ public struct RuleSet: Equatable, Codable, Sendable {
 
   public static let standard = RuleSet()
   public static let hongKong = RuleSet(hongKong: true)
+
+  /// What one seat pays for the cards still in hand. The winner collects the three.
+  ///
+  /// Standard: `rankPoints` (3 = 1 … 2 = 13), doubled at 10 or more cards.
+  /// Hong Kong: one point per card, times ``scoreMultiple(cardsLeft:)``.
+  /// `rankPoints` is ignored under Hong Kong — a two costs the same as a three.
+  public func handPenalty(count: Int, rankPoints: Int) -> Int {
+    if hongKong { return count * scoreMultiple(cardsLeft: count) }
+    return rankPoints * scoreMultiple(cardsLeft: count)
+  }
+
+  /// Standard doubles at 10+. Hong Kong: 1 through 7 cards, 2 at 8–9, 3 at 10–12, 4 at 13.
+  public func scoreMultiple(cardsLeft: Int) -> Int {
+    if !hongKong { return cardsLeft >= 10 ? 2 : 1 }
+    switch cardsLeft {
+    case 13...: return 4
+    case 10...12: return 3
+    case 8...9: return 2
+    default: return 1
+    }
+  }
 }
 
 public enum PlayKind: Int, Comparable, CaseIterable, Sendable {

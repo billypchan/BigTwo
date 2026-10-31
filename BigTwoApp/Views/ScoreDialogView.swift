@@ -45,8 +45,8 @@ struct ScoreDialogView: View {
       }
       if game.preferences.showCardsLeft && player.id != result.winner {
         Text(L10n.string("%d left", result.cardsLeft[player.id])).font(.palm(12 * u, .regular))
-        if result.cardsLeft[player.id] >= 10 {
-          Text(L10n.string("DOUBLE!")).font(.palm(11 * u, .heavy)).foregroundColor(.suitRed)
+        if let mark = stakeMark(result.cardsLeft[player.id]) {
+          Text(L10n.string(mark)).font(.palm(11 * u, .heavy)).foregroundColor(.suitRed)
         }
       }
       Spacer(minLength: 0)
@@ -57,6 +57,16 @@ struct ScoreDialogView: View {
     }
     .accessibilityElement(children: .combine)
     .accessibilityIdentifier("score_row_\(player.id)")
+  }
+
+  /// Standard says DOUBLE! at 10+. Hong Kong: DOUBLE! at 8–9, TRIPLE! at 10–12, ALL! at 13.
+  private func stakeMark(_ cardsLeft: Int) -> String? {
+    switch game.rules.scoreMultiple(cardsLeft: cardsLeft) {
+    case 2: return "DOUBLE!"
+    case 3: return "TRIPLE!"
+    case 4: return "ALL!"
+    default: return nil
+    }
   }
 }
 

@@ -86,6 +86,35 @@ struct GameTests {
     #expect(driven(seed: 42).seats.map(\.hand) != driven(seed: 43).seats.map(\.hand))
   }
 
+  // MARK: - Hong Kong scoring
+
+  /// Folk Hong Kong stakes: one point per card, times how many are left.
+  /// A two and a three cost the same. The standard rule still prices the rank.
+  @Test func hongKongChargesOnePointPerCardTimesTheStake() {
+    let hk = RuleSet.hongKong
+    let standard = RuleSet.standard
+    #expect(hk.scoreMultiple(cardsLeft: 0) == 1)
+    #expect(hk.scoreMultiple(cardsLeft: 7) == 1)
+    #expect(hk.scoreMultiple(cardsLeft: 8) == 2)
+    #expect(hk.scoreMultiple(cardsLeft: 9) == 2)
+    #expect(hk.scoreMultiple(cardsLeft: 10) == 3)
+    #expect(hk.scoreMultiple(cardsLeft: 12) == 3)
+    #expect(hk.scoreMultiple(cardsLeft: 13) == 4)
+    #expect(hk.handPenalty(count: 8, rankPoints: 8) == 16)
+    #expect(hk.handPenalty(count: 8, rankPoints: 104) == 16)
+    #expect(hk.handPenalty(count: 7, rankPoints: 91) == 7)
+    #expect(hk.handPenalty(count: 9, rankPoints: 9) == 18)
+    #expect(hk.handPenalty(count: 10, rankPoints: 10) == 30)
+    #expect(hk.handPenalty(count: 12, rankPoints: 100) == 36)
+    #expect(hk.handPenalty(count: 13, rankPoints: 91) == 52)
+    #expect(standard.scoreMultiple(cardsLeft: 9) == 1)
+    #expect(standard.scoreMultiple(cardsLeft: 10) == 2)
+    #expect(standard.scoreMultiple(cardsLeft: 13) == 2)
+    #expect(standard.handPenalty(count: 8, rankPoints: 80) == 80)
+    #expect(standard.handPenalty(count: 10, rankPoints: 50) == 100)
+    #expect(standard.handPenalty(count: 13, rankPoints: 91) == 182)
+  }
+
   // MARK: - Rules change between deals
 
   @Test func hongKongPreferenceWaitsForTheNextDeal() {
@@ -123,7 +152,8 @@ struct GameTests {
           #expect(game.seats[r.winner].hand.isEmpty)
           for i in 0..<4 where i != r.winner {
             let hand = game.seats[i].hand
-            let cost = hand.reduce(0) { $0 + $1.rank.penalty } * (hand.count >= 10 ? 2 : 1)
+            let rankPoints = hand.reduce(0) { $0 + $1.rank.penalty }
+            let cost = game.rules.handPenalty(count: hand.count, rankPoints: rankPoints)
             #expect(r.points[i] == -cost)
             #expect(r.cardsLeft[i] == hand.count)
             #expect(game.seats[i].score == before[i] + r.points[i])

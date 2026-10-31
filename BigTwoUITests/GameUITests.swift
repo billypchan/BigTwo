@@ -386,6 +386,7 @@ final class GameUITests: XCTestCase {
       XCTAssertTrue(text.label.contains("empty box"))
       XCTAssertTrue(text.label.contains("JQKA2"))
       XCTAssertTrue(text.label.contains("23456"))
+      XCTAssertTrue(text.label.contains("13 is four"))
       XCTAssertTrue(text.label.contains("dealt again"))
       XCTAssertTrue(text.label.contains("straight flush"))
     }

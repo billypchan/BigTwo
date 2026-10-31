@@ -101,7 +101,7 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   2px offset is the one exception — it is the Palm's), no blur, no glass.
 - Buttons use `PalmPressStyle`: SwiftUI's plain style fades a disabled button to a washed-out
   green; Palm greys the text and keeps the white pill.
-- Prompt strings stay terse: "Your Play", "Your Lead", "*WIN!*", "DOUBLE!", "PASS".
+- Prompt strings stay terse: "Your Play", "Your Lead", "*WIN!*", "DOUBLE!", "TRIPLE!", "ALL!", "PASS".
   Visible copy goes through `L10n.string`; keys are the English UI text.
   `PalmButtonView.title` is `String`, so a `Text("literal")` lookup never runs there.
   Identifiers stay English (`pref_bots_Classic`). UI tests launch with
@@ -139,8 +139,9 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
   left; the winner collects all three penalties.
 - 10 deals per game, then the score goes to the high-score list and the cycle restarts.
 - Hong Kong rule set (preference): last deal's winner leads, and 23456 becomes the largest
-  straight. **Takes effect from the next deal** — `BigTwoGame.rules` is fixed at each
-  deal, since a mid-deal change would re-rank the play on the table.
+  straight. Each card left costs 1, times 1 (up to 7), 2 (8–9), 3 (10–12) or 4 (13).
+  **Takes effect from the next deal** — `BigTwoGame.rules` is fixed at each
+  deal, since a mid-deal change would re-rank the play on the table and re-price the score.
   A hand with two or fewer face cards (J, Q, K) and neither an ace nor a two may be
   dealt again. Only a human is asked (`offersRedeal`); Play keeps the hand, Deal again
   reshuffles this same deal and drops the unplayed record. Bots are not asked, and they
@@ -623,13 +624,13 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 114 tests, ~17s
+swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 115 tests, ~18s
 swift test --package-path BigTwoKit --filter PlayTests                    # debug is fine for one file
 ```
 
 ⚠️ **Run the kit in release.** `ExpertSearch` plays dozens of whole deals per decision,
 and a debug build makes the four duel benchmarks take over twenty minutes — the same
-run is **17 seconds** in release. `-Xswiftc -enable-testing` is what keeps
+run is **18 seconds** in release. `-Xswiftc -enable-testing` is what keeps
 `@testable import` working there. Debug still has every check release has, so nothing
 is being skipped; it is only the optimiser.
 
@@ -836,7 +837,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 114 kit tests
+Single-player against three bots is complete and runs on the simulator; 115 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is

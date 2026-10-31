@@ -3,7 +3,8 @@
 //  BigTwoKit — table state, turn order and scoring.
 //
 //  Scoring, as on the Palm: a card left in hand costs its rank (3 = 1 ... 2 = 13),
-//  doubled if you are holding 10 cards or more. The winner collects the lot.
+//  doubled if you are holding 10 cards or more. Hong Kong charges 1 per card instead,
+//  times 1 (up to 7), 2 (8–9), 3 (10–12) or 4 (13). The winner collects the lot.
 //  After `dealsPerGame` deals the game is over and the score goes to the high scores.
 //
 
@@ -424,8 +425,8 @@ public final class BigTwoGame: ObservableObject {
 
     for i in seats.indices where i != winner {
       left[i] = seats[i].hand.count
-      var cost = seats[i].hand.reduce(0) { $0 + $1.rank.penalty }
-      if seats[i].hand.count >= 10 { cost *= 2 }  // DOUBLE!
+      let rankPoints = seats[i].hand.reduce(0) { $0 + $1.rank.penalty }
+      let cost = rules.handPenalty(count: seats[i].hand.count, rankPoints: rankPoints)
       points[i] = -cost
       points[winner] += cost
     }

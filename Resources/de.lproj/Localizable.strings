@@ -65,6 +65,8 @@
 "*WIN!*" = "*SIEG!*";
 "%d left" = "%d übrig";
 "DOUBLE!" = "DOPPELT!";
+"TRIPLE!" = "DREIFACH!";
+"ALL!" = "ALLES!";
 
 "Copy" = "Kopieren";
 "Export" = "Export";
@@ -116,7 +118,7 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Ein Flush zählt nach seiner höchsten Karte, dann deren Farbe. Ein Full House nach dem Drilling. Ein Vierling nach den vier Karten.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Jede Restkarte zählt nach ihrem Wert: 3 ist 1, bis 2, das 13 ist. Zehn oder mehr Restkarten verdoppeln. Der Gewinner nimmt alle drei Summen.";
 "A game is ten deals." = "Ein Spiel hat zehn Runden.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Mit Hongkong-Regeln, ab der nächsten Runde: der letzte Gewinner beginnt, und 23456 ist die höchste Straße. Eine Hand mit zwei oder weniger Bildkarten, ohne Ass und ohne 2, darf neu gegeben werden.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. Each card left costs 1: up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Mit Hongkong-Regeln, ab der nächsten Runde: der letzte Gewinner beginnt, und 23456 ist die höchste Straße. Jede Restkarte zählt 1: bis 7 einfach, 8 oder 9 zweifach, 10 bis 12 dreifach, und 13 vierfach. Eine Hand mit zwei oder weniger Bildkarten, ohne Ass und ohne 2, darf neu gegeben werden.";
 "Bad hand" = "Schlechte Hand";
 "Two or fewer face cards, and no ace or two." = "Zwei oder weniger Bildkarten, und kein Ass und keine 2.";
 "Deal again" = "Neu geben";

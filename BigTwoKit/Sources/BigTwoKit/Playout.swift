@@ -62,31 +62,30 @@ struct Playout {
     }
   }
 
-  /// Runs to the end and scores the deal: a card left costs its rank, doubled at
-  /// ten or more, and the winner collects all three penalties — `BigTwoGame.endDeal`.
+  /// Runs to the end and scores the deal the way `BigTwoGame.endDeal` does.
   mutating func finish() -> [Int] {
     while true {
       let hand = CardSet(bits: hands[turn])
       let moves = MoveGen.moves(in: hand, beating: target, rules: rules)
       if let move = PlayoutPolicy.choose(moves, hand: hand, target: target,
                                          counts: hands.map(\.nonzeroBitCount), seat: turn) {
-        if let winner = apply(move) { return Playout.points(hands, winner: winner) }
+        if let winner = apply(move) { return Playout.points(hands, winner: winner, rules: rules) }
       } else {
         applyPass()
       }
     }
   }
 
-  static func points(_ hands: [UInt64], winner: Int) -> [Int] {
+  static func points(_ hands: [UInt64], winner: Int, rules: RuleSet) -> [Int] {
     var points = Array(repeating: 0, count: hands.count)
     for seat in hands.indices where seat != winner {
-      var cost = 0
+      var rankPoints = 0
       var rest = hands[seat]
       while rest != 0 {
-        cost += Card.deck[rest.trailingZeroBitCount].rank.penalty
+        rankPoints += Card.deck[rest.trailingZeroBitCount].rank.penalty
         rest &= rest - 1
       }
-      if hands[seat].nonzeroBitCount >= 10 { cost *= 2 }
+      let cost = rules.handPenalty(count: hands[seat].nonzeroBitCount, rankPoints: rankPoints)
       points[seat] = -cost
       points[winner] += cost
     }
