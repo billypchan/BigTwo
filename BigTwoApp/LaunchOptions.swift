@@ -42,6 +42,10 @@ enum LaunchOptions {
   /// `-askName YES` opens the first-launch name dialog even under `UITestMode`.
   static var forceNamePrompt: Bool { UserDefaults.standard.bool(forKey: "askName") }
 
+  /// `-hongKong YES` deals the opening hand under Hong Kong rules. Turning the
+  /// checkbox on does not redeal the hand already on the table.
+  static var forceHongKong: Bool { UserDefaults.standard.bool(forKey: "hongKong") }
+
   private static let uiTestSuite = "UITestPreferences"
 
   /// UI tests wipe this unless `-keepPreferences YES`, so one run can't fill Game History.

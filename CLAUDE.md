@@ -141,6 +141,10 @@ https://bigtwo-palmos.sourceforge.net — `Start.gif`, `portrait.gif`, `menu.gif
 - Hong Kong rule set (preference): last deal's winner leads, and 23456 becomes the largest
   straight. **Takes effect from the next deal** — `BigTwoGame.rules` is fixed at each
   deal, since a mid-deal change would re-rank the play on the table.
+  A hand with two or fewer face cards (J, Q, K) and neither an ace nor a two may be
+  dealt again. Only a human is asked (`offersRedeal`); Play keeps the hand, Deal again
+  reshuffles this same deal and drops the unplayed record. Bots are not asked, and they
+  do not move while the question is up.
 
 Every one of these has a test in `BigTwoKit/Tests` — change a rule, change its test.
 
@@ -603,7 +607,7 @@ starts a new deal; it does not put the cards back on the table.
 ### Logic — `swift test` in BigTwoKit (no simulator)
 
 ```bash
-swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 106 tests, ~9s
+swift test --package-path BigTwoKit -c release -Xswiftc -enable-testing   # 111 tests, ~16s
 swift test --package-path BigTwoKit --filter PlayTests                    # debug is fine for one file
 ```
 
@@ -640,6 +644,7 @@ xcodebuild test -project BigTwo.xcodeproj -scheme BigTwo \
 | `-showAds YES` | Put the banner back in a UI test — it is off in `UITestMode` by default |
 | `-watchNotice YES` | Show the one-time Apple Watch note, which `UITestMode` otherwise suppresses |
 | `-askName YES` | Open the first-launch name dialog, which `UITestMode` otherwise suppresses. It is shown before the watch note |
+| `-hongKong YES` | Deal the opening hand under Hong Kong rules. The checkbox does not redeal, so a test of the bad-hand offer has to set this before `BigTwoGame` is created. The watch reads the same flag |
 
 - ⚠️ **Always run the edited UI test** after changing a view or its XCUITest. Do not
   skip because the change looks small.
@@ -814,7 +819,7 @@ Screen-tour names: `ios_screen_NN_<name>` (lead, selected, trick, menu, preferen
 
 ## State of play
 
-Single-player against three bots is complete and runs on the simulator; 106 kit tests
+Single-player against three bots is complete and runs on the simulator; 111 kit tests
 pass (see `docs/test_runs.md`). Open items, roughly in order:
 
 1. App Store: **1.2 is live (released 2026-10-07)**, tagged `v1.2`. **1.3 (105)** is

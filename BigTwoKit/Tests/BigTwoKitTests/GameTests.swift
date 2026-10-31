@@ -14,6 +14,9 @@ struct GameTests {
   /// One bot move for whoever's turn it is. Returns false if the bot tried to pass a lead.
   @discardableResult
   func step(_ game: BigTwoGame) -> Bool {
+    // These tests play the hand that was dealt. A bad-hand offer is the human's
+    // choice; declining here is that choice, so a Hong Kong game still finishes.
+    if game.offersRedeal { game.declineRedeal() }
     let seat = game.turn
     if let choice = game.botChoice(for: seat) {
       #expect(game.legalPlays(for: seat).contains(choice))

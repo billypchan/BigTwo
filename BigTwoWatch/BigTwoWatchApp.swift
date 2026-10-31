@@ -45,7 +45,10 @@ struct BigTwoWatchApp: App {
   init() {
     let store = Self.makeStore()
     self.store = store
-    _game = StateObject(wrappedValue: BigTwoGame(preferences: store.load(), seed: Self.seed,
+    var preferences = store.load()
+    // `-hongKong YES`, same as the phone. The checkbox does not redeal.
+    if UserDefaults.standard.bool(forKey: "hongKong") { preferences.hongKong = true }
+    _game = StateObject(wrappedValue: BigTwoGame(preferences: preferences, seed: Self.seed,
                                                  humanSeats: [1]))
   }
 

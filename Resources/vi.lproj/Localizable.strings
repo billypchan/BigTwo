@@ -112,5 +112,8 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Thùng so lá cao nhất, rồi chất lá đó. Cù lũ so bộ ba. Tứ quý so bốn lá.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Mỗi lá còn lại tính theo số: 3 là 1, đến 2 là 13. Từ mười lá thì nhân đôi. Người thắng lấy cả ba tổng.";
 "A game is ten deals." = "Một trận mười ván.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Luật Hồng Kông, từ ván sau: người thắng ván trước đi trước, và 23456 là sảnh lớn nhất.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Luật Hồng Kông, từ ván sau: người thắng ván trước đi trước, và 23456 là sảnh lớn nhất. Bài có hai lá hình hoặc ít hơn, không có A và không có 2, thì có thể chia lại.";
+"Bad hand" = "Bài xấu";
+"Two or fewer face cards, and no ace or two." = "Hai lá hình hoặc ít hơn, không có A và không có 2.";
+"Deal again" = "Chia lại";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Nhập tên của bạn. Hàng đậm là bạn. Để trống thì giữ tên cũ.";

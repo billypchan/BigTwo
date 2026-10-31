@@ -113,5 +113,8 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "同花比最大的一张，再比它的花色；葫芦比三条的点数；四条比那四张的点数。";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "手上每剩一张牌就按点数扣分：3 计 1 分，依次到 2 计 13 分；剩十张或以上双倍。赢家收齐其余三家的分数。";
 "A game is ten deals." = "一盘十局。";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "用港式规则，从下一局起：上一局的赢家先出，23456 成为最大的顺子。";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "用港式规则，从下一局起：上一局的赢家先出，23456 成为最大的顺子。公仔牌两张或以下，而且没有 A、没有 2，可以重发。";
+"Bad hand" = "烂牌";
+"Two or fewer face cards, and no ace or two." = "公仔牌两张或以下，而且没有 A、没有 2。";
+"Deal again" = "重发";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "输入你的名字。深色那行是你。留空就保留原来的名字。";

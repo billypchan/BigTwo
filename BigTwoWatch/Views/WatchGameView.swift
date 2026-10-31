@@ -81,6 +81,16 @@ struct WatchGameView: View {
         game.continueAfterScore()
       }
     }
+    // ⚠️ The setter must not decline. Deal again clears the offer and may raise it
+    // for the new hand; a dismiss that declined would throw that second offer away.
+    .alert(L10n.string("Bad hand"), isPresented: Binding(get: { game.offersRedeal }, set: { _ in })) {
+      Button(L10n.string("Deal again"), action: game.redeal)
+        .accessibilityIdentifier("redeal_again")
+      Button(L10n.string("Play"), action: game.declineRedeal)
+        .accessibilityIdentifier("redeal_play")
+    } message: {
+      Text(L10n.string("Two or fewer face cards, and no ace or two."))
+    }
   }
 
   /// The title tab and the deal counter, on the clock's own row.
@@ -206,6 +216,7 @@ struct WatchGameView: View {
   }
 
   private var prompt: String {
+    if game.offersRedeal { return "" }
     guard game.result == nil else { return "" }
     if isYourTurn {
       return L10n.string(game.table == nil ? "Your Lead" : "Your Play")
