@@ -96,6 +96,9 @@
 "Buy" = "Bilhin";
 "The App Store could not be reached." = "Hindi maabot ang App Store.";
 "Restore Purchase" = "Ibalik ang Binili";
+"Try one game" = "Subukan ang isang laro";
+"One game is free. Then one purchase, no subscription." = "Isang libreng laro. Pagkatapos, isang bili, hindi subscription.";
+"Your free game is over. One purchase, no subscription." = "Tapos na ang libreng laro. Isang bili, hindi subscription.";
 
 /* Help */
 "Help" = "Tulong";

@@ -96,6 +96,9 @@
 "Buy" = "Beli";
 "The App Store could not be reached." = "App Store tidak dapat dihubungi.";
 "Restore Purchase" = "Pulihkan Pembelian";
+"Try one game" = "Coba satu permainan";
+"One game is free. Then one purchase, no subscription." = "Satu permainan gratis. Lalu beli sekali, bukan langganan.";
+"Your free game is over. One purchase, no subscription." = "Permainan gratis sudah habis. Beli sekali, bukan langganan.";
 
 /* Help */
 "Help" = "Bantuan";

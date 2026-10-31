@@ -26,6 +26,9 @@ import SwiftUI
 
 struct WatchGameView: View {
   @ObservedObject var game: BigTwoGame
+  @ObservedObject var trial: WatchTrial
+  /// False once the purchase is owned. A bought game must not spend the free one.
+  let trialActive: Bool
   @State private var selection: Set<Card> = []
   @State private var message: String?
   @State private var menuShown = false
@@ -72,13 +75,27 @@ struct WatchGameView: View {
           ToolbarItemGroup(placement: .bottomBar) { controls }
         }
     }
+    .onAppear { game.resumeBots() }
     .onChange(of: game.seats[seat].hand) {
       selection = []
       message = nil
     }
+    // Count the deal when it ends, not when the sheet is dismissed: killing the app
+    // on the sheet must not hand the same finished deal back.
+    .onChange(of: game.result?.deal) { _, deal in
+      guard trialActive, deal != nil else { return }
+      trial.noteDealFinished()
+    }
     .sheet(item: Binding(get: { game.result }, set: { _ in })) { result in
       WatchScoreView(result: result, seats: game.seats, gameOver: game.gameOver) {
-        game.continueAfterScore()
+        if trialActive, trial.isSpent {
+          // Leave the finished game where it is. Starting the next one here would
+          // play it behind the paywall.
+          game.pauseBots()
+          trial.requirePurchase()
+        } else {
+          game.continueAfterScore()
+        }
       }
     }
     // ⚠️ The setter must not decline. Deal again clears the offer and may raise it
@@ -126,7 +143,12 @@ struct WatchGameView: View {
         // the one item floating in a white column that reaches the top of the screen.
         WatchMenuView(items: [
           .init(id: "new_game", title: L10n.string("New Game")) {
-            game.startGame()
+            if trialActive, trial.isSpent {
+              game.pauseBots()
+              trial.requirePurchase()
+            } else {
+              game.startGame()
+            }
             selection = []
             message = nil
             menuShown = false
@@ -267,5 +289,8 @@ struct WatchGameView: View {
 }
 
 #Preview {
-  WatchGameView(game: BigTwoGame(seed: 2))
+  WatchGameView(game: BigTwoGame(seed: 2),
+                trial: WatchTrial(defaults: UserDefaults(suiteName: "WatchTrialPreview") ?? .standard,
+                                  resetsForUITest: false),
+                trialActive: false)
 }

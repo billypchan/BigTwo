@@ -96,6 +96,9 @@
 "Buy" = "Kaufen";
 "The App Store could not be reached." = "Der App Store ist nicht erreichbar.";
 "Restore Purchase" = "Kauf wiederherstellen";
+"Try one game" = "Ein Spiel testen";
+"One game is free. Then one purchase, no subscription." = "Ein Spiel ist gratis. Danach einmal kaufen, kein Abo.";
+"Your free game is over. One purchase, no subscription." = "Das Gratisspiel ist vorbei. Einmal kaufen, kein Abo.";
 
 "Tap a card to pick it. Tap it again to put it back." = "Tippe eine Karte an, um sie zu wählen. Noch einmal, um sie zurückzulegen.";
 "Double-tap takes the pair or three of that rank, or the whole suit when you hold five or more of it." = "Doppeltippen nimmt das Paar oder den Drilling, oder die ganze Farbe, wenn du fünf oder mehr davon hast.";
