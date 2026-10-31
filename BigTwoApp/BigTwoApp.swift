@@ -15,7 +15,9 @@ struct BigTwoApp: App {
 
   init() {
     let store = LaunchOptions.preferencesStore()
-    let game = BigTwoGame(preferences: store.load(),
+    var preferences = store.load()
+    if LaunchOptions.forceHongKong { preferences.hongKong = true }
+    let game = BigTwoGame(preferences: preferences,
                           seed: LaunchOptions.seed,
                           humanSeats: LaunchOptions.autoplay ? [] : [1],
                           recordStore: LaunchOptions.recordStore())

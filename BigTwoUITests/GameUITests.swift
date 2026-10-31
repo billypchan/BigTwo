@@ -337,6 +337,7 @@ final class GameUITests: XCTestCase {
       XCTAssertTrue(text.label.contains("empty box"))
       XCTAssertTrue(text.label.contains("JQKA2"))
       XCTAssertTrue(text.label.contains("23456"))
+      XCTAssertTrue(text.label.contains("dealt again"))
       XCTAssertTrue(text.label.contains("straight flush"))
     }
     attachScreen("help")
@@ -366,6 +367,28 @@ final class GameUITests: XCTestCase {
     XCTAssertFalse(intro.exists)
     app.buttons["watch_notice_ok"].tap()
     XCTAssertTrue(app.element("hand_3d").waitForExistence(timeout: 10))
+  }
+
+  /// Seed 100 under Hong Kong rules deals a bad hand (two face cards, no ace, no two).
+  /// Deal again shuffles that same deal; Play would have kept it.
+  func testHongKongBadHand_canBeDealtAgain() {
+    app = .bigTwo(seed: "100", ["-hongKong", "YES"])
+    app.launch()
+    let again = app.buttons["redeal_again"]
+    XCTAssertTrue(again.waitForExistence(timeout: 10))
+    waitUntilSettled(again)
+    XCTAssertTrue(again.isHittable, "Deal again is outside the square")
+    XCTAssertTrue(app.buttons["redeal_play"].isHittable, "Play is outside the square")
+    XCTAssertEqual(app.element("deal_label").label, "Deal 1/10")
+    XCTAssertEqual(app.prompt.label, "")
+    XCTAssertTrue(app.element("hand_Qc").exists)
+    attachScreen("redeal")
+    again.tap()
+    XCTAssertTrue(app.element("hand_Ad").waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["redeal_again"].exists)
+    XCTAssertFalse(app.element("hand_Qc").exists)
+    XCTAssertEqual(app.element("deal_label").label, "Deal 1/10")
+    XCTAssertEqual(app.handCards.count, 13)
   }
 
   /// A normal UI-test launch must not cover the table. Opening Names from the menu

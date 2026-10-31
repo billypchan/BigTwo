@@ -115,5 +115,8 @@
 "A flush is ranked by its highest card, then that card's suit. A full house by the three of a kind. Four of a kind by the four." = "Flush dibandingkan kad tertinggi, kemudian jenisnya. Full house pada tiga senombor. Empat senombor pada keempatnya.";
 "Each card left costs its rank: 3 is 1, up to 2 which is 13. Ten or more cards left doubles the cost. The winner takes all three totals." = "Setiap kad baki dikira nombornya: 3 bernilai 1, hingga 2 bernilai 13. Sepuluh kad atau lebih digandakan. Pemenang mengambil ketiga-tiga jumlah.";
 "A game is ten deals." = "Satu permainan sepuluh pusingan.";
-"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight." = "Peraturan Hong Kong, dari pusingan seterusnya: pemenang tadi main dahulu, dan 23456 ialah straight terbesar.";
+"With Hong Kong rules, from the next deal: the last winner leads, and 23456 is the highest straight. A hand with two or fewer face cards, and no ace or two, may be dealt again." = "Peraturan Hong Kong, dari pusingan seterusnya: pemenang tadi main dahulu, dan 23456 ialah straight terbesar. Kad bergambar dua atau kurang, tanpa A dan tanpa 2, boleh diagihkan semula.";
+"Bad hand" = "Kad teruk";
+"Two or fewer face cards, and no ace or two." = "Dua kad gambar atau kurang, tanpa A dan tanpa 2.";
+"Deal again" = "Deal semula";
 "Enter your name. The dark row is you. Leave a row blank to keep its name." = "Masukkan nama anda. Baris gelap ialah anda. Baris kosong mengekalkan namanya.";

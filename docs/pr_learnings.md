@@ -13,6 +13,22 @@ and the evidence.
 
 ---
 
+## hk-redeal — 港式爛牌可以重發同一舖
+
+**問的是人，不是機器人。** 公仔牌（J、Q、K）兩張或以下，而且沒有 A、沒有 2，才算爛牌。只有人手牌符合才升起 `offersRedeal`。沒有人的自動打牌不問。同一副牌在標準規則下也不問。機器人在問答之前不會動。
+
+**一張公仔也算。** 2026-10-31 回報的第 2 舖是 `3d 4d 4c 4h 5d 5s 6h 6s 7c 7h 9s Ts Jd`：只有 J♦。`reportedOneJackHandMayBeDealtAgain` 釘住這 13 張。畫面上沒有對話，不代表這手不算——這一舖發牌時若不是港式，就不會問。
+
+**重發不進下一舖。** `deal` 不變。還沒有人出過牌的那一筆記錄要先拿掉再 `newDeal()`，否則歷史多一舖空的。下一手還是爛牌就再問。Decline 才把牌打下去。
+
+**勾選港式不會重發這一手。** 規則在發牌時固定。UI 測試要 `-hongKong YES`，而且要在 `BigTwoGame` 建立之前設上。手錶讀同一個 flag。種子 100 的人手牌是爛牌，重發後不是。
+
+**提問還開著時，提示不能寫某人正在想。** 那一回合被按住了。手機那一行改成空白。
+
+**延遲 0 要同步出牌。** 丟進 `Task.sleep` 的話，跟一場長 benchmark 搶 main actor，測試會先醒、以為機器人沒有動。`botDelayOverride == 0` 就在 `scheduleBot` 裡直接走。
+
+**手錶 alert 的 setter 不能 decline。** 重發會先清掉這次提問，新牌若又是爛牌會再升起；dismiss 時 decline 會把第二次問掉。電話用方塊裡的 Palm form，手錶沒有那個方塊，才用系統 alert。
+
 ## watch-one-game-trial — 試玩一局，計的是打完的墩
 
 **遊戲物件在付費牆後面就存在。** `BigTwoWatchApp` 一啟動就 `BigTwoGame()`，機器人

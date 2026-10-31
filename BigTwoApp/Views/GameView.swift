@@ -154,6 +154,7 @@ struct GameView: View {
   }
 
   private var prompt: String {
+    if game.offersRedeal { return "" }
     if let message { return message }
     if game.mustPlayThreeOfDiamonds && isYourTurn { return L10n.string("Lead with the 3♦") }
     if isYourTurn { return L10n.string(game.table == nil ? "Your Lead" : "Your Play") }
@@ -214,6 +215,11 @@ struct GameView: View {
             self.dialog = nil
           }
         }
+      }
+    } else if game.offersRedeal {
+      // After the name prompt and the watch note. The deal stays put until then.
+      modal(u) {
+        RedealDialogView(onDealAgain: { game.redeal() }, onPlay: { game.declineRedeal() })
       }
     }
   }

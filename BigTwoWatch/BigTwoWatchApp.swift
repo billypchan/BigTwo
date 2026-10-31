@@ -54,11 +54,14 @@ struct BigTwoWatchApp: App {
   init() {
     let store = Self.makeStore()
     self.store = store
+    var preferences = store.load()
+    // `-hongKong YES`, same as the phone. The checkbox does not redeal.
+    if UserDefaults.standard.bool(forKey: "hongKong") { preferences.hongKong = true }
     let deals = Self.dealsPerGame
     // Paused until the table is on screen. The object exists behind the paywall, and
     // the bots would otherwise play the free game before Try.
     let autoplay = UserDefaults.standard.bool(forKey: "autoplay")
-    let game = BigTwoGame(preferences: store.load(), seed: Self.seed,
+    let game = BigTwoGame(preferences: preferences, seed: Self.seed,
                           humanSeats: autoplay ? [] : [1], startPaused: true)
     if ProcessInfo.processInfo.arguments.contains("UITestMode") {
       game.botDelayOverride = 0.15
