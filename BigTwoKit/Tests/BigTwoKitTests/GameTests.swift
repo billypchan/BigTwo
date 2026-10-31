@@ -148,6 +148,23 @@ struct GameTests {
     }
   }
 
+  /// Fast bots move inside a second. A paused game must still be on the opening lead
+  /// after that, and resume has to be what starts them.
+  @Test func pausedBotsWaitUntilResumed() async throws {
+    var prefs = Preferences()
+    prefs.gameSpeed = .fast
+    let game = BigTwoGame(preferences: prefs, seed: 2, humanSeats: [], startPaused: true)
+    try await Task.sleep(nanoseconds: 600_000_000)
+    #expect(game.table == nil && game.result == nil)
+    game.botDelayOverride = 0
+    game.resumeBots()
+    let deadline = Date().addingTimeInterval(3)
+    while game.table == nil && game.result == nil && Date() < deadline {
+      try await Task.sleep(nanoseconds: 20_000_000)
+    }
+    #expect(game.table != nil || game.result != nil)
+  }
+
   @Test func oneDealOverrideOpensTheFinalScore() {
     let game = driven(seed: 2)
     game.dealsPerGameOverride = 1

@@ -89,6 +89,8 @@ public final class BigTwoGame: ObservableObject {
   }
 
   private var passes = 0
+  /// The watch paywall holds a live game. Bots stay stopped until the table is on screen.
+  public private(set) var botsPaused: Bool
   private var lastWinner: Int?
   private var openingPlay = false  // the 3♦ must be in the first play of a deal
   private var botTask: Task<Void, Never>?
@@ -108,14 +110,17 @@ public final class BigTwoGame: ObservableObject {
   /// `botsMoveThemselves: false` leaves every move to the caller — tests step the bots
   /// with `botChoice(for:)` instead of waiting on timers.
   /// `recordStore` keeps the transcript on device. Tests omit it.
+  /// `startPaused` deals the cards and does not move: the watch creates the game while
+  /// the paywall is up, and an unpaused game would finish the free trial unseen.
   public init(preferences: Preferences = Preferences(), seed: UInt64? = nil,
               humanSeats: Set<Int> = [1], botsMoveThemselves: Bool = true,
-              recordStore: GameRecordStore? = nil) {
+              recordStore: GameRecordStore? = nil, startPaused: Bool = false) {
     self.preferences = preferences
     self.rules = RuleSet(hongKong: preferences.hongKong)
     self.rng = seed.map(SeededGenerator.init(seed:))
     self.botsMoveThemselves = botsMoveThemselves
     self.recordStore = recordStore
+    self.botsPaused = startPaused
     self.library = recordStore?.load() ?? GameRecordLibrary()
     self.record = library.current
     self.seats = Self.resolvedNames(preferences.playerNames).enumerated().map {
@@ -295,8 +300,21 @@ public final class BigTwoGame: ObservableObject {
     scheduleBot()
   }
 
+  public func pauseBots() {
+    botsPaused = true
+    botTask?.cancel()
+  }
+
+  /// The next bot move, if it is a bot's turn. A second call does nothing.
+  public func resumeBots() {
+    guard botsPaused else { return }
+    botsPaused = false
+    scheduleBot()
+  }
+
   private func scheduleBot() {
     botTask?.cancel()
+    guard !botsPaused else { return }
     guard botsMoveThemselves, !seats[turn].isHuman, result == nil, !gameOver else { return }
     let seat = turn
     let delay = UInt64((botDelayOverride ?? preferences.gameSpeed.botDelay) * 1_000_000_000)

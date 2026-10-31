@@ -8,6 +8,7 @@ import SwiftUI
 
 struct WatchStoreView: View {
   @ObservedObject var unlock: WatchUnlock
+  @ObservedObject var trial: WatchTrial
 
   var body: some View {
     ScrollView {
@@ -15,9 +16,18 @@ struct WatchStoreView: View {
         Text(verbatim: L10n.string("Big Two on Apple Watch"))
           .font(.system(size: 15, weight: .heavy))
           .multilineTextAlignment(.center)
-        Text(verbatim: L10n.string("Play the full game on your wrist. One purchase, no subscription."))
+        Text(verbatim: L10n.string(trial.offerTry
+                                   ? "One game is free. Then one purchase, no subscription."
+                                   : "Your free game is over. One purchase, no subscription."))
           .font(.system(size: 12))
           .multilineTextAlignment(.center)
+
+        if trial.offerTry {
+          WatchPalmButtonView(title: L10n.string("Try one game")) {
+            trial.begin()
+          }
+          .accessibilityIdentifier("store_try")
+        }
 
         switch unlock.state {
         case .locked(let price):
@@ -48,5 +58,7 @@ struct WatchStoreView: View {
 }
 
 #Preview {
-  WatchStoreView(unlock: WatchUnlock())
+  WatchStoreView(unlock: WatchUnlock(),
+                 trial: WatchTrial(defaults: UserDefaults(suiteName: "WatchTrialPreview") ?? .standard,
+                                   resetsForUITest: false))
 }

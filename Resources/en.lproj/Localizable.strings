@@ -103,6 +103,9 @@
 "Buy" = "Buy";
 "The App Store could not be reached." = "The App Store could not be reached.";
 "Restore Purchase" = "Restore Purchase";
+"Try one game" = "Try one game";
+"One game is free. Then one purchase, no subscription." = "One game is free. Then one purchase, no subscription.";
+"Your free game is over. One purchase, no subscription." = "Your free game is over. One purchase, no subscription.";
 
 /* Help */
 "Help" = "Help";
