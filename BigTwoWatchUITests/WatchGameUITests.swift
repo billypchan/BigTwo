@@ -70,6 +70,33 @@ final class WatchGameUITests: XCTestCase {
     waitForSelected(2, "double tap on a short suit")
   }
 
+  /// Seed 25 holds three kings and a pair of sixes, and you lead, so the bots
+  /// stay put. A double tap on the other group must not clear the one already
+  /// selected. 6♠: 6♦ is one of five diamonds, and that shortcut takes the suit.
+  func testDoubleTapKeepsAThreeAndAPairTogether() {
+    relaunchFullHouse()
+    card("hand_Ks").press(forDuration: 1.0)
+    waitForSelected(3, "long press the three kings")
+    card("hand_6s").doubleTap()
+    waitForSelected(5, "a pair on top of a selected three")
+    XCTAssertTrue(card("hand_Kc").isSelected)
+    XCTAssertTrue(card("hand_6d").isSelected)
+
+    relaunchFullHouse()
+    card("hand_6s").doubleTap()
+    waitForSelected(2, "the pair of sixes")
+    card("hand_Kc").doubleTap()
+    waitForSelected(5, "a three on top of a selected pair")
+    XCTAssertTrue(card("hand_6s").isSelected)
+    XCTAssertTrue(card("hand_Ks").isSelected)
+  }
+
+  private func relaunchFullHouse() {
+    app.terminate()
+    app.launchArguments = ["UITestMode", "-AppleLanguages", "(en)", "-seed", "25", "-unlocked", "YES"]
+    app.launch()
+  }
+
   /// Long press takes every card of that rank.
   func testLongPressTakesTheRank() {
     card("hand_9c").press(forDuration: 1.0)
