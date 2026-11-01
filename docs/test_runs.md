@@ -148,3 +148,4 @@ evidence that a test can fail; they stay in the log.
 - 2026-10-31 — double-tap-full-house: BigTwoKit ✓ 126/126 (`swift test -c release -Xswiftc -enable-testing`, 30.1 s). Includes `HandSelectionTests`. Benchmarks unchanged: Legacy -1562 / Strong -481, Strong -1045 / Expert -453, reading -772 / search -453, greedy 1050 / Expert 1894.
 - 2026-10-31 — double-tap-full-house: iOS (iPhone 17 Pro Max, 26.3, BFB1B358) ✓ 5/5 (`testDoubleTap_keepsAThreeAndAPairTogether` plus the four existing gesture tests, 38.9 s). Then ✗ 0/1 deliberate (`fullHousePartner` returned false): expected 5 selected, got 2. Restored ✓ 1/1 (11.0 s). No shots; these tests do not attach any.
 - 2026-10-31 — double-tap-full-house: watchOS (Apple Watch Ultra 3 49mm, E9EB773F) ✓ 4/4 (`testDoubleTapKeepsAThreeAndAPairTogether` plus suit, pair, and long press, 52.2 s). No shots.
+- 2026-11-01 10:12 — v1.5 submitted (build 144)
