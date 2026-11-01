@@ -168,6 +168,38 @@ final class GameUITests: XCTestCase {
     XCTAssertFalse(app.element("hand_8h").isSelected)
   }
 
+  /// Seed 25 leads with 3♦ and also holds three kings and a pair of sixes.
+  /// Double-tap the pair after the three, and the three after the pair: both
+  /// stay. 6♠, not 6♦ — five diamonds would take the suit and wipe the kings.
+  func testDoubleTap_keepsAThreeAndAPairTogether() {
+    app = .bigTwo(seed: "25")
+    app.launch()
+    XCTAssertTrue(app.element("hand_Ks").waitForExistence(timeout: 10))
+
+    app.element("hand_Ks").press(forDuration: 0.6)
+    waitForCount(app.selectedHandCards, 3)
+    XCTAssertTrue(app.element("hand_Kc").isSelected)
+    XCTAssertTrue(app.element("hand_Kd").isSelected)
+
+    app.element("hand_6s").doubleTap()
+    waitForCount(app.selectedHandCards, 5)
+    XCTAssertTrue(app.element("hand_Ks").isSelected, "the three kings were cleared")
+    XCTAssertTrue(app.element("hand_6d").isSelected)
+    XCTAssertTrue(app.element("hand_6s").isSelected)
+
+    app.buttons["button_clear"].tap()
+    waitForCount(app.selectedHandCards, 0)
+
+    app.element("hand_6s").doubleTap()
+    waitForCount(app.selectedHandCards, 2)
+    app.element("hand_Kc").doubleTap()
+    waitForCount(app.selectedHandCards, 5)
+    XCTAssertTrue(app.element("hand_6s").isSelected, "the pair of sixes was cleared")
+    XCTAssertTrue(app.element("hand_Kd").isSelected)
+    XCTAssertTrue(app.element("hand_Ks").isSelected)
+    XCTAssertFalse(app.element("hand_3d").isSelected)
+  }
+
   /// The Apple Watch note is shown once. ⚠️ `UITestMode` suppresses it — the preference
   /// suite is wiped every launch, so without that it would cover the table in every test —
   /// and `-watchNotice YES` is what asks for it back.

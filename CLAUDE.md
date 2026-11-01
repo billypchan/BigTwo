@@ -583,7 +583,13 @@ does.
 The watch has the phone's two selection shortcuts, and one of its own:
 
 - **Double tap a card** — the whole suit when you hold five or more of it, otherwise the
-  pair or triple of that rank. ⚠️ `.onTapGesture(count: 2)` must be attached **before**
+  pair or triple of that rank. A selected three stays when that shortcut takes a pair,
+  and a selected pair stays when it takes a three, so the two gestures build a full
+  house. Anything else still replaces the selection, including five of a suit and a
+  four of a kind. ⚠️ On the phone the first tap has already toggled the card before
+  the shortcut runs (`CardRowView`); decide what to keep after dropping that rank.
+  The watch gesture has not toggled. Both call `HandSelection.doubleTap`.
+  ⚠️ `.onTapGesture(count: 2)` must be attached **before**
   `.onTapGesture`, or the single tap swallows the event and the double never fires.
 - **Long press a card** — every card of that rank.
 - **Apple's Double Tap** (pinch twice) plays the selection: `handGestureShortcut(.primaryAction)`.

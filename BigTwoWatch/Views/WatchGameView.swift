@@ -246,19 +246,10 @@ struct WatchGameView: View {
     return L10n.string("%@, to play", game.seats[game.turn].name)
   }
 
-  /// Double tap: the whole suit when you hold five or more of it — the makings of a
-  /// flush — otherwise the pair or triple of that rank. Same rule as the phone.
+  /// Same rule as the phone. `HandSelection` keeps a selected three when this
+  /// takes a pair, and a selected pair when this takes a three.
   private func selectSuitOrPair(_ card: Card) {
-    let cards = game.seats[seat].hand
-    let ofSuit = cards.filter { $0.suit == card.suit }
-    if ofSuit.count >= 5 {
-      selection = Set(ofSuit)
-      return
-    }
-    let ofRank = cards.filter { $0.rank == card.rank }
-    if ofRank.count >= 2 {
-      selection = Set(ofRank)
-    }
+    selection = HandSelection.doubleTap(card, in: game.seats[seat].hand, selection: selection)
     message = nil
   }
 
