@@ -11,6 +11,6 @@ Meja hijau, bilah judul abu-abu polos, petunjuk singkat, dan tiga pemain kompute
 • Pass otomatis, urut kartu menurut angka atau jenis, tekan lama untuk memilih satu angka, ketuk dua kali untuk satu jenis.
 • Salin riwayat permainan untuk ditempel di mana saja.
 
-Tanpa iklan, tanpa akun, tanpa pelacakan — aplikasi ini tidak mengumpulkan data apa pun. Gratis dan sumber terbuka (lisensi MIT).
+Iklan spanduk ada di bawah pelacak kartu, disajikan oleh Google. Tanpa akun. Gratis dan sumber terbuka (lisensi MIT).
 
 Saya tidak main dengan uang asli.

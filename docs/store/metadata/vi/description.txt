@@ -12,6 +12,6 @@ Mặt bàn xanh, thanh tiêu đề xám phẳng, lời nhắc ngắn gọn, và 
 • Sao chép lịch sử ván đấu để dán ra ngoài.
 • Bảy ngôn ngữ: Anh, Trung phồn thể, Trung giản thể, Indonesia, Philippines, Mã Lai và Việt.
 
-Không quảng cáo, không tài khoản, không theo dõi — ứng dụng không thu thập dữ liệu nào. Miễn phí và mã nguồn mở (giấy phép MIT).
+Một biểu ngữ quảng cáo nằm dưới bảng theo dõi bài, do Google phát. Không tài khoản. Miễn phí và mã nguồn mở (giấy phép MIT).
 
 Tôi không chơi bằng tiền thật.

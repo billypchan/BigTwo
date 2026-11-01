@@ -1,8 +1,8 @@
-Versi 1.4
+Versi 1.5
 
-• Bantuan menjelaskan tombol dan aturan
-• Pertama kali dibuka, game meminta nama Anda. Baris gelap adalah Anda
-• Bahasa Jerman adalah bahasa baru
-• Bot Kuat bermain lebih kuat, dan Kuat tetap bawaan
-• Ahli adalah tingkat bot baru. Ia membaca kartu yang sudah dimainkan. Pilih di Bot
-• Tentang menambah Traktir Saya Kopi, plus satu kali pemberitahuan: Kini di Apple Watch
+• Di Apple Watch, satu permainan gratis, lalu beli sekali
+• Menang lawan bot Kuat, game bertanya untuk ganti bot ke Ahli
+• Aturan Hong Kong: setiap kartu sisa bernilai 1. Sampai 7 satu kali, 8 atau 9 dua kali, 10 sampai 12 tiga kali, dan 13 empat kali
+• Kartu Hong Kong bergambar dua atau kurang, tanpa as dan tanpa 2, boleh dibagikan lagi
+• Ketuk dua kali mempertahankan tiga kartu yang sudah dipilih saat mengambil pasangan, dan pasangan saat mengambil tiga kartu
+• Setelah satu permainan, game dapat meminta penilaian

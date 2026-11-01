@@ -11,6 +11,6 @@ Meja hijau, bar tajuk kelabu rata, arahan ringkas, dan tiga pemain komputer yang
 • Pass automatik, susun kad mengikut nombor atau jenis, tekan lama untuk memilih satu nombor, ketik dua kali untuk satu jenis.
 • Salin sejarah permainan untuk ditampal di mana-mana.
 
-Tiada iklan, tiada akaun, tiada penjejakan — aplikasi ini tidak mengumpul sebarang data. Percuma dan sumber terbuka (lesen MIT).
+Iklan jalur ada di bawah penjejak kad, dihidangkan oleh Google. Tiada akaun. Percuma dan sumber terbuka (lesen MIT).
 
 Saya tidak bermain dengan wang sebenar.

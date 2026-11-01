@@ -12,6 +12,6 @@ A green table, a flat grey title bar, terse prompts, and three computer players 
 • Copy the game history to paste anywhere.
 • Seven languages: English, Traditional Chinese, Simplified Chinese, Indonesian, Filipino, Malay and Vietnamese.
 
-No ads, no accounts, no tracking — the app collects no data at all. Free and open source (MIT license).
+A banner ad sits under the card tracker, served by Google. No account. Free and open source (MIT license).
 
 I will not play with real money.

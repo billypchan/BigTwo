@@ -1,8 +1,8 @@
-Phiên bản 1.4
+Phiên bản 1.5
 
-• Trợ giúp giải thích các nút và luật chơi
-• Lần đầu mở game sẽ hỏi tên bạn. Hàng đậm là bạn
-• Thêm tiếng Đức
-• Máy Mạnh chơi khá hơn, và Mạnh vẫn là mặc định
-• Cao thủ là mức máy mới. Nó đọc các lá đã đánh. Chọn trong Máy
-• Giới thiệu thêm Mời tôi ly cà phê, và một lần báo rằng giờ có trên Apple Watch
+• Trên Apple Watch, một ván miễn phí, sau đó mua một lần
+• Thắng máy Mạnh thì game hỏi đổi máy sang Cao thủ
+• Luật Hồng Kông: mỗi lá còn lại tính 1. Đến 7 là một lần, 8 hoặc 9 là hai, 10 đến 12 là ba, và 13 là bốn
+• Bài Hồng Kông có hai lá hình hoặc ít hơn, không có A và không có 2, thì có thể chia lại
+• Chạm đúp giữ ba lá đã chọn khi lấy một đôi, và giữ đôi đã chọn khi lấy ba lá
+• Sau một ván, game có thể hỏi bạn đánh giá

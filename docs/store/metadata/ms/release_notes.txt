@@ -1,8 +1,8 @@
-Versi 1.4
+Versi 1.5
 
-• Bantuan menerangkan butang dan peraturan
-• Kali pertama dibuka, permainan meminta nama anda. Baris gelap ialah anda
-• Bahasa Jerman ialah bahasa baharu
-• Bot Kuat bermain lebih kuat, dan Kuat kekal lalai
-• Pakar ialah tahap bot baharu. Ia membaca kad yang sudah dimainkan. Pilih di Bot
-• Perihal menambah Belanja Saya Kopi, serta satu pemberitahuan: Kini di Apple Watch
+• Di Apple Watch, satu permainan percuma, kemudian beli sekali
+• Menang lawan bot Kuat, permainan bertanya untuk tukar bot ke Pakar
+• Peraturan Hong Kong: setiap kad baki bernilai 1. Hingga 7 satu kali, 8 atau 9 dua kali, 10 hingga 12 tiga kali, dan 13 empat kali
+• Kad Hong Kong bergambar dua atau kurang, tanpa A dan tanpa 2, boleh diagihkan semula
+• Ketik dua kali mengekalkan tiga kad yang dipilih apabila mengambil pasangan, dan pasangan apabila mengambil tiga kad
+• Selepas satu permainan, permainan mungkin meminta penilaian

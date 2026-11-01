@@ -1,8 +1,8 @@
-Version 1.4
+Version 1.5
 
-• Help explains the buttons and the rules
-• The first launch asks you to enter a name. The dark row is you
-• German is a new language
-• Strong bots play a stronger game, and Strong stays the default
-• Expert is a new bot level. It reads the cards already played. Choose it under Bots
-• About adds Buy Me a Coffee, and a one-time note that the game is on Apple Watch
+• On Apple Watch, one game is free, then one purchase
+• After you win against Strong, the game asks to set the bots to Expert
+• Hong Kong: each card left costs 1. Up to 7 is one times, 8 or 9 is two, 10 to 12 is three, and 13 is four
+• A Hong Kong hand with two or fewer face cards, and no ace or two, may be dealt again
+• Double-tap keeps a selected three when you take a pair, and a selected pair when you take a three
+• The game may ask for a rating after a deal
